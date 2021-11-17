@@ -1,0 +1,161 @@
+:root {
+  --bg-primary: #2e3440;
+  /*  rgb(30, 30, 26); */
+  /* --bg-card: rgb(34, 34, 44); */
+  /* --bg-card: #2c2c2c; */
+  --bg-card: #3b4252;
+  /* --color-text: rgb(1, 227, 217); */
+  /* --color-text: #81a1c1; */
+  --color-text: #8fbcbb;
+  --color-highlight: #5e81ac;
+  --color-max: #81a1c1;
+  --color-cta: #88c0d0;
+  --color-red: #bf616a;
+  --color-green: #a3be8c;
+  --color-purple: #b48ead;
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  color: white;
+  background: black;
+  letter-spacing: 0.5px;
+  font-size: 19px;
+}
+
+/* ::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #150142;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #21085c;
+  border-radius: 1rem;
+  border: 1px solid #0e012b;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #32186e;
+}
+*/ a {
+  color: white;
+}
+
+.Card-title {
+  font-size: 2rem;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+input {
+  font-size: 1.3rem;
+  color: white;
+  outline: none;
+  background: none;
+  border: none;
+  padding: 0.8rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+button {
+  outline: none;
+  cursor: pointer;
+}
+
+button:disabled,
+button.App-cta:disabled {
+  cursor: not-allowed;
+  opacity: 0.9;
+  box-shadow: none;
+}
+
+table {
+  margin: 0;
+  padding: 0;
+}
+
+tr {
+  margin: 0;
+  padding: 0;
+}
+
+td {
+  margin: 0;
+  padding: 0;
+  padding-right: 0.3rem;
+}
+
+.border {
+  /* border-width: 1px;
+  border-style: solid;
+  border-image-source: linear-gradient(to right top, #1c0e6a, #361070);
+  border-image-slice: 1; */
+  border: 1px solid slategray;
+  border-radius: 8px;
+}
+
+.align-right {
+  text-align: right;
+}
+
+.muted {
+  opacity: 0.7;
+}
+
+.strong {
+  font-weight: bold;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.underline {
+  text-decoration: underline;
+}
+
+.margin-bottom {
+  margin-bottom: 0.3rem;
+}
+
+.transition-arrow {
+  vertical-align: middle;
+  margin-top: -0.2rem;
+}
+
+.inline-block {
+  display: inline-block;
+}
+
+.label {
+  opacity: 0.7;
+}
+
+a.plain {
+  text-decoration: none;
+}
+
+.checkbox:checked:before {
+  background-color: green;
+}

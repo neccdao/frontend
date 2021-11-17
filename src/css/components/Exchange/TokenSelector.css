@@ -1,0 +1,73 @@
+.TokenSelector {
+  font-weight: bold;
+}
+
+.TokenSelector .Modal-content {
+  width: 20rem;
+  margin: 0;
+}
+
+.TokenSelector-token-name {
+  margin-right: 1rem;
+}
+
+.TokenSelector.disabled {
+  pointer-events: none;
+}
+
+.TokenSelector.disabled .TokenSelector-caret {
+  display: none;
+}
+
+.TokenSelector-box {
+  display: block;
+  cursor: pointer;
+  border-radius: 6px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.TokenSelector-box:hover {
+  /* color: #8763ff; */
+  color: var(--color-text);
+}
+
+.TokenSelector-caret {
+  vertical-align: middle;
+  display: inline-block;
+  margin-left: 0.3rem;
+  font-size: 1.5rem;
+  margin-top: -0.3rem;
+}
+
+.TokenSelector-tokens {
+  overflow: auto;
+}
+
+.TokenSelector-token-row {
+  cursor: pointer;
+  padding: 0.6rem;
+  padding-left: 0.7rem;
+  margin-bottom: 0.3rem;
+  /* background: linear-gradient(270deg, rgba(33,14,82,0.7) 0%, rgba(65,24,87,0.7) 100%); */
+  background: var(--bg-card);
+}
+
+.TokenSelector-token-row:hover {
+  /* background: linear-gradient(270deg, rgba(72,44,144,1) 0%, rgba(109,43,144,1) 100%); */
+  background: var(--color-text);
+}
+
+.TokenSelector-top-row {
+  font-size: 1.1rem;
+  display: grid;
+  grid-template-columns: auto auto;
+}
+
+.TokenSelector-content-row {
+  margin-top: 0.2rem;
+  font-size: 0.8rem;
+  opacity: 0.7;
+  display: grid;
+  grid-template-columns: auto auto;
+}

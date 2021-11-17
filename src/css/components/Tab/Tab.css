@@ -1,0 +1,45 @@
+.Tab.block {
+  display: grid;
+  grid-auto-flow: column;
+  /* background: linear-gradient(90deg, rgba(30,9,94,0.7) 0%, rgba(35,8,82,0.7) 100%); */
+  font-size: 0.9rem;
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  background-color: var(--bg-card);
+  border-radius: 12px;
+}
+
+.Tab.block .Tab-option {
+  text-align: center;
+  padding: 0.5rem;
+  cursor: pointer;
+}
+
+.Tab.block .Tab-option.active {
+  opacity: 1;
+  /* background: linear-gradient(90deg, rgb(13, 169, 134) 0%, rgb(45, 163, 79) 100%); */
+  background: var(--color-text);
+  pointer-events: none;
+  border-radius: 8px;
+  font-weight: 700;
+}
+
+.Tab.inline {
+}
+
+.Tab.inline .Tab-option {
+  cursor: pointer;
+  display: inline-block;
+  border-bottom: 2px solid transparent;
+  margin-right: 15px;
+  padding-bottom: 5px;
+}
+
+.Tab-option:hover {
+  opacity: 1;
+}
+
+.Tab.inline .Tab-option.active {
+  border-color: #fff;
+  opacity: 1;
+}
