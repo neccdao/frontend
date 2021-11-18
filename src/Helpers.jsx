@@ -1095,8 +1095,8 @@ export const addToken = async (token) => {
         options: {
           address: token.address, // The address that the token is at.
           symbol: token.symbol, // A ticker symbol or shorthand, up to 5 chars.
-          decimals: token.info.decimals, // The number of decimals in the token
-          image: token.info.imageUrl, // A string url of the token logo
+          decimals: token?.info?.decimals || token?.decimals, // The number of decimals in the token
+          image: token?.info?.imageUrl || token?.imageUrl, // A string url of the token logo
         },
       },
     });

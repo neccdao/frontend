@@ -128,6 +128,9 @@ export const TOKENS = {
       symbol: "BTC",
       decimals: 8,
       address: getContract(4, "BTC"),
+      coingeckoUrl: "https://www.coingecko.com/en/coins/wrapped-bitcoin",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/1/small/bitcoin.png?1547033579",
     },
     {
       name: "ETH",
@@ -141,6 +144,9 @@ export const TOKENS = {
       decimals: 18,
       address: getContract(4, "NATIVE_TOKEN"),
       isWrapped: true, // NOTE - Seems required even though shown in from token selector list
+      coingeckoUrl: "https://www.coingecko.com/en/coins/ethereum",
+      imageUrl:
+        "https://assets.coingecko.com/coins/images/279/small/ethereum.png",
     },
     {
       name: "Necc Dollars",

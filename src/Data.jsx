@@ -31,7 +31,6 @@ import "./css/Dashboard.css";
 
 import metamaskImg from "./img/metamask.png";
 import coingeckoImg from "./img/coingecko.png";
-import bscscanImg from "./img/bscscan.png";
 import { useWeb3React } from "@web3-react/core";
 
 const USD_DECIMALS = 30;
@@ -497,7 +496,7 @@ export default function Data() {
           <div className="border Dashboard-token-card ndol App-card primary">
             <div className="Dashboard-token-title App-card-title">
               <div className="Dashboard-token-title-text">NDOL</div>
-              <div className="Dashboard-token-title-options flex">
+              <div className="Dashboard-token-title-options flex items-center">
                 <img
                   src={metamaskImg}
                   alt="MetaMask"
@@ -507,25 +506,27 @@ export default function Data() {
                       symbol: "NDOL",
                       info: {
                         decimals: 18,
-                        imageUrl:
-                          "https://assets.coingecko.com/coins/images/15886/small/ndol-02.png",
+                        imageUrl: "https://assets.necc.io/ndol token.svg",
                       },
                     })
                   }
                 />
                 <a
-                  href="https://www.coingecko.com/en/coins/usd-gambit"
+                  href="https://www.coingecko.com/en/coins/ndol"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  {/* <img src={ETHcoingeckoImg} alt="CoinGecko" /> */}
+                  <img src={coingeckoImg} alt="CoinGecko" />
                 </a>
                 <a
-                  href="https://bscscan.com/token/0x85E76cbf4893c1fbcB34dCF1239A91CE2A4CF5a7"
+                  href="https://explorer.mainnet.aurora.dev/token/0xNDOL"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  {/* <img src={bscscanImg} alt="Arbiscan" /> */}
+                  <img
+                    src="https://doc.aurora.dev/_img/favicon.svg"
+                    alt="AuroraScan"
+                  />
                 </a>
               </div>
               <div className="label">Supply</div>
@@ -542,7 +543,7 @@ export default function Data() {
                   <div className="Dashboard-token-title-text">
                     {token.symbol}
                   </div>
-                  <div className="Dashboard-token-title-options flex">
+                  <div className="Dashboard-token-title-options flex items-center">
                     <img
                       src={metamaskImg}
                       alt="MetaMask"
@@ -560,7 +561,12 @@ export default function Data() {
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      {/* <img src={bscscanImg} alt="Arbiscan" /> */}
+                      <img
+                        src={
+                          "https://explorer.mainnet.aurora.dev/images/aurora-horiz-5d81bff2d4f3f54af7b558f6960becc1.svg"
+                        }
+                        alt="AuroraScan"
+                      />
                     </a>
                   </div>
                 </div>
