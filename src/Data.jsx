@@ -562,9 +562,7 @@ export default function Data() {
                       rel="noopener noreferrer"
                     >
                       <img
-                        src={
-                          "https://explorer.mainnet.aurora.dev/images/aurora-horiz-5d81bff2d4f3f54af7b558f6960becc1.svg"
-                        }
+                        src={"https://doc.aurora.dev/_img/favicon.svg"}
                         alt="AuroraScan"
                       />
                     </a>
