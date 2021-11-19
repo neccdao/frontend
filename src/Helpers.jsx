@@ -997,9 +997,9 @@ export const shouldRaiseGasError = (token, amount) => {
 };
 
 export const getTokenInfo = (infoTokens, tokenAddress, replaceNative) => {
-  // if (replaceNative && tokenAddress === NATIVE_TOKEN_ADDRESS) {
-  //   return infoTokens[AddressZero];
-  // }
+  if (replaceNative && tokenAddress === NATIVE_TOKEN_ADDRESS) {
+    return infoTokens[AddressZero];
+  }
   return infoTokens[tokenAddress];
 };
 

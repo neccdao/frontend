@@ -65,7 +65,6 @@ const NATIVE_TOKEN_ADDRESS = getContract(CHAIN_ID, "NATIVE_TOKEN");
 const { AddressZero } = ethers.constants;
 
 const getTokenAddress = (token) => {
-  // TODO: Check if required, do we assign WETH to Address Zero or with isWrapped: true?
   if (token.address === AddressZero) {
     return NATIVE_TOKEN_ADDRESS;
   }
@@ -145,24 +144,19 @@ function getPositionQuery(tokens) {
   const isLong = [];
 
   for (let i = 0; i < tokens.length; i++) {
-    const token = tokens[i];
-    if (token.isWrapped) {
-      continue;
-    }
-    collateralTokens.push(getTokenAddress(token));
-    indexTokens.push(getTokenAddress(token));
-    isLong.push(true);
-  }
+    const collateralToken = tokens[i];
 
-  for (let i = 0; i < tokens.length; i++) {
-    const token = tokens[i];
-    if (token.isWrapped) {
-      continue;
-    }
+    for (let j = 0; j < tokens.length; j++) {
+      const indexToken = tokens[j];
 
-    collateralTokens.push(token.address);
-    indexTokens.push(getTokenAddress(token));
-    isLong.push(false);
+      collateralTokens.push(collateralToken.address);
+      indexTokens.push(indexToken?.address);
+      isLong.push(true);
+
+      collateralTokens.push(collateralToken.address);
+      indexTokens.push(indexToken?.address);
+      isLong.push(false);
+    }
   }
 
   return { collateralTokens, indexTokens, isLong };

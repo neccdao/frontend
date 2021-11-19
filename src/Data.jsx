@@ -441,7 +441,6 @@ export default function Data() {
             ?.mul(expandDecimals(1, 30 - token.decimals))
             ?.div(expandDecimals(1, 30))
         : bigNumberify(0);
-      console.log(feeUsd?.div(expandDecimals(1, 18))?.toString());
       totalFeesUsd = totalFeesUsd.add(feeUsd);
 
       totalLongPositionSizes = totalLongPositionSizes.add(
