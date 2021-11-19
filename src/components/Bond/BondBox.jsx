@@ -525,10 +525,7 @@ export const BondBox = (props) => {
         return "Select different tokens";
       }
     }
-    if (
-      isRedeem &&
-      (!fromToken?.pendingPayoutFor || fromToken?.pendingPayoutFor?.eq(0))
-    ) {
+    if (isRedeem && fromToken?.pendingPayoutFor?.eq(0)) {
       return "Nothing to claim";
     }
     if (isStake) {

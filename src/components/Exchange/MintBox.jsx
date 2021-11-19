@@ -432,8 +432,7 @@ const MintBox = (props) => {
   const stakingRebase =
     stakingEpoch?.distribute?.toNumber() / nNeccCirculatingSupply?.toNumber();
   const apy = Math.pow(1 + stakingRebase, 365 * 3) - 1;
-  let fiveDayRate = Math.pow(1 + stakingRebase, 5 * 3);
-  fiveDayRate = fiveDayRate === 1 ? 0 : Math.pow(1 + stakingRebase, 5 * 3);
+  const fiveDayRate = Math.pow(1 + stakingRebase, 5 * 3) - 1;
 
   // const { data: mintFarmNeccBalance, mutate: updateMintFarmNeccBalance } = useSWR(
   //   [active, neccAddress, "balanceOf", mintFarmAddress],

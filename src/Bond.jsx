@@ -282,10 +282,33 @@ export default function Bond() {
       fetcher: fetcher(library, nNecc, []),
     });
 
+  // const { data: nNeccTotalSupply, mutate: updatenNeccTotalSupply } = useSWR(
+  //   [active, nNeccAddress, "totalSupply"],
+  //   {
+  //     fetcher: fetcher(library, nNecc, []),
+  //   }
+  // );
+
+  // const { data: nNeccbalanceOf, mutate: updatenNeccbalanceOf } = useSWR(
+  //   [active, nNeccAddress, "balanceOf"],
+  //   {
+  //     fetcher: fetcher(library, nNecc, [stakingAddress]),
+  //   }
+  // );
+  // console.log("nNeccbalanceOf?.toString()");
+  // console.log(nNeccbalanceOf?.toString());
+
   const stakingRebase =
     stakingEpoch?.distribute?.toNumber() / nNeccCirculatingSupply?.toNumber();
   const fiveDayRate = Math.pow(1 + stakingRebase, 5 * 3) - 1;
   const apy = Math.pow(1 + stakingRebase, 365 * 3) - 1;
+  // console.log(ndolBondInfo?.vesting?.toNumber());
+  // console.log(ndolBondInfo?.lastTime?.toNumber());
+  // console.log(ndolBondInfo?.toString());
+
+  // console.log(stakingEpoch?.toString());
+  // console.log(fiveDayRate?.toString());
+  // console.log(apy?.toString());
 
   // const { data: principleValuation, mutate: updatePrincipleValuation } = useSWR(
   //   [
