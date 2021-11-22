@@ -42,7 +42,7 @@ export default function Modal(props) {
             leaveTo="opacity-0 scale-95"
           >
             <div
-              className={`inline-block w-full max-w-md p-6 my-8 overflow-hidden text-left align-middle transition-all transform bg-nord3 shadow-xl rounded-2xl ${className}`}
+              className={`inline-block w-full max-w-md p-6 my-8 overflow-hidden text-left align-middle transition-all transform bg-nord1 shadow-xl rounded-2xl border-2 border-solid border-nord3 ${className}`}
             >
               <Dialog.Title as="h3" className="text-2xl font-bold text-white">
                 {props.label}

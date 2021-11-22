@@ -48,7 +48,7 @@ function App() {
       <Web3ReactProvider getLibrary={getLibrary}>
         <ApolloProvider client={getNeccSubgraphClient()}>
           <div className="App">
-            <div className="App-background"></div>
+            <div className="bg-[#242933] fixed z-0 w-full h-full"></div>
             <div className="App-highlight"></div>
             <div className="App-content">
               <Header />

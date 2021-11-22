@@ -3,7 +3,7 @@
   /*  rgb(30, 30, 26); */
   /* --bg-card: rgb(34, 34, 44); */
   /* --bg-card: #2c2c2c; */
-  --bg-card: #3b4252;
+  --bg-card: #2e3440;
   /* --color-text: rgb(1, 227, 217); */
   /* --color-text: #81a1c1; */
   --color-text: #8fbcbb;
@@ -111,7 +111,8 @@ td {
   border-style: solid;
   border-image-source: linear-gradient(to right top, #1c0e6a, #361070);
   border-image-slice: 1; */
-  border: 1px solid slategray;
+  box-shadow: rgb(15 17 21 / 25%) 0px 4px 6px, rgb(15 17 21 / 10%) 0px 5px 7px;
+  border: 1px solid #4c566a;
   border-radius: 8px;
 }
 
