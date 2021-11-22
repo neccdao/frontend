@@ -429,17 +429,10 @@ const MintBox = (props) => {
 
   // console.log(ndolAmounts?.toString());
 
-  const stakingRebase =
-    stakingEpoch?.distribute?.toNumber() / nNeccCirculatingSupply?.toNumber();
-  const apy = Math.pow(1 + stakingRebase, 365 * 3) - 1;
-  const fiveDayRate = Math.pow(1 + stakingRebase, 5 * 3) - 1;
-
-  // const { data: mintFarmNeccBalance, mutate: updateMintFarmNeccBalance } = useSWR(
-  //   [active, neccAddress, "balanceOf", mintFarmAddress],
-  //   {
-  //     fetcher: fetcher(library, Token),
-  //   }
-  // );
+  const { data: mintFarmNeccBalance, mutate: updateMintFarmNeccBalance } =
+    useSWR([active, neccAddress, "balanceOf", mintFarmAddress], {
+      fetcher: fetcher(library, Token),
+    });
 
   const needMintFarmApproval =
     mintFarmTokenAllowance &&
@@ -1671,22 +1664,13 @@ const MintBox = (props) => {
                 <ExchangeInfoRow label="Claimable Necc">
                   <div>{formatAmount(claimableNecc, 9, 8, true)}</div>
                 </ExchangeInfoRow>
+                <ExchangeInfoRow label="Distributable Necc">
+                  <div>{formatAmount(mintFarmNeccBalance, 9, 2, true)}</div>
+                </ExchangeInfoRow>
                 <ExchangeInfoRow label="Total Staked NDOL">
                   <div>
                     {formatAmount(totalStaked, fromToken?.decimals, 2, true)}
                   </div>
-                </ExchangeInfoRow>
-                <ExchangeInfoRow label="APY (Necc)">
-                  <div>
-                    {" "}
-                    {new Intl.NumberFormat("en-US").format(
-                      Number(trim(Number(apy), 2))
-                    )}{" "}
-                    %
-                  </div>
-                </ExchangeInfoRow>
-                <ExchangeInfoRow label="5 Day Rate">
-                  <div>{trim(Number(fiveDayRate), 4)} %</div>
                 </ExchangeInfoRow>
               </div>
             )}

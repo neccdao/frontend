@@ -176,12 +176,12 @@ export const TOKENS = {
     },
   ],
   1337: [
-    // {
-    //   name: "NEAR (wNEAR)",
-    //   symbol: "NEAR",
-    //   decimals: 24,
-    //   address: getContract(1337, "NEAR"),
-    // },
+    {
+      name: "NEAR (wNEAR)",
+      symbol: "NEAR",
+      decimals: 24,
+      address: getContract(1337, "NEAR"),
+    },
     {
       name: "Bitcoin (WBTC)",
       symbol: "BTC",

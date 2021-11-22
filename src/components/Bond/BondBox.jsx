@@ -198,6 +198,9 @@ export const BondBox = (props) => {
     //
     fiveDayRate,
     apy,
+    nextRewardValue,
+    stakingRebasePercentage,
+    interestDue,
     warmupInfo,
     stakingContractBalance,
     stakingCurrentIndex,
@@ -1540,9 +1543,9 @@ export const BondBox = (props) => {
                     className="Exchange-swap-input"
                     value={formatAmount(
                       fromToken?.pendingPayoutFor,
-                      toTokenInfo.decimals,
                       9,
-                      true
+                      9,
+                      false
                     )}
                   />
                 </div>
@@ -1569,12 +1572,7 @@ export const BondBox = (props) => {
                       type="number"
                       placeholder="0.0"
                       className="Exchange-swap-input"
-                      value={formatAmount(
-                        fromToken?.interestDue,
-                        toTokenInfo.decimals,
-                        9,
-                        true
-                      )}
+                      value={formatAmount(interestDue, 9, 9, false)}
                     />
                   </div>
                   <div>
@@ -1942,10 +1940,28 @@ export const BondBox = (props) => {
           </div>
 
           <div className="Exchange-info-row">
+            <div className="Exchange-info-label">Next Reward Percentage</div>
+            <div className="align-right">
+              {stakingRebasePercentage}
+              {" %"}
+            </div>
+          </div>
+
+          {nextRewardValue > 0 && (
+            <div className="Exchange-info-row">
+              <div className="Exchange-info-label">Next Reward Amount</div>
+              <div className="align-right">
+                {formatAmount(nextRewardValue, toToken?.decimals, 4, false)}{" "}
+                {"nNecc"}
+              </div>
+            </div>
+          )}
+
+          <div className="Exchange-info-row">
             <div className="Exchange-info-label">Total Staked</div>
             <div className="align-right">
               {fromToken && formatAmount(stakingContractBalance, 9, 8, true)}{" "}
-              {toToken?.symbol}
+              {"nNecc"}
             </div>
           </div>
 

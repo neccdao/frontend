@@ -308,7 +308,7 @@ export default function ConfirmationBox(props) {
               9,
               true
             )}{" "}
-            {fromToken.symbol}
+            {toToken.symbol}
           </div>
           <div className="Confirmation-box-main-icon"></div>
           <div>

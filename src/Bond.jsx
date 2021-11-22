@@ -29,6 +29,7 @@ import {
   getLiquidationPrice,
   getLeverage,
   useLocalStorageSerializeKey,
+  trim,
 } from "./Helpers";
 
 import { getContract } from "./Addresses";
@@ -268,8 +269,8 @@ export default function Bond() {
   );
 
   const { data: stakingCurrentIndex, mutate: updateStakingCurrentIndex } =
-    useSWR([active, stakingAddress, "index"], {
-      fetcher: fetcher(library, Staking, []),
+    useSWR([active, nNeccAddress, "index"], {
+      fetcher: fetcher(library, nNecc, []),
     });
 
   const { data: stakingContractBalance, mutate: updateStakingContractBalance } =
@@ -289,19 +290,31 @@ export default function Bond() {
   //   }
   // );
 
-  // const { data: nNeccbalanceOf, mutate: updatenNeccbalanceOf } = useSWR(
-  //   [active, nNeccAddress, "balanceOf"],
-  //   {
-  //     fetcher: fetcher(library, nNecc, [stakingAddress]),
-  //   }
-  // );
+  const { data: nNeccBalance, mutate: updatenNeccBalance } = useSWR(
+    [active, nNeccAddress, "balanceOf"],
+    {
+      fetcher: fetcher(library, nNecc, [account]),
+    }
+  );
   // console.log("nNeccbalanceOf?.toString()");
   // console.log(nNeccbalanceOf?.toString());
 
   const stakingRebase =
     stakingEpoch?.distribute?.toNumber() / nNeccCirculatingSupply?.toNumber();
-  const fiveDayRate = Math.pow(1 + stakingRebase, 5 * 3) - 1;
-  const apy = Math.pow(1 + stakingRebase, 365 * 3) - 1;
+  const fiveDayRate = Math.pow(1 + stakingRebase, 5 * 24) - 1;
+  const apy = Math.pow(1 + stakingRebase, 365 * 24) - 1;
+  const interestDue = ndolBondInfo?.payout;
+  const stakingRebasePercentage = stakingRebase && trim(stakingRebase * 100, 4);
+  const nextRewardValue =
+    stakingRebasePercentage && nNeccBalance?.toNumber()
+      ? trim(
+          (Number(stakingRebasePercentage) / 100) * nNeccBalance?.toNumber(),
+          0
+        )
+      : 0;
+
+  // console.log(nextRewardValue);
+  // console.log(apy?.toString());
   // console.log(ndolBondInfo?.vesting?.toNumber());
   // console.log(ndolBondInfo?.lastTime?.toNumber());
   // console.log(ndolBondInfo?.toString());
@@ -545,8 +558,11 @@ export default function Bond() {
           setIsPendingConfirmation={setIsPendingConfirmation}
           bondsInfo={bondsInfo}
           //
+          interestDue={interestDue}
           fiveDayRate={fiveDayRate}
           apy={apy}
+          nextRewardValue={nextRewardValue}
+          stakingRebasePercentage={stakingRebasePercentage}
           warmupInfo={stakingWarmupInfo}
           stakingContractBalance={stakingContractBalance}
           stakingCurrentIndex={stakingCurrentIndex}
