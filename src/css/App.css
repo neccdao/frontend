@@ -118,14 +118,12 @@
 }
 
 .App-background {
-  z-index: 0;
-  position: fixed;
-  left: -20%;
-  right: -100%;
-  top: -100%;
-  bottom: -20%;
-  /* background: radial-gradient(circle, rgba(84,84,214,0.2) 0%, rgba(91,59,204,0.05) 44%, rgba(0,0,0,1) 100%); */
-  background-color: var(--bg-primary);
+  background: linear-gradient(
+    180deg,
+    rgba(11, 39, 96, 0.8) 0%,
+    rgba(32, 91, 165, 0.8) 50%,
+    rgba(34, 199, 246, 0.8) 100%
+  );
 }
 
 .App-icon {
