@@ -92,7 +92,8 @@
 }
 
 .Exchange-swap-connect-wallet:hover {
-  background: var(--color-highlight);
+  background: var(--color-cta);
+  border-radius: 8px;
 }
 
 .Exchange-swap-account {
