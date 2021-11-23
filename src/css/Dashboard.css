@@ -12,6 +12,10 @@
   line-height: 1.5rem;
 }
 
+.Dashboard-token-card {
+  background-color: #242933;
+}
+
 .Dashboard-token-card-bottom {
 }
 
@@ -36,13 +40,6 @@
 }
 
 .Dashboard-token-card .Dashboard-token-title-options {
-  opacity: 0.5;
-  filter: sepia(100%) hue-rotate(220deg);
-}
-
-.Dashboard-token-card:hover .Dashboard-token-title-options {
-  opacity: 1;
-  filter: none;
 }
 
 .Dashboard-token-card.ndol {

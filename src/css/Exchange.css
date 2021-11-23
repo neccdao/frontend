@@ -481,13 +481,14 @@ table.Exchange-positions th {
 
 .Exchange-swap-box-inner {
   /* background: linear-gradient(45deg, rgba(11,5,55,0.8) 0%, rgba(21,3,48,0.8) 100%); */
-  background-color: var(--bg-card);
+  background-color: #242933;
   border-radius: 12px;
   border: 3px solid rgba(255, 255, 255, 0.125);
   padding: 1rem;
 }
 
 .Exchange-swap-market-box {
+  background-color: #242933 !important;
   margin-top: 1rem;
   padding: 1rem;
 }

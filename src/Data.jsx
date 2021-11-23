@@ -476,7 +476,7 @@ export default function Data() {
       </div>
       {feeText && (
         <div className="Dashboard-fee-info">
-          Total fees earned:
+          {"Total fees earned: "}
           {formatAmount(totalFeesUsd, USD_DECIMALS, 2, true)} USD
           <br />
           Fee assets: {feeText}
