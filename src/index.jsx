@@ -7,22 +7,22 @@ import reportWebVitals from "./reportWebVitals";
 import * as Sentry from "@sentry/react";
 import { Integrations } from "@sentry/tracing";
 
-// Sentry.init({
-//   dsn: "https://4030b752292e4ac2b9cb6d0bb2f0e58b@o821372.ingest.sentry.io/5809462",
-//   integrations: [new Integrations.BrowserTracing()],
+Sentry.init({
+  dsn: "https://6caab7da17634e1789aa63eddd9b22e1@o1076269.ingest.sentry.io/6077796",
+  integrations: [new Integrations.BrowserTracing()],
 
-//   // Set tracesSampleRate to 1.0 to capture 100%
-//   // of transactions for performance monitoring.
-//   // We recommend adjusting this value in production
-//   tracesSampleRate: 1.0,
+  // Set tracesSampleRate to 1.0 to capture 100%
+  // of transactions for performance monitoring.
+  // We recommend adjusting this value in production
+  tracesSampleRate: 1.0,
 
-//   beforeSend: (event) => {
-//     if (window.location.hostname === 'localhost') {
-//       return null;
-//     }
-//     return event;
-//   },
-// });
+  beforeSend: (event) => {
+    if (window.location.hostname === "localhost") {
+      return null;
+    }
+    return event;
+  },
+});
 
 ReactDOM.render(
   <React.StrictMode>
