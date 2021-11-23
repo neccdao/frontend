@@ -93,6 +93,7 @@
 
 .Exchange-swap-connect-wallet:hover {
   background: var(--color-cta);
+  font-weight: 600;
   border-radius: 8px;
 }
 

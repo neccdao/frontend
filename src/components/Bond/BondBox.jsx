@@ -1865,14 +1865,6 @@ export const BondBox = (props) => {
       {isBond && (
         <div className="Exchange-swap-market-box border App-box">
           <div className="Exchange-swap-market-box-title">{swapOption}</div>
-          <div className="Exchange-info-row">
-            <div className="Exchange-info-label">{fromToken.symbol} Price</div>
-            <div className="align-right">
-              {fromToken &&
-                formatAmount(fromToken.minPrice, USD_DECIMALS, 2, true)}{" "}
-              USD
-            </div>
-          </div>
 
           <div className="Exchange-info-row">
             <div className="Exchange-info-label">{toToken.symbol} Price</div>
@@ -1925,14 +1917,6 @@ export const BondBox = (props) => {
       {isStake && (
         <div className="Exchange-swap-market-box border App-box">
           <div className="Exchange-swap-market-box-title">{swapOption}</div>
-          <div className="Exchange-info-row">
-            <div className="Exchange-info-label">{fromToken.symbol} Price</div>
-            <div className="align-right">
-              {fromToken &&
-                formatAmount(fromToken.minPrice, USD_DECIMALS, 2, true)}{" "}
-              USD
-            </div>
-          </div>
 
           <div className="Exchange-info-row">
             <div className="Exchange-info-label">Bond Price</div>
@@ -1951,7 +1935,7 @@ export const BondBox = (props) => {
             </div>
           </div>
           <div className="Exchange-info-row">
-            <div className="Exchange-info-label">5 day rate</div>
+            <div className="Exchange-info-label">5 Day Rate</div>
             <div className="align-right">
               {trim(Number(fiveDayRate) * 100, 4)} %
             </div>

@@ -1685,7 +1685,7 @@ const MintBox = (props) => {
                     %
                   </div>
                 </ExchangeInfoRow>
-                <ExchangeInfoRow label="5 day rate">
+                <ExchangeInfoRow label="5 Day Rate">
                   <div>{trim(Number(fiveDayRate), 4)} %</div>
                 </ExchangeInfoRow>
               </div>
