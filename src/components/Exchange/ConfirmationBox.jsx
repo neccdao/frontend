@@ -313,7 +313,7 @@ export default function ConfirmationBox(props) {
           <div className="Confirmation-box-main-icon"></div>
           <div>
             {formatAmount(
-              fromToken?.interestDue,
+              fromToken?.interestDue?.sub(fromToken?.pendingPayoutFor),
               toTokenInfo.decimals,
               2,
               true

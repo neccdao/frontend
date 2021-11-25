@@ -24,7 +24,7 @@ export const MAINNET = 56;
 export const TESTNET = 4;
 export const LOCAL = 1337;
 // TODO take it from web3
-export const CHAIN_ID = TESTNET;
+export const CHAIN_ID = LOCAL;
 export const NATIVE_TOKEN_ADDRESS = getContract(CHAIN_ID, "NATIVE_TOKEN");
 export const NDOL_ADDRESS = getContract(CHAIN_ID, "NDOL");
 const MAX_LEVERAGE = 50 * 10000;
