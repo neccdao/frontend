@@ -426,8 +426,7 @@ const Header = () => {
         </div>
         <div className="App-header-link-container  flex items-center">
           <a
-            href="https://necc.gitbook.io/necc/"
-            // href="https://necc-docs.surge.sh/docs/tocs/"
+            href="https://docs.necc.io"
             target="_blank"
             rel="noopener noreferrer"
           >
