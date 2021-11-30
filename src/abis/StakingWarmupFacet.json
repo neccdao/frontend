@@ -12,7 +12,7 @@
         },
         {
           "internalType": "address",
-          "name": "_nNecc",
+          "name": "_sNecc",
           "type": "address"
         }
       ],

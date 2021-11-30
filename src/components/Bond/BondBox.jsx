@@ -75,7 +75,7 @@ import {
 import Token from "../../abis/Token.json";
 import WETH from "../../abis/WETH.json";
 import BondDepositoryFacet from "../../abis/BondDepositoryFacet.json";
-import NNecc from "../../abis/nNecc.json";
+import NNecc from "../../abis/sNeccFacet.json";
 import Staking from "../../abis/StakingFacet.json";
 import TreasuryFacet from "../../abis/TreasuryFacet.json";
 
@@ -283,6 +283,7 @@ export const BondBox = (props) => {
 
   const NDOLBond = getContract(CHAIN_ID, "NDOLBond");
   const NeccStaking = getContract(CHAIN_ID, "NeccStaking");
+  const sNeccAddress = getContract(CHAIN_ID, "sNecc");
   const nNeccAddress = getContract(CHAIN_ID, "nNecc");
   const NeccAddress = getContract(CHAIN_ID, "Necc");
   const treasuryAddress = getContract(CHAIN_ID, "Treasury");
@@ -318,9 +319,10 @@ export const BondBox = (props) => {
     }
   );
   const { data: stakingTokenAllowance, mutate: updateStakingTokenAllowance } =
-    useSWR([active, fromTokenAddress, "allowance", account, NeccStaking], {
+    useSWR([active, NeccAddress, "allowance", account, NeccStaking], {
       fetcher: fetcher(library, Token),
     });
+
   const {
     data: unstakingTokenAllowance,
     mutate: updateUnstakingTokenAllowance,
@@ -1344,7 +1346,7 @@ export const BondBox = (props) => {
   };
 
   function approveFromToken(unstakingApproval = false) {
-    if (unstakingApproval) {
+    if (isStake && unstakingApproval) {
       approveTokens({
         setIsApproving,
         library,
@@ -1359,11 +1361,11 @@ export const BondBox = (props) => {
         pendingTxns,
         setPendingTxns,
       });
-    } else if (needStakingApproval) {
+    } else if (isStake && needStakingApproval) {
       approveTokens({
         setIsApproving,
         library,
-        tokenAddress: fromToken.address,
+        tokenAddress: NeccAddress,
         spender: NeccStaking,
         chainId: CHAIN_ID,
         onApproveSubmitted: () => {
@@ -1793,9 +1795,7 @@ export const BondBox = (props) => {
 
             <div className="Exchange-swap-box-info">
               <ExchangeInfoRow label="nNecc Balance">
-                <div>
-                  {formatAmount(nNeccTokenBalance, fromToken.decimals, 8, true)}
-                </div>
+                <div>{formatAmount(nNeccTokenBalance, 18, 4, true)}</div>
               </ExchangeInfoRow>
             </div>
           </React.Fragment>
@@ -1842,7 +1842,7 @@ export const BondBox = (props) => {
                 onClickPrimary();
               }}
             >
-              Claim nNecc
+              Claim sNecc
             </button>
           )}
 
@@ -1947,21 +1947,11 @@ export const BondBox = (props) => {
             </div>
           </div>
 
-          {nextRewardValue > 0 && (
-            <div className="Exchange-info-row">
-              <div className="Exchange-info-label">Next Reward Amount</div>
-              <div className="align-right">
-                {formatAmount(nextRewardValue, toToken?.decimals, 4, false)}{" "}
-                {"nNecc"}
-              </div>
-            </div>
-          )}
-
           <div className="Exchange-info-row">
             <div className="Exchange-info-label">Total Staked</div>
             <div className="align-right">
               {fromToken && formatAmount(stakingContractBalance, 9, 8, true)}{" "}
-              {"nNecc"}
+              {"Necc"}
             </div>
           </div>
 

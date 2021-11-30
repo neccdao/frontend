@@ -79,7 +79,7 @@ import WETH from "../../abis/WETH.json";
 import VaultPriceFeed from "../../abis/VaultPriceFeedFacet.json";
 import VaultNDOL from "../../abis/VaultNDOLFacet.json";
 import Staking from "../../abis/StakingFacet.json";
-import nNecc from "../../abis/nNecc.json";
+import sNecc from "../../abis/sNeccFacet.json";
 
 const { AddressZero } = ethers.constants;
 
@@ -319,7 +319,7 @@ const MintBox = (props) => {
   const routerAddress = getContract(CHAIN_ID, "Router");
   const mintFarmAddress = getContract(CHAIN_ID, "MintFarm");
   const stakingAddress = getContract(CHAIN_ID, "NeccStaking");
-  const nNeccAddress = getContract(CHAIN_ID, "nNecc");
+  const sNeccAddress = getContract(CHAIN_ID, "sNecc");
   const mintDistributorAddress = getContract(CHAIN_ID, "MintDistributor");
   const neccAddress = getContract(CHAIN_ID, "Necc");
 
@@ -394,9 +394,9 @@ const MintBox = (props) => {
     }
   );
 
-  const { data: nNeccCirculatingSupply, mutate: updatenNeccCirculatingSupply } =
-    useSWR([active, nNeccAddress, "circulatingSupply"], {
-      fetcher: fetcher(library, nNecc, []),
+  const { data: sNeccCirculatingSupply, mutate: updatesNeccCirculatingSupply } =
+    useSWR([active, sNeccAddress, "circulatingSupply"], {
+      fetcher: fetcher(library, sNecc, []),
     });
 
   const { data: targetAdjustedSwapFee, mutate: updateTargetAdjustedSwapFee } =
@@ -494,7 +494,7 @@ const MintBox = (props) => {
         updateStakedBalance(undefined, true);
         updateTotalStaked(undefined, true);
         updateStakingEpoch(undefined, true);
-        updatenNeccCirculatingSupply(undefined, true);
+        updatesNeccCirculatingSupply(undefined, true);
       });
       return () => {
         library.removeListener("block");
@@ -511,7 +511,7 @@ const MintBox = (props) => {
     updateClaimableNecc,
     updateTotalStaked,
     updateStakingEpoch,
-    updatenNeccCirculatingSupply,
+    updatesNeccCirculatingSupply,
   ]);
 
   useEffect(() => {

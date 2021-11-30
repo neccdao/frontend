@@ -42,7 +42,7 @@ import {
 
 import ReaderFacet from "./abis/ReaderFacet.json";
 import BondDepositoryFacet from "./abis/BondDepositoryFacet.json";
-import nNecc from "./abis/nNecc.json";
+import sNecc from "./abis/sNeccFacet.json";
 import Staking from "./abis/StakingFacet.json";
 import TreasuryFacet from "./abis/TreasuryFacet.json";
 import BondingCalculatorFacet from "./abis/BondingCalculatorFacet.json";
@@ -173,7 +173,7 @@ export default function Bond() {
   const ndolBondAddress = getContract(CHAIN_ID, "NDOLBond");
   const treasuryAddress = getContract(CHAIN_ID, "Treasury");
   const neccAddress = getContract(CHAIN_ID, "Necc");
-  const nNeccAddress = getContract(CHAIN_ID, "nNecc");
+  const sNeccAddress = getContract(CHAIN_ID, "sNecc");
   const stakingAddress = getContract(CHAIN_ID, "NeccStaking");
   const ndolAddress = getContract(CHAIN_ID, "NDOL");
 
@@ -269,8 +269,8 @@ export default function Bond() {
   );
 
   const { data: stakingCurrentIndex, mutate: updateStakingCurrentIndex } =
-    useSWR([active, nNeccAddress, "index"], {
-      fetcher: fetcher(library, nNecc, []),
+    useSWR([active, sNeccAddress, "index"], {
+      fetcher: fetcher(library, sNecc, []),
     });
 
   const { data: stakingContractBalance, mutate: updateStakingContractBalance } =
@@ -278,37 +278,37 @@ export default function Bond() {
       fetcher: fetcher(library, Staking, []),
     });
 
-  const { data: nNeccCirculatingSupply, mutate: updatenNeccCirculatingSupply } =
-    useSWR([active, nNeccAddress, "circulatingSupply"], {
-      fetcher: fetcher(library, nNecc, []),
+  const { data: sNeccCirculatingSupply, mutate: updatesNeccCirculatingSupply } =
+    useSWR([active, sNeccAddress, "circulatingSupply"], {
+      fetcher: fetcher(library, sNecc, []),
     });
 
-  // const { data: nNeccTotalSupply, mutate: updatenNeccTotalSupply } = useSWR(
-  //   [active, nNeccAddress, "totalSupply"],
+  // const { data: sNeccTotalSupply, mutate: updatesNeccTotalSupply } = useSWR(
+  //   [active, sNeccAddress, "totalSupply"],
   //   {
-  //     fetcher: fetcher(library, nNecc, []),
+  //     fetcher: fetcher(library, sNecc, []),
   //   }
   // );
 
-  const { data: nNeccBalance, mutate: updatenNeccBalance } = useSWR(
-    [active, nNeccAddress, "balanceOf"],
+  const { data: sNeccBalance, mutate: updatesNeccBalance } = useSWR(
+    [active, sNeccAddress, "balanceOf"],
     {
-      fetcher: fetcher(library, nNecc, [account]),
+      fetcher: fetcher(library, sNecc, [account]),
     }
   );
-  // console.log("nNeccbalanceOf?.toString()");
-  // console.log(nNeccbalanceOf?.toString());
+  // console.log("sNeccbalanceOf?.toString()");
+  // console.log(sNeccbalanceOf?.toString());
 
   const stakingRebase =
-    stakingEpoch?.distribute?.toNumber() / nNeccCirculatingSupply?.toNumber();
+    stakingEpoch?.distribute?.toNumber() / sNeccCirculatingSupply?.toNumber();
   const fiveDayRate = Math.pow(1 + stakingRebase, 5 * 24) - 1;
   const apy = Math.pow(1 + stakingRebase, 365 * 24) - 1;
   const interestDue = ndolBondInfo?.payout;
   const stakingRebasePercentage = stakingRebase && trim(stakingRebase * 100, 4);
   const nextRewardValue =
-    stakingRebasePercentage && nNeccBalance?.toNumber()
+    stakingRebasePercentage && sNeccBalance?.toNumber()
       ? trim(
-          (Number(stakingRebasePercentage) / 100) * nNeccBalance?.toNumber(),
+          (Number(stakingRebasePercentage) / 100) * sNeccBalance?.toNumber(),
           0
         )
       : 0;
@@ -357,7 +357,7 @@ export default function Bond() {
   // console.log(ndolBondTerms?.toString());
   // console.log(ndolBondStandardizedDebtRatio?.toString());
   // console.log(stakingEpoch?.endTime?.toString());
-  // console.log(nNeccCirculatingSupply?.toString());
+  // console.log(sNeccCirculatingSupply?.toString());
   // console.log(ndolBondInfo?.vesting?.toString());
   // console.log(ndolBondInfo?.lastTime?.toString());
 
@@ -475,7 +475,7 @@ export default function Bond() {
         updateStakingWarmupInfo(undefined, true);
         updateStakingCurrentIndex(undefined, true);
         updateStakingContractBalance(undefined, true);
-        updatenNeccCirculatingSupply(undefined, true);
+        updatesNeccCirculatingSupply(undefined, true);
         updateCurrentDebt(undefined, true);
       });
       return () => {
@@ -497,7 +497,7 @@ export default function Bond() {
     updateStakingWarmupInfo,
     updateStakingCurrentIndex,
     updateStakingContractBalance,
-    updatenNeccCirculatingSupply,
+    updatesNeccCirculatingSupply,
     updateCurrentDebt,
   ]);
 

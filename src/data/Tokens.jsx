@@ -162,10 +162,10 @@ export const TOKENS = {
       address: getContract(4, "Necc"),
     },
     {
-      name: "nNecc",
-      symbol: "nNecc",
+      name: "sNecc",
+      symbol: "sNecc",
       decimals: 9,
-      address: getContract(4, "nNecc"),
+      address: getContract(4, "sNecc"),
     },
     {
       name: "NDOL-Necc LP",
@@ -176,12 +176,12 @@ export const TOKENS = {
     },
   ],
   1337: [
-    {
-      name: "NEAR (wNEAR)",
-      symbol: "NEAR",
-      decimals: 24,
-      address: getContract(1337, "NEAR"),
-    },
+    // {
+    //   name: "NEAR (wNEAR)",
+    //   symbol: "NEAR",
+    //   decimals: 24,
+    //   address: getContract(1337, "NEAR"),
+    // },
     {
       name: "Bitcoin (WBTC)",
       symbol: "BTC",
@@ -215,10 +215,10 @@ export const TOKENS = {
       address: getContract(1337, "Necc"),
     },
     {
-      name: "nNecc",
-      symbol: "nNecc",
+      name: "sNecc",
+      symbol: "sNecc",
       decimals: 9,
-      address: getContract(1337, "nNecc"),
+      address: getContract(1337, "sNecc"),
     },
     // {
     //   name: "ETH-NDOL LP",
@@ -258,7 +258,7 @@ export function getTokens(chainId) {
     if (token.symbol === "Necc") {
       return false;
     }
-    if (token.symbol === "nNecc") {
+    if (token.symbol === "sNecc") {
       return false;
     }
     if (token.symbol?.toLowerCase().includes("lp")) {
@@ -291,7 +291,7 @@ export function getWhitelistedTokens(chainId) {
     if (token.symbol === "Necc") {
       return false;
     }
-    if (token.symbol === "nNecc") {
+    if (token.symbol === "sNecc") {
       return false;
     }
     if (token.symbol === "NDOL") {
@@ -324,6 +324,6 @@ export function getBondTokens(chainId) {
     "0xC9BdeEd33CD01541e1eeD10f90519d2C06Fe3feB", // WETH
     "0x0580cEd4F4d45591682223D655FEBE5A967C18a8", // NDOL
     "0x9a56acEda450b564CB5EB15C14d172FE2b32A12d", // Necc
-    "0x59cc64B3510fBcc9D4A93C7A0380495EE0dd356b" // nNecc
+    "0x59cc64B3510fBcc9D4A93C7A0380495EE0dd356b" // sNecc
 ]
 */
