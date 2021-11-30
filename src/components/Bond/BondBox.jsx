@@ -1917,13 +1917,6 @@ export const BondBox = (props) => {
           <div className="Exchange-swap-market-box-title">{swapOption}</div>
 
           <div className="Exchange-info-row">
-            <div className="Exchange-info-label">Bond Price</div>
-            <div className="align-right">
-              {fromToken && formatAmount(bondPrice, 18, 2, true)} USD
-            </div>
-          </div>
-
-          <div className="Exchange-info-row">
             <div className="Exchange-info-label">APY</div>
             <div className="align-right">
               {new Intl.NumberFormat("en-US").format(
