@@ -79,7 +79,7 @@ import WETH from "../../abis/WETH.json";
 import VaultPriceFeed from "../../abis/VaultPriceFeedFacet.json";
 import VaultNDOL from "../../abis/VaultNDOLFacet.json";
 import Staking from "../../abis/StakingFacet.json";
-import sNecc from "../../abis/sNeccFacet.json";
+import nNecc from "../../abis/nNeccFacet.json";
 
 const { AddressZero } = ethers.constants;
 
@@ -319,9 +319,8 @@ const MintBox = (props) => {
   const routerAddress = getContract(CHAIN_ID, "Router");
   const mintFarmAddress = getContract(CHAIN_ID, "MintFarm");
   const stakingAddress = getContract(CHAIN_ID, "NeccStaking");
-  const sNeccAddress = getContract(CHAIN_ID, "sNecc");
+  const nNeccAddress = getContract(CHAIN_ID, "nNecc");
   const mintDistributorAddress = getContract(CHAIN_ID, "MintDistributor");
-  const neccAddress = getContract(CHAIN_ID, "Necc");
 
   const fromToken = getToken(CHAIN_ID, fromTokenAddress);
   const toToken = getToken(CHAIN_ID, toTokenAddress);
@@ -335,8 +334,8 @@ const MintBox = (props) => {
   const fromAmount = parseValue(fromValue, fromToken.decimals);
   const toAmount = parseValue(toValue, toToken.decimals);
 
-  const { data: neccTokenBalance, mutate: updateNeccTokenBalance } = useSWR(
-    [active, neccAddress, "balanceOf", account],
+  const { data: nNeccTokenBalance, mutate: updatenNeccTokenBalance } = useSWR(
+    [active, nNeccAddress, "balanceOf", account],
     {
       fetcher: fetcher(library, Token),
     }
@@ -354,12 +353,12 @@ const MintBox = (props) => {
       fetcher: fetcher(library, Token),
     });
 
-  const { data: x, mutate: updatex } = useSWR(
-    [active, neccAddress, "balanceOf", mintDistributorAddress],
-    {
-      fetcher: fetcher(library, Token),
-    }
-  );
+  const {
+    data: mintDistributornNeccTokenBalance,
+    mutate: updateMintDistributornNeccTokenBalance,
+  } = useSWR([active, nNeccAddress, "balanceOf", mintDistributorAddress], {
+    fetcher: fetcher(library, Token),
+  });
 
   const { data: stakedBalance, mutate: updateStakedBalance } = useSWR(
     [active, mintFarmAddress, "staked", account],
@@ -381,7 +380,7 @@ const MintBox = (props) => {
     }
   );
 
-  const { data: claimableNecc, mutate: updateClaimableNecc } = useSWR(
+  const { data: claimablenNecc, mutate: updateClaimablenNecc } = useSWR(
     [active, mintFarmAddress, "claimable", account],
     {
       fetcher: fetcher(library, MintFarm),
@@ -394,9 +393,9 @@ const MintBox = (props) => {
     }
   );
 
-  const { data: sNeccCirculatingSupply, mutate: updatesNeccCirculatingSupply } =
-    useSWR([active, sNeccAddress, "circulatingSupply"], {
-      fetcher: fetcher(library, sNecc, []),
+  const { data: nNeccCirculatingSupply, mutate: npdatesNeccCirculatingSupply } =
+    useSWR([active, nNeccAddress, "circulatingSupply"], {
+      fetcher: fetcher(library, nNecc, []),
     });
 
   const { data: targetAdjustedSwapFee, mutate: updateTargetAdjustedSwapFee } =
@@ -429,8 +428,8 @@ const MintBox = (props) => {
 
   // console.log(ndolAmounts?.toString());
 
-  const { data: mintFarmNeccBalance, mutate: updateMintFarmNeccBalance } =
-    useSWR([active, neccAddress, "balanceOf", mintFarmAddress], {
+  const { data: mintFarmnNeccBalance, mutate: updateMintFarmnNeccBalance } =
+    useSWR([active, nNeccAddress, "balanceOf", mintFarmAddress], {
       fetcher: fetcher(library, Token),
     });
 
@@ -489,12 +488,13 @@ const MintBox = (props) => {
         updateMintFarmTokenAllowance(undefined, true);
         updateTokenAllowance(undefined, true);
         updateTargetAdjustedSwapFee(undefined, true);
-        updateNeccTokenBalance(undefined, true);
-        updateClaimableNecc(undefined, true);
+        updatenNeccTokenBalance(undefined, true);
+        updateClaimablenNecc(undefined, true);
         updateStakedBalance(undefined, true);
         updateTotalStaked(undefined, true);
         updateStakingEpoch(undefined, true);
-        updatesNeccCirculatingSupply(undefined, true);
+        npdatesNeccCirculatingSupply(undefined, true);
+        updateMintFarmnNeccBalance(undefined, true);
       });
       return () => {
         library.removeListener("block");
@@ -506,12 +506,12 @@ const MintBox = (props) => {
     updateTokenAllowance,
     updateTargetAdjustedSwapFee,
     updateMintFarmTokenAllowance,
-    updateNeccTokenBalance,
+    updatenNeccTokenBalance,
     updateStakedBalance,
-    updateClaimableNecc,
+    updateClaimablenNecc,
     updateTotalStaked,
     updateStakingEpoch,
-    updatesNeccCirculatingSupply,
+    npdatesNeccCirculatingSupply,
   ]);
 
   useEffect(() => {
@@ -1658,14 +1658,14 @@ const MintBox = (props) => {
             </div>
             {isStake && (
               <div className="Exchange-swap-box-info">
-                <ExchangeInfoRow label="Necc Balance">
-                  <div>{formatAmount(neccTokenBalance, 9, 8, true)}</div>
+                <ExchangeInfoRow label="nNecc Balance">
+                  <div>{formatAmount(nNeccTokenBalance, 18, 4, true)}</div>
                 </ExchangeInfoRow>
-                <ExchangeInfoRow label="Claimable Necc">
-                  <div>{formatAmount(claimableNecc, 9, 8, true)}</div>
+                <ExchangeInfoRow label="Claimable nNecc">
+                  <div>{formatAmount(claimablenNecc, 18, 4, true)}</div>
                 </ExchangeInfoRow>
-                <ExchangeInfoRow label="Distributable Necc">
-                  <div>{formatAmount(mintFarmNeccBalance, 9, 2, true)}</div>
+                <ExchangeInfoRow label="Distributable nNecc">
+                  <div>{formatAmount(mintFarmnNeccBalance, 18, 2, true)}</div>
                 </ExchangeInfoRow>
                 <ExchangeInfoRow label="Total Staked NDOL">
                   <div>
@@ -1706,7 +1706,7 @@ const MintBox = (props) => {
 
         {isStake && (
           <React.Fragment>
-            {claimableNecc?.gt(0) && (
+            {claimablenNecc?.gt(0) && (
               <div className="Exchange-swap-button-container">
                 <button
                   className="App-cta Exchange-swap-button"
