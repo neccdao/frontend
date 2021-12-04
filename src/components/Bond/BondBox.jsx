@@ -218,7 +218,6 @@ export const BondBox = (props) => {
   const [isApproving, setIsApproving] = useState(false);
   const [isWaitingForApproval, setIsWaitingForApproval] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isUnstake, setIsUnstake] = useState(false);
   const [isClaim, setIsClaim] = useState(false);
   const isBond = swapOption === "Bond";
   const isRedeem = swapOption === "Redeem";
@@ -323,12 +322,6 @@ export const BondBox = (props) => {
       fetcher: fetcher(library, Token),
     });
 
-  const {
-    data: unstakingTokenAllowance,
-    mutate: updateUnstakingTokenAllowance,
-  } = useSWR([active, nNeccAddress, "allowance", account, NeccStaking], {
-    fetcher: fetcher(library, Token),
-  });
   const { data: NeccTokenBalance, mutate: updateNeccTokenBalance } = useSWR(
     [active, NeccAddress, "balanceOf", account],
     {
@@ -346,10 +339,6 @@ export const BondBox = (props) => {
     tokenAllowance && fromAmount && fromAmount.gt(tokenAllowance);
   const needStakingApproval =
     stakingTokenAllowance && fromAmount && fromAmount.gt(stakingTokenAllowance);
-  const needUnstakingApproval =
-    unstakingTokenAllowance &&
-    nNeccTokenBalance &&
-    nNeccTokenBalance.gt(unstakingTokenAllowance);
 
   const prevFromTokenAddress = usePrevious(fromTokenAddress);
   const prevNeedApproval = usePrevious(needApproval);
@@ -435,7 +424,6 @@ export const BondBox = (props) => {
       library.on("block", () => {
         updateTokenAllowance(undefined, true);
         updateStakingTokenAllowance(undefined, true);
-        updateUnstakingTokenAllowance(undefined, true);
         updatenNeccTokenBalance(undefined, true);
         updatePrincipleValuation(undefined, true);
         updateNDOLBondPayoutFor(undefined, true);
@@ -449,7 +437,6 @@ export const BondBox = (props) => {
     library,
     updateTokenAllowance,
     updateStakingTokenAllowance,
-    updateUnstakingTokenAllowance,
     updatenNeccTokenBalance,
     updatePrincipleValuation,
     updateNDOLBondPayoutFor,
@@ -616,9 +603,6 @@ export const BondBox = (props) => {
       return false;
     }
 
-    if ((needUnstakingApproval && isWaitingForApproval) || isApproving) {
-      return false;
-    }
     if (isApproving) {
       return false;
     }
@@ -705,16 +689,6 @@ export const BondBox = (props) => {
     const error = getError(true);
     if (error) {
       return error;
-    }
-
-    if (needUnstakingApproval && isWaitingForApproval) {
-      return "Waiting for Approval";
-    }
-    if (isStake) {
-      if (needUnstakingApproval) {
-        return "Approve to unstake";
-      }
-      return "Unstake";
     }
 
     return "Redeem and Stake";
@@ -973,64 +947,6 @@ export const BondBox = (props) => {
     } catch (err) {
       console.error(err);
       toast.error("Claim failed");
-    } finally {
-      setIsSubmitting(false);
-      setIsPendingConfirmation(false);
-    }
-  };
-
-  const unstake = async () => {
-    setIsSubmitting(true);
-
-    let method;
-    let contract;
-    let value;
-    let params;
-
-    method = "unstake";
-    value = bigNumberify(0);
-    params = [nNeccTokenBalance, true];
-
-    contract = new ethers.Contract(
-      NeccStaking,
-      Staking.abi,
-      library.getSigner()
-    );
-
-    if (
-      shouldRaiseGasError(
-        getTokenInfo(infoTokens, fromTokenAddress),
-        fromAmount
-      )
-    ) {
-      setIsSubmitting(false);
-      toast.error(
-        `Leave at least ${formatAmount(DUST_BNB, 18, 3)} ETH for gas`
-      );
-      return;
-    }
-
-    try {
-      const gasLimit = await getGasLimit(contract, method, params, value);
-      const res = await contract[method](...params, { value, gasLimit });
-      const txUrl = getExplorerUrl(CHAIN_ID) + "tx/" + res.hash;
-      const toastSuccessMessage = (
-        <div>
-          Unstake submitted!{" "}
-          <a href={txUrl} target="_blank" rel="noopener noreferrer">
-            View status.
-          </a>
-          <br />
-        </div>
-      );
-
-      const stakeMessage = `Unstaked ${toToken.symbol}`;
-      const txMessage = stakeMessage;
-
-      handleFulfilled(res, toastSuccessMessage, txMessage);
-    } catch (err) {
-      console.error(err);
-      toast.error("Unstake failed");
     } finally {
       setIsSubmitting(false);
       setIsPendingConfirmation(false);
@@ -1323,10 +1239,6 @@ export const BondBox = (props) => {
       claim();
       return;
     }
-    if (isUnstake) {
-      unstake();
-      return;
-    }
     if (isStake) {
       stake();
       return;
@@ -1345,23 +1257,8 @@ export const BondBox = (props) => {
     }
   };
 
-  function approveFromToken(unstakingApproval = false) {
-    if (isStake && unstakingApproval) {
-      approveTokens({
-        setIsApproving,
-        library,
-        tokenAddress: nNeccAddress,
-        spender: NeccStaking,
-        chainId: CHAIN_ID,
-        onApproveSubmitted: () => {
-          setIsWaitingForApproval(true);
-        },
-        infoTokens,
-        getTokenInfo,
-        pendingTxns,
-        setPendingTxns,
-      });
-    } else if (isStake && needStakingApproval) {
+  function approveFromToken() {
+    if (isStake && needStakingApproval) {
       approveTokens({
         setIsApproving,
         library,
@@ -1406,11 +1303,6 @@ export const BondBox = (props) => {
     }
 
     if (isStake) {
-      if (needUnstakingApproval) {
-        approveFromToken(true);
-        return;
-      }
-
       if (needStakingApproval) {
         approveFromToken();
         return;
@@ -1845,18 +1737,6 @@ export const BondBox = (props) => {
               Claim sNecc
             </button>
           )}
-
-          {isStake && nNeccTokenBalance?.gt(0) && (
-            <button
-              className="App-cta Exchange-swap-button mt-4"
-              onClick={() => {
-                setIsUnstake(true);
-                onClickPrimary();
-              }}
-            >
-              {getSecondaryText()}
-            </button>
-          )}
         </div>
       </div>
 
@@ -1971,13 +1851,11 @@ export const BondBox = (props) => {
           isStake={isStake}
           isRebase={isRebase}
           isClaim={isClaim}
-          isUnstake={isUnstake}
           isRedeemSecondary={isRedeemSecondary}
           isMarketOrder={isMarketOrder}
           setIsRedeemSecondary={setIsRedeemSecondary}
           setIsRebase={setIsRebase}
           setIsClaim={setIsClaim}
-          setIsUnstake={setIsUnstake}
           orderType={orderType}
           fromToken={fromToken}
           fromTokenInfo={fromTokenInfo}
