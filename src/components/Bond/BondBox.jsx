@@ -670,15 +670,14 @@ export const BondBox = (props) => {
 
     if (!isMarketOrder) return `Create ${orderType.toLowerCase()} order`;
 
-    if (isRedeem) {
-      return "Redeem";
-    }
-
     if (isBond) {
       if (isToAmountGreaterThanAvailableBonds) {
         return "Insufficient Bonds";
       }
       return "Bond";
+    }
+    if (isRedeem) {
+      return "Redeem and Stake";
     }
     if (isStake) {
       return "Stake";
@@ -734,7 +733,6 @@ export const BondBox = (props) => {
       message: txMessage,
     };
     setPendingTxns([...pendingTxns, pendingTxn]);
-    setIsRedeemSecondary(false);
   };
 
   const wrap = async () => {
@@ -1006,7 +1004,7 @@ export const BondBox = (props) => {
     }
   };
 
-  const redeem = async (stakeAfterClaim = false) => {
+  const redeem = async () => {
     setIsSubmitting(true);
 
     let method;
@@ -1016,7 +1014,7 @@ export const BondBox = (props) => {
 
     method = "redeem";
     value = bigNumberify(0);
-    params = [account, fromTokenAddress, stakeAfterClaim];
+    params = [account, fromTokenAddress];
 
     contract = new ethers.Contract(
       NDOLBond,
@@ -1043,7 +1041,7 @@ export const BondBox = (props) => {
       const txUrl = getExplorerUrl(CHAIN_ID) + "tx/" + res.hash;
       const toastSuccessMessage = (
         <div>
-          {stakeAfterClaim ? "Redeem and Stake" : "Redeem"} submitted!{" "}
+          {"Redeem and Stake"} submitted!{" "}
           <a href={txUrl} target="_blank" rel="noopener noreferrer">
             View status.
           </a>
@@ -1051,12 +1049,8 @@ export const BondBox = (props) => {
         </div>
       );
 
-      const marketOrderRedeemMessage = `Redeemed ${toToken.symbol}`;
       const marketOrderRedeemAndStakeMessage = `Redeem and Staked ${toToken.symbol}`;
-      const txMessage = stakeAfterClaim
-        ? marketOrderRedeemAndStakeMessage
-        : marketOrderRedeemMessage;
-
+      const txMessage = marketOrderRedeemAndStakeMessage;
       handleFulfilled(res, toastSuccessMessage, txMessage);
     } catch (err) {
       console.error(err);
@@ -1243,10 +1237,6 @@ export const BondBox = (props) => {
       stake();
       return;
     }
-    if (isRedeemSecondary) {
-      redeem(true);
-      return;
-    }
     if (isRedeem) {
       redeem();
       return;
@@ -1305,24 +1295,6 @@ export const BondBox = (props) => {
     if (isStake) {
       if (needStakingApproval) {
         approveFromToken();
-        return;
-      }
-    }
-
-    if (isRedeem || isBond) {
-      if (
-        fromTokenAddress === AddressZero &&
-        toTokenAddress === NATIVE_TOKEN_ADDRESS
-      ) {
-        wrap();
-        return;
-      }
-
-      if (
-        fromTokenAddress === NATIVE_TOKEN_ADDRESS &&
-        toTokenAddress === AddressZero
-      ) {
-        unwrap();
         return;
       }
     }
@@ -1701,18 +1673,6 @@ export const BondBox = (props) => {
           >
             {getPrimaryText()}
           </button>
-          {active && isRedeem && isPrimaryEnabled() && (
-            <button
-              className="App-cta Exchange-swap-button mt-4"
-              onClick={() => {
-                setIsRedeemSecondary(true);
-                onClickPrimary();
-              }}
-              disabled={!isPrimaryEnabled()}
-            >
-              {getSecondaryText()}
-            </button>
-          )}
 
           {isStake && (
             <button

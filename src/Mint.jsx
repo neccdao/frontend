@@ -85,7 +85,6 @@ function getInfoTokens(
     infoTokens[token.address] = token;
   }
 
-  console.log({ infoTokens });
   return infoTokens;
 }
 
