@@ -75,7 +75,7 @@ import {
 import Token from "../../abis/Token.json";
 import WETH from "../../abis/WETH.json";
 import BondDepositoryFacet from "../../abis/BondDepositoryFacet.json";
-import NNecc from "../../abis/sNeccFacet.json";
+import UniswapV2Pair from "../../abis/IUniswapV2Pair.json";
 import Staking from "../../abis/StakingFacet.json";
 import TreasuryFacet from "../../abis/TreasuryFacet.json";
 
@@ -286,6 +286,7 @@ export const BondBox = (props) => {
   const nNeccAddress = getContract(CHAIN_ID, "nNecc");
   const NeccAddress = getContract(CHAIN_ID, "Necc");
   const treasuryAddress = getContract(CHAIN_ID, "Treasury");
+  const ndolNNECCPairAddress = getContract(CHAIN_ID, "NDOL_NNECC_PAIR");
 
   const bondTokens = getBondTokens(CHAIN_ID);
   const fromTokens = bondTokens;
@@ -356,14 +357,7 @@ export const BondBox = (props) => {
   const isToAmountGreaterThanAvailableBonds = toAmount?.gt(
     fromToken?.maxPayout || 0
   );
-  const bondDiscount =
-    toToken.minPrice
-      ?.mul(expandDecimals(10, 18))
-      .sub(fromToken?.Price)
-      .div(fromToken?.Price)
-      .mul(100) || bigNumberify(0);
-
-  const debtRatio = standardizedDebtRatio || bigNumberify(0);
+  // const debtRatio = standardizedDebtRatio || bigNumberify(0);
   // const calculatedBondPrice = bigNumberify(500)
   //   ?.mul(debtRatio)
   //   ?.add(1000000000)
@@ -373,6 +367,27 @@ export const BondBox = (props) => {
   // console.log("calculatedBondPrice", calculatedBondPrice?.toString());
 
   const ndolBondAddress = getContract(CHAIN_ID, "NDOLBond");
+  const { data: ndolnNECCPairReserves, mutate: updatendolnNECCPairReserves } =
+    useSWR([active, ndolNNECCPairAddress, "getReserves"], {
+      fetcher: fetcher(library, UniswapV2Pair),
+    });
+
+  const ndolnNECCPairMarketPrice =
+    ndolnNECCPairReserves &&
+    Number(ndolnNECCPairReserves?.[1].toString()) /
+      Number(ndolnNECCPairReserves?.[0].toString());
+
+  const nNeccPrice = ndolnNECCPairMarketPrice
+    ? bigNumberify(ndolnNECCPairMarketPrice)?.mul(expandDecimals(1, 18))
+    : bigNumberify(0);
+
+  const bondDiscount =
+    bondPrice &&
+    nNeccPrice &&
+    (bondPrice < nNeccPrice
+      ? Number(nNeccPrice?.sub(bondPrice)?.toString()) /
+        Number(bondPrice?.toString() || 1)
+      : bigNumberify(0));
 
   const { data: principleValuation, mutate: updatePrincipleValuation } = useSWR(
     [
@@ -1713,19 +1728,16 @@ export const BondBox = (props) => {
           <div className="Exchange-swap-market-box-title">{swapOption}</div>
 
           <div className="Exchange-info-row">
-            <div className="Exchange-info-label">{toToken.symbol} Price</div>
+            <div className="Exchange-info-label">nNECC Price</div>
             <div className="align-right">
-              {toTokenInfo &&
-                formatAmount(toTokenInfo.minPrice, USD_DECIMALS, 2, true)}{" "}
-              USD
+              {nNeccPrice && formatAmount(nNeccPrice, 18, 2, true)} USD
             </div>
           </div>
 
           <div className="Exchange-info-row">
             <div className="Exchange-info-label">Bond Price</div>
             <div className="align-right">
-              {fromToken && bondPrice && formatAmount(bondPrice, 18, 2, true)}{" "}
-              USD
+              {bondPrice && formatAmount(bondPrice, 18, 2, true)} USD
             </div>
           </div>
 
@@ -1741,7 +1753,7 @@ export const BondBox = (props) => {
             <div className="Exchange-info-label">Discount</div>
             <div className="align-right">
               {/* TODO: Change second param (tokenDecimal) once LP is deployed with Necc market price derivable */}
-              {formatAmount(bondDiscount, 2, 2, true)} %
+              {bondDiscount && trim(Number(bondDiscount) * 100, 2)} %
             </div>
           </div>
 
