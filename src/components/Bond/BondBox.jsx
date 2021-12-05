@@ -357,14 +357,6 @@ export const BondBox = (props) => {
   const isToAmountGreaterThanAvailableBonds = toAmount?.gt(
     fromToken?.maxPayout || 0
   );
-  // const debtRatio = standardizedDebtRatio || bigNumberify(0);
-  // const calculatedBondPrice = bigNumberify(500)
-  //   ?.mul(debtRatio)
-  //   ?.add(1000000000)
-  //   ?.div(1e7);
-  // console.log("bondPrice", bondPrice?.toString());
-  // console.log("debtRatio", debtRatio?.toString());
-  // console.log("calculatedBondPrice", calculatedBondPrice?.toString());
 
   const ndolBondAddress = getContract(CHAIN_ID, "NDOLBond");
   const { data: ndolnNECCPairReserves, mutate: updatendolnNECCPairReserves } =
@@ -377,16 +369,32 @@ export const BondBox = (props) => {
     Number(ndolnNECCPairReserves?.[1].toString()) /
       Number(ndolnNECCPairReserves?.[0].toString());
 
-  const nNeccPrice = ndolnNECCPairMarketPrice
+  const nNeccMarketPrice = ndolnNECCPairMarketPrice
     ? bigNumberify(ndolnNECCPairMarketPrice)?.mul(expandDecimals(1, 18))
     : bigNumberify(0);
 
+  const nNeccBondPrice = bondPrice
+    ? bigNumberify(bondPrice)
+        ?.mul(stakingCurrentIndex)
+        ?.div(expandDecimals(1, 9))
+    : bigNumberify(0);
+
+  // console.log(nNeccBondPrice?.toString());
+  // const debtRatio = standardizedDebtRatio || bigNumberify(0);
+  // const calculatedBondPrice = bigNumberify(500)
+  //   ?.mul(debtRatio)
+  //   ?.add(1000000000)
+  //   ?.div(1e7);
+  // console.log("bondPrice", bondPrice?.toString());
+  // console.log("debtRatio", debtRatio?.toString());
+  // console.log("calculatedBondPrice", calculatedBondPrice?.toString());
+
   const bondDiscount =
-    bondPrice &&
-    nNeccPrice &&
-    (bondPrice < nNeccPrice
-      ? Number(nNeccPrice?.sub(bondPrice)?.toString()) /
-        Number(bondPrice?.toString() || 1)
+    nNeccBondPrice &&
+    nNeccMarketPrice &&
+    (nNeccBondPrice < nNeccMarketPrice
+      ? Number(nNeccMarketPrice?.sub(nNeccBondPrice)?.toString()) /
+        Number(nNeccBondPrice?.toString() || 1)
       : bigNumberify(0));
 
   const { data: principleValuation, mutate: updatePrincipleValuation } = useSWR(
@@ -449,6 +457,7 @@ export const BondBox = (props) => {
         updatenNeccTokenBalance(undefined, true);
         updatePrincipleValuation(undefined, true);
         updateNDOLBondPayoutFor(undefined, true);
+        updatendolnNECCPairReserves(undefined, true);
       });
       return () => {
         library.removeListener("block");
@@ -1684,6 +1693,10 @@ export const BondBox = (props) => {
               <ExchangeInfoRow label="nNecc Balance">
                 <div>{formatAmount(nNeccTokenBalance, 18, 4, true)}</div>
               </ExchangeInfoRow>
+              <ExchangeInfoRow label="nNecc Market Price">
+                {nNeccMarketPrice &&
+                  formatAmount(nNeccMarketPrice, 18, 2, true)}{" "}
+              </ExchangeInfoRow>
             </div>
           </React.Fragment>
         )}
@@ -1728,9 +1741,17 @@ export const BondBox = (props) => {
           <div className="Exchange-swap-market-box-title">{swapOption}</div>
 
           <div className="Exchange-info-row">
-            <div className="Exchange-info-label">nNECC Price</div>
+            <div className="Exchange-info-label">nNECC Market Price </div>
             <div className="align-right">
-              {nNeccPrice && formatAmount(nNeccPrice, 18, 2, true)} USD
+              {nNeccMarketPrice && formatAmount(nNeccMarketPrice, 18, 2, true)}{" "}
+              USD
+            </div>
+          </div>
+
+          <div className="Exchange-info-row">
+            <div className="Exchange-info-label">nNECC Bond Price </div>
+            <div className="align-right">
+              {nNeccBondPrice && formatAmount(nNeccBondPrice, 18, 2, true)} USD
             </div>
           </div>
 
@@ -1742,18 +1763,18 @@ export const BondBox = (props) => {
           </div>
 
           <div className="Exchange-info-row">
-            <div className="Exchange-info-label">Available Bonds</div>
-            <div className="align-right">
-              {fromToken &&
-                formatAmount(fromToken.maxPayout, toToken.decimals, 4, true)}
-            </div>
-          </div>
-
-          <div className="Exchange-info-row">
             <div className="Exchange-info-label">Discount</div>
             <div className="align-right">
               {/* TODO: Change second param (tokenDecimal) once LP is deployed with Necc market price derivable */}
               {bondDiscount && trim(Number(bondDiscount) * 100, 2)} %
+            </div>
+          </div>
+
+          <div className="Exchange-info-row">
+            <div className="Exchange-info-label">Available Bonds</div>
+            <div className="align-right">
+              {fromToken &&
+                formatAmount(fromToken.maxPayout, toToken.decimals, 4, true)}
             </div>
           </div>
 
