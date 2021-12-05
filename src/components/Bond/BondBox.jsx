@@ -364,6 +364,13 @@ export const BondBox = (props) => {
       .mul(100) || bigNumberify(0);
 
   const debtRatio = standardizedDebtRatio || bigNumberify(0);
+  // const calculatedBondPrice = bigNumberify(500)
+  //   ?.mul(debtRatio)
+  //   ?.add(1000000000)
+  //   ?.div(1e7);
+  // console.log("bondPrice", bondPrice?.toString());
+  // console.log("debtRatio", debtRatio?.toString());
+  // console.log("calculatedBondPrice", calculatedBondPrice?.toString());
 
   const ndolBondAddress = getContract(CHAIN_ID, "NDOLBond");
 
@@ -890,6 +897,7 @@ export const BondBox = (props) => {
     } finally {
       setIsSubmitting(false);
       setIsPendingConfirmation(false);
+      setIsRebase(false);
     }
   };
 
@@ -1716,7 +1724,8 @@ export const BondBox = (props) => {
           <div className="Exchange-info-row">
             <div className="Exchange-info-label">Bond Price</div>
             <div className="align-right">
-              {fromToken && formatAmount(bondPrice, 18, 2, true)} USD
+              {fromToken && bondPrice && formatAmount(bondPrice, 18, 2, true)}{" "}
+              USD
             </div>
           </div>
 
@@ -1740,13 +1749,6 @@ export const BondBox = (props) => {
             <div className="Exchange-info-label">Current Debt</div>
             <div className="align-right">
               {formatAmount(currentDebt, 9, 2, true)} %
-            </div>
-          </div>
-
-          <div className="Exchange-info-row">
-            <div className="Exchange-info-label">Debt Ratio</div>
-            <div className="align-right">
-              {formatAmount(debtRatio, 9, 2, true)} %
             </div>
           </div>
         </div>

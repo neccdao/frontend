@@ -168,14 +168,14 @@ export default function Bond() {
   useInactiveListener(!triedEager || !!activatingConnector);
   const connectWallet = getConnectWalletHandler(activate);
 
-  const vaultAddress = getContract(CHAIN_ID, "Vault");
   const readerAddress = getContract(CHAIN_ID, "Reader");
   const ndolBondAddress = getContract(CHAIN_ID, "NDOLBond");
-  const treasuryAddress = getContract(CHAIN_ID, "Treasury");
   const neccAddress = getContract(CHAIN_ID, "Necc");
   const sNeccAddress = getContract(CHAIN_ID, "sNecc");
+  const nNeccAddress = getContract(CHAIN_ID, "nNecc");
   const stakingAddress = getContract(CHAIN_ID, "NeccStaking");
   const ndolAddress = getContract(CHAIN_ID, "NDOL");
+  const treasuryAddress = getContract(CHAIN_ID, "Treasury");
 
   const prevAccount = usePrevious(account);
   useEffect(() => {
@@ -184,9 +184,8 @@ export default function Bond() {
     }
   }, [prevAccount, account]);
 
-  const bondTokenAddresses = bondTokens.map((token) => token.address);
-
   const tokenAddresses = tokens.map((token) => token.address);
+  const bondTokenAddresses = bondTokens.map((token) => token.address);
   const { data: tokenBalances, mutate: updateTokenBalances } = useSWR(
     [active, readerAddress, "getTokenBalances", account],
     {
@@ -329,8 +328,8 @@ export default function Bond() {
   //     treasuryAddress,
   //     "valueOfToken",
   //     fromTokenAddress,
-  //     // tokenBalances?.[tokenAddresses.indexOf(fromTokenAddress)],
-  //   ],
+  //     tokenBalances?.[tokenAddresses.indexOf(fromTokenAddress)
+  // ],
   //   {
   //     fetcher: fetcher(library, TreasuryFacet),
   //   }
@@ -379,7 +378,7 @@ export default function Bond() {
       warmupInfo: stakingWarmupInfo,
     },
 
-    NDOLNeccLPBond: {
+    NDOLnNeccLPBond: {
       price: ndolBondPrice,
       maxPayout: ndolBondMaxPayout,
       standardizedDebtRatio: ndolBondStandardizedDebtRatio,
