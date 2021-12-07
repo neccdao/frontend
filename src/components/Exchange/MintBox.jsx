@@ -398,21 +398,18 @@ const MintBox = (props) => {
       fetcher: fetcher(library, nNecc, []),
     });
 
-  const { data: targetAdjustedSwapFee, mutate: updateTargetAdjustedSwapFee } =
-    useSWR(
-      [
-        active,
-        routerAddress,
-        "getTargetAdjustedFee",
-        fromTokenAddress?.includes("0x0")
-          ? nativeTokenAddress
-          : fromTokenAddress,
-        SWAP_FEE_BASIS_POINTS,
-      ],
-      {
-        fetcher: fetcher(library, VaultNDOL),
-      }
-    );
+  const { data: targetAdjustedFee, mutate: updateTargetAdjustedFee } = useSWR(
+    [
+      active,
+      routerAddress,
+      "getTargetAdjustedFee",
+      fromTokenAddress?.includes("0x0") ? nativeTokenAddress : fromTokenAddress,
+      SWAP_FEE_BASIS_POINTS,
+    ],
+    {
+      fetcher: fetcher(library, VaultNDOL),
+    }
+  );
 
   // const { data: ndolAmounts, mutate: updateX } = useSWR(
   //   [
@@ -487,7 +484,7 @@ const MintBox = (props) => {
       library.on("block", () => {
         updateMintFarmTokenAllowance(undefined, true);
         updateTokenAllowance(undefined, true);
-        updateTargetAdjustedSwapFee(undefined, true);
+        updateTargetAdjustedFee(undefined, true);
         updatenNeccTokenBalance(undefined, true);
         updateClaimablenNecc(undefined, true);
         updateStakedBalance(undefined, true);
@@ -504,7 +501,7 @@ const MintBox = (props) => {
     active,
     library,
     updateTokenAllowance,
-    updateTargetAdjustedSwapFee,
+    updateTargetAdjustedFee,
     updateMintFarmTokenAllowance,
     updatenNeccTokenBalance,
     updateStakedBalance,
@@ -532,7 +529,7 @@ const MintBox = (props) => {
             infoTokens,
             undefined,
             !isMarketOrder && triggerRatio,
-            targetAdjustedSwapFee
+            targetAdjustedFee
           );
           const nextToValue = formatAmountFree(
             nextToAmount,
@@ -1413,8 +1410,8 @@ const MintBox = (props) => {
   let feesUsd;
   if (isBurn || isMint) {
     if (fromAmount) {
-      if (targetAdjustedSwapFee) {
-        fees = fromAmount.mul(targetAdjustedSwapFee).div(BASIS_POINTS_DIVISOR);
+      if (targetAdjustedFee) {
+        fees = fromAmount.mul(targetAdjustedFee).div(BASIS_POINTS_DIVISOR);
 
         const feeTokenPrice =
           fromTokenInfo.address === NDOL_ADDRESS
@@ -1691,6 +1688,14 @@ const MintBox = (props) => {
                 )}
               </div>
             </ExchangeInfoRow>
+
+            {isMint && (
+              <ExchangeInfoRow label="Target Adjusted Fee">
+                <div>
+                  {formatAmount(targetAdjustedFee, 2, 3, true)} {" %"}
+                </div>
+              </ExchangeInfoRow>
+            )}
           </div>
         )}
 
