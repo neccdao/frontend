@@ -79,7 +79,7 @@ import WETH from "../../abis/WETH.json";
 import VaultPriceFeed from "../../abis/VaultPriceFeedFacet.json";
 import VaultNDOL from "../../abis/VaultNDOLFacet.json";
 import Staking from "../../abis/StakingFacet.json";
-import nNecc from "../../abis/nNecc.json";
+import nNecc from "../../abis/nNeccFacet.json";
 
 const { AddressZero } = ethers.constants;
 
@@ -321,7 +321,6 @@ const MintBox = (props) => {
   const stakingAddress = getContract(CHAIN_ID, "NeccStaking");
   const nNeccAddress = getContract(CHAIN_ID, "nNecc");
   const mintDistributorAddress = getContract(CHAIN_ID, "MintDistributor");
-  const neccAddress = getContract(CHAIN_ID, "Necc");
 
   const fromToken = getToken(CHAIN_ID, fromTokenAddress);
   const toToken = getToken(CHAIN_ID, toTokenAddress);
@@ -335,8 +334,8 @@ const MintBox = (props) => {
   const fromAmount = parseValue(fromValue, fromToken.decimals);
   const toAmount = parseValue(toValue, toToken.decimals);
 
-  const { data: neccTokenBalance, mutate: updateNeccTokenBalance } = useSWR(
-    [active, neccAddress, "balanceOf", account],
+  const { data: nNeccTokenBalance, mutate: updatenNeccTokenBalance } = useSWR(
+    [active, nNeccAddress, "balanceOf", account],
     {
       fetcher: fetcher(library, Token),
     }
@@ -354,12 +353,12 @@ const MintBox = (props) => {
       fetcher: fetcher(library, Token),
     });
 
-  const { data: x, mutate: updatex } = useSWR(
-    [active, neccAddress, "balanceOf", mintDistributorAddress],
-    {
-      fetcher: fetcher(library, Token),
-    }
-  );
+  const {
+    data: mintDistributornNeccTokenBalance,
+    mutate: updateMintDistributornNeccTokenBalance,
+  } = useSWR([active, nNeccAddress, "balanceOf", mintDistributorAddress], {
+    fetcher: fetcher(library, Token),
+  });
 
   const { data: stakedBalance, mutate: updateStakedBalance } = useSWR(
     [active, mintFarmAddress, "staked", account],
@@ -381,7 +380,7 @@ const MintBox = (props) => {
     }
   );
 
-  const { data: claimableNecc, mutate: updateClaimableNecc } = useSWR(
+  const { data: claimablenNecc, mutate: updateClaimablenNecc } = useSWR(
     [active, mintFarmAddress, "claimable", account],
     {
       fetcher: fetcher(library, MintFarm),
@@ -394,26 +393,23 @@ const MintBox = (props) => {
     }
   );
 
-  const { data: nNeccCirculatingSupply, mutate: updatenNeccCirculatingSupply } =
+  const { data: nNeccCirculatingSupply, mutate: npdatesNeccCirculatingSupply } =
     useSWR([active, nNeccAddress, "circulatingSupply"], {
       fetcher: fetcher(library, nNecc, []),
     });
 
-  const { data: targetAdjustedSwapFee, mutate: updateTargetAdjustedSwapFee } =
-    useSWR(
-      [
-        active,
-        routerAddress,
-        "getTargetAdjustedFee",
-        fromTokenAddress?.includes("0x0")
-          ? nativeTokenAddress
-          : fromTokenAddress,
-        SWAP_FEE_BASIS_POINTS,
-      ],
-      {
-        fetcher: fetcher(library, VaultNDOL),
-      }
-    );
+  const { data: targetAdjustedFee, mutate: updateTargetAdjustedFee } = useSWR(
+    [
+      active,
+      routerAddress,
+      "getTargetAdjustedFee",
+      fromTokenAddress?.includes("0x0") ? nativeTokenAddress : fromTokenAddress,
+      SWAP_FEE_BASIS_POINTS,
+    ],
+    {
+      fetcher: fetcher(library, VaultNDOL),
+    }
+  );
 
   // const { data: ndolAmounts, mutate: updateX } = useSWR(
   //   [
@@ -429,17 +425,10 @@ const MintBox = (props) => {
 
   // console.log(ndolAmounts?.toString());
 
-  const stakingRebase =
-    stakingEpoch?.distribute?.toNumber() / nNeccCirculatingSupply?.toNumber();
-  const apy = Math.pow(1 + stakingRebase, 365 * 3) - 1;
-  const fiveDayRate = Math.pow(1 + stakingRebase, 5 * 3) - 1;
-
-  // const { data: mintFarmNeccBalance, mutate: updateMintFarmNeccBalance } = useSWR(
-  //   [active, neccAddress, "balanceOf", mintFarmAddress],
-  //   {
-  //     fetcher: fetcher(library, Token),
-  //   }
-  // );
+  const { data: mintFarmnNeccBalance, mutate: updateMintFarmnNeccBalance } =
+    useSWR([active, nNeccAddress, "balanceOf", mintFarmAddress], {
+      fetcher: fetcher(library, Token),
+    });
 
   const needMintFarmApproval =
     mintFarmTokenAllowance &&
@@ -495,13 +484,14 @@ const MintBox = (props) => {
       library.on("block", () => {
         updateMintFarmTokenAllowance(undefined, true);
         updateTokenAllowance(undefined, true);
-        updateTargetAdjustedSwapFee(undefined, true);
-        updateNeccTokenBalance(undefined, true);
-        updateClaimableNecc(undefined, true);
+        updateTargetAdjustedFee(undefined, true);
+        updatenNeccTokenBalance(undefined, true);
+        updateClaimablenNecc(undefined, true);
         updateStakedBalance(undefined, true);
         updateTotalStaked(undefined, true);
         updateStakingEpoch(undefined, true);
-        updatenNeccCirculatingSupply(undefined, true);
+        npdatesNeccCirculatingSupply(undefined, true);
+        updateMintFarmnNeccBalance(undefined, true);
       });
       return () => {
         library.removeListener("block");
@@ -511,14 +501,14 @@ const MintBox = (props) => {
     active,
     library,
     updateTokenAllowance,
-    updateTargetAdjustedSwapFee,
+    updateTargetAdjustedFee,
     updateMintFarmTokenAllowance,
-    updateNeccTokenBalance,
+    updatenNeccTokenBalance,
     updateStakedBalance,
-    updateClaimableNecc,
+    updateClaimablenNecc,
     updateTotalStaked,
     updateStakingEpoch,
-    updatenNeccCirculatingSupply,
+    npdatesNeccCirculatingSupply,
   ]);
 
   useEffect(() => {
@@ -539,7 +529,7 @@ const MintBox = (props) => {
             infoTokens,
             undefined,
             !isMarketOrder && triggerRatio,
-            targetAdjustedSwapFee
+            targetAdjustedFee
           );
           const nextToValue = formatAmountFree(
             nextToAmount,
@@ -1420,8 +1410,8 @@ const MintBox = (props) => {
   let feesUsd;
   if (isBurn || isMint) {
     if (fromAmount) {
-      if (targetAdjustedSwapFee) {
-        fees = fromAmount.mul(targetAdjustedSwapFee).div(BASIS_POINTS_DIVISOR);
+      if (targetAdjustedFee) {
+        fees = fromAmount.mul(targetAdjustedFee).div(BASIS_POINTS_DIVISOR);
 
         const feeTokenPrice =
           fromTokenInfo.address === NDOL_ADDRESS
@@ -1665,28 +1655,19 @@ const MintBox = (props) => {
             </div>
             {isStake && (
               <div className="Exchange-swap-box-info">
-                <ExchangeInfoRow label="Necc Balance">
-                  <div>{formatAmount(neccTokenBalance, 9, 8, true)}</div>
+                <ExchangeInfoRow label="nNecc Balance">
+                  <div>{formatAmount(nNeccTokenBalance, 18, 4, true)}</div>
                 </ExchangeInfoRow>
-                <ExchangeInfoRow label="Claimable Necc">
-                  <div>{formatAmount(claimableNecc, 9, 8, true)}</div>
+                <ExchangeInfoRow label="Claimable nNecc">
+                  <div>{formatAmount(claimablenNecc, 18, 4, true)}</div>
+                </ExchangeInfoRow>
+                <ExchangeInfoRow label="Distributable nNecc">
+                  <div>{formatAmount(mintFarmnNeccBalance, 18, 2, true)}</div>
                 </ExchangeInfoRow>
                 <ExchangeInfoRow label="Total Staked NDOL">
                   <div>
                     {formatAmount(totalStaked, fromToken?.decimals, 2, true)}
                   </div>
-                </ExchangeInfoRow>
-                <ExchangeInfoRow label="APY (Necc)">
-                  <div>
-                    {" "}
-                    {new Intl.NumberFormat("en-US").format(
-                      Number(trim(Number(apy), 2))
-                    )}{" "}
-                    %
-                  </div>
-                </ExchangeInfoRow>
-                <ExchangeInfoRow label="5 Day Rate">
-                  <div>{trim(Number(fiveDayRate), 4)} %</div>
                 </ExchangeInfoRow>
               </div>
             )}
@@ -1707,6 +1688,14 @@ const MintBox = (props) => {
                 )}
               </div>
             </ExchangeInfoRow>
+
+            {isMint && (
+              <ExchangeInfoRow label="Target Adjusted Fee">
+                <div>
+                  {formatAmount(targetAdjustedFee, 2, 3, true)} {" %"}
+                </div>
+              </ExchangeInfoRow>
+            )}
           </div>
         )}
 
@@ -1722,7 +1711,7 @@ const MintBox = (props) => {
 
         {isStake && (
           <React.Fragment>
-            {claimableNecc?.gt(0) && (
+            {claimablenNecc?.gt(0) && (
               <div className="Exchange-swap-button-container">
                 <button
                   className="App-cta Exchange-swap-button"

@@ -75,7 +75,7 @@ import {
 import Token from "../../abis/Token.json";
 import WETH from "../../abis/WETH.json";
 import BondDepositoryFacet from "../../abis/BondDepositoryFacet.json";
-import NNecc from "../../abis/nNecc.json";
+import UniswapV2Pair from "../../abis/IUniswapV2Pair.json";
 import Staking from "../../abis/StakingFacet.json";
 import TreasuryFacet from "../../abis/TreasuryFacet.json";
 
@@ -198,6 +198,9 @@ export const BondBox = (props) => {
     //
     fiveDayRate,
     apy,
+    nextRewardValue,
+    stakingRebasePercentage,
+    interestDue,
     warmupInfo,
     stakingContractBalance,
     stakingCurrentIndex,
@@ -215,7 +218,6 @@ export const BondBox = (props) => {
   const [isApproving, setIsApproving] = useState(false);
   const [isWaitingForApproval, setIsWaitingForApproval] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isUnstake, setIsUnstake] = useState(false);
   const [isClaim, setIsClaim] = useState(false);
   const isBond = swapOption === "Bond";
   const isRedeem = swapOption === "Redeem";
@@ -280,9 +282,11 @@ export const BondBox = (props) => {
 
   const NDOLBond = getContract(CHAIN_ID, "NDOLBond");
   const NeccStaking = getContract(CHAIN_ID, "NeccStaking");
+  const sNeccAddress = getContract(CHAIN_ID, "sNecc");
   const nNeccAddress = getContract(CHAIN_ID, "nNecc");
   const NeccAddress = getContract(CHAIN_ID, "Necc");
   const treasuryAddress = getContract(CHAIN_ID, "Treasury");
+  const ndolNNECCPairAddress = getContract(CHAIN_ID, "NDOL_NNECC_PAIR");
 
   const bondTokens = getBondTokens(CHAIN_ID);
   const fromTokens = bondTokens;
@@ -315,15 +319,10 @@ export const BondBox = (props) => {
     }
   );
   const { data: stakingTokenAllowance, mutate: updateStakingTokenAllowance } =
-    useSWR([active, fromTokenAddress, "allowance", account, NeccStaking], {
+    useSWR([active, NeccAddress, "allowance", account, NeccStaking], {
       fetcher: fetcher(library, Token),
     });
-  const {
-    data: unstakingTokenAllowance,
-    mutate: updateUnstakingTokenAllowance,
-  } = useSWR([active, nNeccAddress, "allowance", account, NeccStaking], {
-    fetcher: fetcher(library, Token),
-  });
+
   const { data: NeccTokenBalance, mutate: updateNeccTokenBalance } = useSWR(
     [active, NeccAddress, "balanceOf", account],
     {
@@ -341,10 +340,6 @@ export const BondBox = (props) => {
     tokenAllowance && fromAmount && fromAmount.gt(tokenAllowance);
   const needStakingApproval =
     stakingTokenAllowance && fromAmount && fromAmount.gt(stakingTokenAllowance);
-  const needUnstakingApproval =
-    unstakingTokenAllowance &&
-    nNeccTokenBalance &&
-    nNeccTokenBalance.gt(unstakingTokenAllowance);
 
   const prevFromTokenAddress = usePrevious(fromTokenAddress);
   const prevNeedApproval = usePrevious(needApproval);
@@ -362,16 +357,46 @@ export const BondBox = (props) => {
   const isToAmountGreaterThanAvailableBonds = toAmount?.gt(
     fromToken?.maxPayout || 0
   );
-  const bondDiscount =
-    toToken.minPrice
-      ?.mul(expandDecimals(10, 18))
-      .sub(fromToken?.Price)
-      .div(fromToken?.Price)
-      .mul(100) || bigNumberify(0);
-
-  const debtRatio = standardizedDebtRatio || bigNumberify(0);
 
   const ndolBondAddress = getContract(CHAIN_ID, "NDOLBond");
+  const { data: ndolnNECCPairReserves, mutate: updatendolnNECCPairReserves } =
+    useSWR([active, ndolNNECCPairAddress, "getReserves"], {
+      fetcher: fetcher(library, UniswapV2Pair),
+    });
+
+  const ndolnNECCPairMarketPrice =
+    ndolnNECCPairReserves &&
+    Number(ndolnNECCPairReserves?.[1].toString()) /
+      Number(ndolnNECCPairReserves?.[0].toString());
+
+  const nNeccMarketPrice = ndolnNECCPairMarketPrice
+    ? bigNumberify(ndolnNECCPairMarketPrice)?.mul(expandDecimals(1, 18))
+    : bigNumberify(0);
+
+  const nNeccBondPrice =
+    bondPrice && stakingCurrentIndex
+      ? bigNumberify(bondPrice)
+          ?.mul(stakingCurrentIndex)
+          ?.div(expandDecimals(1, 9))
+      : bigNumberify(0);
+
+  // console.log(nNeccBondPrice?.toString());
+  // const debtRatio = standardizedDebtRatio || bigNumberify(0);
+  // const calculatedBondPrice = bigNumberify(500)
+  //   ?.mul(debtRatio)
+  //   ?.add(1000000000)
+  //   ?.div(1e7);
+  // console.log("bondPrice", bondPrice?.toString());
+  // console.log("debtRatio", debtRatio?.toString());
+  // console.log("calculatedBondPrice", calculatedBondPrice?.toString());
+
+  const bondDiscount =
+    nNeccBondPrice &&
+    nNeccMarketPrice &&
+    (nNeccBondPrice < nNeccMarketPrice
+      ? Number(nNeccMarketPrice?.sub(nNeccBondPrice)?.toString()) /
+        Number(nNeccBondPrice?.toString() || 1)
+      : bigNumberify(0));
 
   const { data: principleValuation, mutate: updatePrincipleValuation } = useSWR(
     [
@@ -430,10 +455,10 @@ export const BondBox = (props) => {
       library.on("block", () => {
         updateTokenAllowance(undefined, true);
         updateStakingTokenAllowance(undefined, true);
-        updateUnstakingTokenAllowance(undefined, true);
         updatenNeccTokenBalance(undefined, true);
         updatePrincipleValuation(undefined, true);
         updateNDOLBondPayoutFor(undefined, true);
+        updatendolnNECCPairReserves(undefined, true);
       });
       return () => {
         library.removeListener("block");
@@ -444,7 +469,6 @@ export const BondBox = (props) => {
     library,
     updateTokenAllowance,
     updateStakingTokenAllowance,
-    updateUnstakingTokenAllowance,
     updatenNeccTokenBalance,
     updatePrincipleValuation,
     updateNDOLBondPayoutFor,
@@ -611,9 +635,6 @@ export const BondBox = (props) => {
       return false;
     }
 
-    if ((needUnstakingApproval && isWaitingForApproval) || isApproving) {
-      return false;
-    }
     if (isApproving) {
       return false;
     }
@@ -681,15 +702,14 @@ export const BondBox = (props) => {
 
     if (!isMarketOrder) return `Create ${orderType.toLowerCase()} order`;
 
-    if (isRedeem) {
-      return "Redeem";
-    }
-
     if (isBond) {
       if (isToAmountGreaterThanAvailableBonds) {
         return "Insufficient Bonds";
       }
       return "Bond";
+    }
+    if (isRedeem) {
+      return "Redeem and Stake";
     }
     if (isStake) {
       return "Stake";
@@ -700,16 +720,6 @@ export const BondBox = (props) => {
     const error = getError(true);
     if (error) {
       return error;
-    }
-
-    if (needUnstakingApproval && isWaitingForApproval) {
-      return "Waiting for Approval";
-    }
-    if (isStake) {
-      if (needUnstakingApproval) {
-        return "Approve to unstake";
-      }
-      return "Unstake";
     }
 
     return "Redeem and Stake";
@@ -755,7 +765,6 @@ export const BondBox = (props) => {
       message: txMessage,
     };
     setPendingTxns([...pendingTxns, pendingTxn]);
-    setIsRedeemSecondary(false);
   };
 
   const wrap = async () => {
@@ -913,6 +922,7 @@ export const BondBox = (props) => {
     } finally {
       setIsSubmitting(false);
       setIsPendingConfirmation(false);
+      setIsRebase(false);
     }
   };
 
@@ -974,64 +984,6 @@ export const BondBox = (props) => {
     }
   };
 
-  const unstake = async () => {
-    setIsSubmitting(true);
-
-    let method;
-    let contract;
-    let value;
-    let params;
-
-    method = "unstake";
-    value = bigNumberify(0);
-    params = [nNeccTokenBalance, true];
-
-    contract = new ethers.Contract(
-      NeccStaking,
-      Staking.abi,
-      library.getSigner()
-    );
-
-    if (
-      shouldRaiseGasError(
-        getTokenInfo(infoTokens, fromTokenAddress),
-        fromAmount
-      )
-    ) {
-      setIsSubmitting(false);
-      toast.error(
-        `Leave at least ${formatAmount(DUST_BNB, 18, 3)} ETH for gas`
-      );
-      return;
-    }
-
-    try {
-      const gasLimit = await getGasLimit(contract, method, params, value);
-      const res = await contract[method](...params, { value, gasLimit });
-      const txUrl = getExplorerUrl(CHAIN_ID) + "tx/" + res.hash;
-      const toastSuccessMessage = (
-        <div>
-          Unstake submitted!{" "}
-          <a href={txUrl} target="_blank" rel="noopener noreferrer">
-            View status.
-          </a>
-          <br />
-        </div>
-      );
-
-      const stakeMessage = `Unstaked ${toToken.symbol}`;
-      const txMessage = stakeMessage;
-
-      handleFulfilled(res, toastSuccessMessage, txMessage);
-    } catch (err) {
-      console.error(err);
-      toast.error("Unstake failed");
-    } finally {
-      setIsSubmitting(false);
-      setIsPendingConfirmation(false);
-    }
-  };
-
   const stake = async () => {
     setIsSubmitting(true);
 
@@ -1085,7 +1037,7 @@ export const BondBox = (props) => {
     }
   };
 
-  const redeem = async (stakeAfterClaim = false) => {
+  const redeem = async () => {
     setIsSubmitting(true);
 
     let method;
@@ -1095,7 +1047,7 @@ export const BondBox = (props) => {
 
     method = "redeem";
     value = bigNumberify(0);
-    params = [account, fromTokenAddress, stakeAfterClaim];
+    params = [account, fromTokenAddress];
 
     contract = new ethers.Contract(
       NDOLBond,
@@ -1122,7 +1074,7 @@ export const BondBox = (props) => {
       const txUrl = getExplorerUrl(CHAIN_ID) + "tx/" + res.hash;
       const toastSuccessMessage = (
         <div>
-          {stakeAfterClaim ? "Redeem and Stake" : "Redeem"} submitted!{" "}
+          {"Redeem and Stake"} submitted!{" "}
           <a href={txUrl} target="_blank" rel="noopener noreferrer">
             View status.
           </a>
@@ -1130,12 +1082,8 @@ export const BondBox = (props) => {
         </div>
       );
 
-      const marketOrderRedeemMessage = `Redeemed ${toToken.symbol}`;
       const marketOrderRedeemAndStakeMessage = `Redeem and Staked ${toToken.symbol}`;
-      const txMessage = stakeAfterClaim
-        ? marketOrderRedeemAndStakeMessage
-        : marketOrderRedeemMessage;
-
+      const txMessage = marketOrderRedeemAndStakeMessage;
       handleFulfilled(res, toastSuccessMessage, txMessage);
     } catch (err) {
       console.error(err);
@@ -1318,16 +1266,8 @@ export const BondBox = (props) => {
       claim();
       return;
     }
-    if (isUnstake) {
-      unstake();
-      return;
-    }
     if (isStake) {
       stake();
-      return;
-    }
-    if (isRedeemSecondary) {
-      redeem(true);
       return;
     }
     if (isRedeem) {
@@ -1340,27 +1280,12 @@ export const BondBox = (props) => {
     }
   };
 
-  function approveFromToken(unstakingApproval = false) {
-    if (unstakingApproval) {
+  function approveFromToken() {
+    if (isStake && needStakingApproval) {
       approveTokens({
         setIsApproving,
         library,
-        tokenAddress: nNeccAddress,
-        spender: NeccStaking,
-        chainId: CHAIN_ID,
-        onApproveSubmitted: () => {
-          setIsWaitingForApproval(true);
-        },
-        infoTokens,
-        getTokenInfo,
-        pendingTxns,
-        setPendingTxns,
-      });
-    } else if (needStakingApproval) {
-      approveTokens({
-        setIsApproving,
-        library,
-        tokenAddress: fromToken.address,
+        tokenAddress: NeccAddress,
         spender: NeccStaking,
         chainId: CHAIN_ID,
         onApproveSubmitted: () => {
@@ -1401,31 +1326,8 @@ export const BondBox = (props) => {
     }
 
     if (isStake) {
-      if (needUnstakingApproval) {
-        approveFromToken(true);
-        return;
-      }
-
       if (needStakingApproval) {
         approveFromToken();
-        return;
-      }
-    }
-
-    if (isRedeem || isBond) {
-      if (
-        fromTokenAddress === AddressZero &&
-        toTokenAddress === NATIVE_TOKEN_ADDRESS
-      ) {
-        wrap();
-        return;
-      }
-
-      if (
-        fromTokenAddress === NATIVE_TOKEN_ADDRESS &&
-        toTokenAddress === AddressZero
-      ) {
-        unwrap();
         return;
       }
     }
@@ -1540,9 +1442,9 @@ export const BondBox = (props) => {
                     className="Exchange-swap-input"
                     value={formatAmount(
                       fromToken?.pendingPayoutFor,
-                      toTokenInfo.decimals,
                       9,
-                      true
+                      9,
+                      false
                     )}
                   />
                 </div>
@@ -1569,12 +1471,7 @@ export const BondBox = (props) => {
                       type="number"
                       placeholder="0.0"
                       className="Exchange-swap-input"
-                      value={formatAmount(
-                        fromToken?.interestDue,
-                        toTokenInfo.decimals,
-                        9,
-                        true
-                      )}
+                      value={formatAmount(interestDue, 9, 9, false)}
                     />
                   </div>
                   <div>
@@ -1795,9 +1692,11 @@ export const BondBox = (props) => {
 
             <div className="Exchange-swap-box-info">
               <ExchangeInfoRow label="nNecc Balance">
-                <div>
-                  {formatAmount(nNeccTokenBalance, fromToken.decimals, 8, true)}
-                </div>
+                <div>{formatAmount(nNeccTokenBalance, 18, 4, true)}</div>
+              </ExchangeInfoRow>
+              <ExchangeInfoRow label="nNecc Market Price">
+                {nNeccMarketPrice &&
+                  formatAmount(nNeccMarketPrice, 18, 2, true)}{" "}
               </ExchangeInfoRow>
             </div>
           </React.Fragment>
@@ -1811,18 +1710,6 @@ export const BondBox = (props) => {
           >
             {getPrimaryText()}
           </button>
-          {active && isRedeem && isPrimaryEnabled() && (
-            <button
-              className="App-cta Exchange-swap-button mt-4"
-              onClick={() => {
-                setIsRedeemSecondary(true);
-                onClickPrimary();
-              }}
-              disabled={!isPrimaryEnabled()}
-            >
-              {getSecondaryText()}
-            </button>
-          )}
 
           {isStake && (
             <button
@@ -1844,19 +1731,7 @@ export const BondBox = (props) => {
                 onClickPrimary();
               }}
             >
-              Claim nNecc
-            </button>
-          )}
-
-          {isStake && nNeccTokenBalance?.gt(0) && (
-            <button
-              className="App-cta Exchange-swap-button mt-4"
-              onClick={() => {
-                setIsUnstake(true);
-                onClickPrimary();
-              }}
-            >
-              {getSecondaryText()}
+              Claim sNecc
             </button>
           )}
         </div>
@@ -1867,18 +1742,32 @@ export const BondBox = (props) => {
           <div className="Exchange-swap-market-box-title">{swapOption}</div>
 
           <div className="Exchange-info-row">
-            <div className="Exchange-info-label">{toToken.symbol} Price</div>
+            <div className="Exchange-info-label">nNECC Market Price </div>
             <div className="align-right">
-              {toTokenInfo &&
-                formatAmount(toTokenInfo.minPrice, USD_DECIMALS, 2, true)}{" "}
+              {nNeccMarketPrice && formatAmount(nNeccMarketPrice, 18, 2, true)}{" "}
               USD
+            </div>
+          </div>
+
+          <div className="Exchange-info-row">
+            <div className="Exchange-info-label">nNECC Bond Price </div>
+            <div className="align-right">
+              {nNeccBondPrice && formatAmount(nNeccBondPrice, 18, 2, true)} USD
             </div>
           </div>
 
           <div className="Exchange-info-row">
             <div className="Exchange-info-label">Bond Price</div>
             <div className="align-right">
-              {fromToken && formatAmount(bondPrice, 18, 2, true)} USD
+              {bondPrice && formatAmount(bondPrice, 18, 2, true)} USD
+            </div>
+          </div>
+
+          <div className="Exchange-info-row">
+            <div className="Exchange-info-label">Discount</div>
+            <div className="align-right">
+              {/* TODO: Change second param (tokenDecimal) once LP is deployed with Necc market price derivable */}
+              {bondDiscount && trim(Number(bondDiscount) * 100, 2)} %
             </div>
           </div>
 
@@ -1891,24 +1780,9 @@ export const BondBox = (props) => {
           </div>
 
           <div className="Exchange-info-row">
-            <div className="Exchange-info-label">Discount</div>
-            <div className="align-right">
-              {/* TODO: Change second param (tokenDecimal) once LP is deployed with Necc market price derivable */}
-              {formatAmount(bondDiscount, 2, 2, true)} %
-            </div>
-          </div>
-
-          <div className="Exchange-info-row">
             <div className="Exchange-info-label">Current Debt</div>
             <div className="align-right">
               {formatAmount(currentDebt, 9, 2, true)} %
-            </div>
-          </div>
-
-          <div className="Exchange-info-row">
-            <div className="Exchange-info-label">Debt Ratio</div>
-            <div className="align-right">
-              {formatAmount(debtRatio, 9, 2, true)} %
             </div>
           </div>
         </div>
@@ -1917,13 +1791,6 @@ export const BondBox = (props) => {
       {isStake && (
         <div className="Exchange-swap-market-box border App-box">
           <div className="Exchange-swap-market-box-title">{swapOption}</div>
-
-          <div className="Exchange-info-row">
-            <div className="Exchange-info-label">Bond Price</div>
-            <div className="align-right">
-              {fromToken && formatAmount(bondPrice, 18, 2, true)} USD
-            </div>
-          </div>
 
           <div className="Exchange-info-row">
             <div className="Exchange-info-label">APY</div>
@@ -1942,10 +1809,18 @@ export const BondBox = (props) => {
           </div>
 
           <div className="Exchange-info-row">
+            <div className="Exchange-info-label">Next Reward Percentage</div>
+            <div className="align-right">
+              {stakingRebasePercentage}
+              {" %"}
+            </div>
+          </div>
+
+          <div className="Exchange-info-row">
             <div className="Exchange-info-label">Total Staked</div>
             <div className="align-right">
               {fromToken && formatAmount(stakingContractBalance, 9, 8, true)}{" "}
-              {toToken?.symbol}
+              {"Necc"}
             </div>
           </div>
 
@@ -1972,13 +1847,11 @@ export const BondBox = (props) => {
           isStake={isStake}
           isRebase={isRebase}
           isClaim={isClaim}
-          isUnstake={isUnstake}
           isRedeemSecondary={isRedeemSecondary}
           isMarketOrder={isMarketOrder}
           setIsRedeemSecondary={setIsRedeemSecondary}
           setIsRebase={setIsRebase}
           setIsClaim={setIsClaim}
-          setIsUnstake={setIsUnstake}
           orderType={orderType}
           fromToken={fromToken}
           fromTokenInfo={fromTokenInfo}

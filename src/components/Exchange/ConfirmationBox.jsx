@@ -164,11 +164,8 @@ export default function ConfirmationBox(props) {
     if (isBond) {
       return "Confirm Bond";
     }
-    if (isRedeemSecondary) {
-      return "Confirm Redeem And Stake";
-    }
     if (isRedeem) {
-      return "Confirm Redeem";
+      return "Confirm Redeem and Stake";
     }
     return isLong ? "Confirm Long" : "Confirm Short";
   };
@@ -215,11 +212,8 @@ export default function ConfirmationBox(props) {
     if (isBond) {
       return "Bonding...";
     }
-    if (isRedeemSecondary) {
-      return "Redeem and Staking ...";
-    }
     if (isRedeem) {
-      return "Redeeming...";
+      return "Redeem and Staking...";
     }
     if (isHarvest) {
       return "Harvesting...";
@@ -308,12 +302,12 @@ export default function ConfirmationBox(props) {
               9,
               true
             )}{" "}
-            {fromToken.symbol}
+            {toToken.symbol}
           </div>
           <div className="Confirmation-box-main-icon"></div>
           <div>
             {formatAmount(
-              fromToken?.interestDue,
+              fromToken?.interestDue?.sub(fromToken?.pendingPayoutFor),
               toTokenInfo.decimals,
               2,
               true

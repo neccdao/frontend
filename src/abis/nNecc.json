@@ -1,7 +1,7 @@
 {
   "_format": "hh-sol-artifact-1",
-  "contractName": "nNecc",
-  "sourceName": "contracts/tokens/Necc/nNecc.sol",
+  "contractName": "sNecc",
+  "sourceName": "contracts/tokens/Necc/sNecc.sol",
   "abi": [
     {
       "inputs": [],

@@ -1108,6 +1108,11 @@ export const addToken = async (token) => {
 export const trim = (number = 0, precision) => {
   const array = number.toString().split(".");
   if (array.length === 1) return number.toString();
+  if (precision === 0) {
+    array.push(array.pop().substring(0, precision));
+    const trimmedNumber = array.join("");
+    return trimmedNumber;
+  }
   array.push(array.pop().substring(0, precision));
   const trimmedNumber = array.join(".");
   return trimmedNumber;
