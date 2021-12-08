@@ -167,13 +167,13 @@ export const TOKENS = {
       decimals: 9,
       address: getContract(4, "sNecc"),
     },
-    {
-      name: "NDOL-Necc LP",
-      symbol: "NDOLnNeccLP",
-      decimals: 18,
-      address: getContract(4, "NDOL_NNECC_PAIR"),
-      isLP: true,
-    },
+    // {
+    //   name: "NDOL-Necc LP",
+    //   symbol: "NDOLnNeccLP",
+    //   decimals: 18,
+    //   address: getContract(4, "NDOL_NNECC_PAIR"),
+    //   isLP: true,
+    // },
   ],
   1337: [
     {

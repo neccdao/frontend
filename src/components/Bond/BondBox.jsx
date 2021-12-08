@@ -373,11 +373,12 @@ export const BondBox = (props) => {
     ? bigNumberify(ndolnNECCPairMarketPrice)?.mul(expandDecimals(1, 18))
     : bigNumberify(0);
 
-  const nNeccBondPrice = bondPrice
-    ? bigNumberify(bondPrice)
-        ?.mul(stakingCurrentIndex)
-        ?.div(expandDecimals(1, 9))
-    : bigNumberify(0);
+  const nNeccBondPrice =
+    bondPrice && stakingCurrentIndex
+      ? bigNumberify(bondPrice)
+          ?.mul(stakingCurrentIndex)
+          ?.div(expandDecimals(1, 9))
+      : bigNumberify(0);
 
   // console.log(nNeccBondPrice?.toString());
   // const debtRatio = standardizedDebtRatio || bigNumberify(0);
