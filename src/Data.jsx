@@ -130,7 +130,7 @@ function getTokenStats(tokens) {
 
   const stats = {
     aum: bigNumberify(0),
-    nusd: bigNumberify(0),
+    ndol: bigNumberify(0),
     longUtilizationUsd: bigNumberify(0),
     shortUtilizationUsd: bigNumberify(0),
   };
@@ -138,7 +138,7 @@ function getTokenStats(tokens) {
   for (let i = 0; i < tokens.length; i++) {
     const token = tokens[i];
     stats.aum = stats.aum.add(token.managedUsd);
-    stats.nusd = stats.nusd.add(token.nusdAmounts);
+    stats.ndol = stats.ndol.add(token.ndolAmounts);
     stats.longUtilizationUsd = stats.longUtilizationUsd.add(
       token.utilizationUsd
     );
@@ -297,7 +297,7 @@ const GET_COLLATERALS = gql`
       id
       feeReserves
       guaranteedUsd
-      nusdAmounts
+      ndolAmounts
       reservedAmounts
       poolAmounts
       cumulativeFundingRate
@@ -596,7 +596,7 @@ export default function Data() {
                     <div className="Dashboard-token-info App-card-row">
                       <div className="label">NDOL Minted</div>
                       <div>
-                        {formatAmount(token.nusdAmounts, 18, 0, true)} USD
+                        {formatAmount(token.ndolAmounts, 18, 0, true)} USD
                       </div>
                     </div>
                   )}
