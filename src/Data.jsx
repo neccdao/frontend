@@ -658,10 +658,11 @@ export default function Data() {
                     <div>
                       {formatAmount(
                         token.longLiquidations,
-                        token.decimals,
-                        0,
+                        USD_DECIMALS,
+                        2,
                         true
                       )}
+                      {" USD"}
                     </div>
                   </div>
                   <div className="App-card-row">
@@ -669,10 +670,11 @@ export default function Data() {
                     <div>
                       {formatAmount(
                         token.shortLiquidations,
-                        token.decimals,
-                        0,
+                        USD_DECIMALS,
+                        2,
                         true
                       )}
+                      {" USD"}
                     </div>
                   </div>
                   <div className="App-card-row">

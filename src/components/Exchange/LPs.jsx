@@ -20,7 +20,7 @@ const GET_LPs = gql`
         id
         token
         tokenAmount
-        nusdAmount
+        ndolAmount
       }
     }
   }
@@ -78,8 +78,8 @@ export default function LPs(props) {
                     4,
                     true
                   )} ${collateralToken.symbol} ${
-                    lp.nusdAmount >= 1 ? "minted" : "burned"
-                  } ${formatAmount(lp.nusdAmount, 18, 4, true)} NDOL`}
+                    lp.ndolAmount >= 1 ? "minted" : "burned"
+                  } ${formatAmount(lp.ndolAmount, 18, 4, true)} NDOL`}
                 </div>
                 {/* TODO: X% contributed of total collateral pool amount */}
               </div>

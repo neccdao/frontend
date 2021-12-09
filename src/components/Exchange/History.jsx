@@ -56,7 +56,7 @@ const GET_HISTORY = gql`
         # BuyNDOL | SellNDOL
         token
         tokenAmount
-        nusdAmount
+        ndolAmount
       }
     }
   }
@@ -97,7 +97,7 @@ export default function History(props) {
       );
 
       switch (tradeData.type) {
-        case "SellNUSD": {
+        case "SellNDOL": {
           const token = getTokenInfo(
             lowercasedInfoTokensKeys,
             params.token,
@@ -107,7 +107,7 @@ export default function History(props) {
             return defaultMsg;
           }
           return `Sell ${formatAmount(
-            params.nusdAmount,
+            params.ndolAmount,
             18,
             4,
             true
@@ -118,7 +118,7 @@ export default function History(props) {
             true
           )} ${token.symbol}`;
         }
-        case "BuyNUSD": {
+        case "BuyNDOL": {
           const token = getTokenInfo(
             lowercasedInfoTokensKeys,
             params.token,
@@ -128,7 +128,7 @@ export default function History(props) {
             return defaultMsg;
           }
           return `Buy ${formatAmount(
-            params.nusdAmount,
+            params.ndolAmount,
             18,
             4,
             true
