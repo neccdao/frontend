@@ -411,7 +411,7 @@ export const BondBox = (props) => {
     }
   );
 
-  const { data: ndolBondPayoutFor, mutate: updateNDOLBondPayoutFor } = useSWR(
+  const { data: bondPayoutFor, mutate: updateBondPayoutFor } = useSWR(
     [
       active,
       ndolBondAddress,
@@ -423,6 +423,10 @@ export const BondBox = (props) => {
       fetcher: fetcher(library, BondDepositoryFacet),
     }
   );
+
+  const bondPayoutForUsd = bondPayoutFor
+    ?.mul(expandDecimals(1, 3))
+    ?.mul(fromToken.price);
 
   useEffect(() => {
     if (
@@ -457,7 +461,7 @@ export const BondBox = (props) => {
         updateStakingTokenAllowance(undefined, true);
         updatenNeccTokenBalance(undefined, true);
         updatePrincipleValuation(undefined, true);
-        updateNDOLBondPayoutFor(undefined, true);
+        updateBondPayoutFor(undefined, true);
         updatendolnNECCPairReserves(undefined, true);
       });
       return () => {
@@ -471,7 +475,7 @@ export const BondBox = (props) => {
     updateStakingTokenAllowance,
     updatenNeccTokenBalance,
     updatePrincipleValuation,
-    updateNDOLBondPayoutFor,
+    updateBondPayoutFor,
   ]);
 
   useEffect(() => {
@@ -486,7 +490,7 @@ export const BondBox = (props) => {
           return;
         }
         if (toToken) {
-          const nextToValue = formatAmountFree(ndolBondPayoutFor, 9, 8);
+          const nextToValue = formatAmountFree(bondPayoutFor, 9, 8);
           setToValue(nextToValue);
         }
         return;
@@ -1426,11 +1430,6 @@ export const BondBox = (props) => {
             <div className="Exchange-swap-section">
               <div className="Exchange-swap-section-top">
                 <div className="muted">{!fromUsdMin && "Redeemable"}</div>
-                {fromBalance && (
-                  <div className="muted align-right clickable">
-                    Balance: {formatAmount(NeccTokenBalance, 9, 6, true)}
-                  </div>
-                )}
               </div>
 
               <div className="Exchange-swap-section-bottom">
@@ -1488,18 +1487,11 @@ export const BondBox = (props) => {
             <div className="Exchange-swap-section">
               <div className="Exchange-swap-section-top">
                 <div className="muted">
-                  {ndolBondPayoutFor && (
+                  {bondPayoutFor && (
                     // TODO for swap limits price can be different at moment of execution
                     <div className="Exchange-swap-usd">
                       Bond:{" "}
-                      {formatAmount(
-                        ndolBondPayoutFor
-                          ?.mul(expandDecimals(1, 3))
-                          ?.mul(fromToken.price),
-                        USD_DECIMALS,
-                        2,
-                        true
-                      )}{" "}
+                      {formatAmount(bondPayoutForUsd, USD_DECIMALS, 2, true)}{" "}
                       USD
                     </div>
                   )}
@@ -1867,7 +1859,7 @@ export const BondBox = (props) => {
           feesUsd={feesUsd}
           isSubmitting={isSubmitting}
           isPendingConfirmation={isPendingConfirmation}
-          fromUsdMin={fromUsdMin}
+          fromUsdMin={bondPayoutForUsd}
           toUsdMax={toUsdMax}
         />
       )}

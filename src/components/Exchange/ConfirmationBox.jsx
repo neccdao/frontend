@@ -331,7 +331,6 @@ export default function ConfirmationBox(props) {
           <div>
             Vest over 5 days&nbsp;
             {formatAmount(toAmount, toToken.decimals, 4, true)} {toToken.symbol}{" "}
-            (${formatAmount(toUsdMax, USD_DECIMALS, 2, true)})
           </div>
         </div>
       );

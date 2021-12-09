@@ -19,7 +19,7 @@ import { getToken, getTokens, getWhitelistedTokens } from "./data/Tokens";
 
 import Reader from "./abis/Reader.json";
 
-const CHAIN_ID = 4;
+const CHAIN_ID = process.env.NODE_ENV === "development" ? 1337 : 4;
 const USD_DECIMALS = 30;
 
 const BASIS_POINTS_DIVISOR = 10000;
