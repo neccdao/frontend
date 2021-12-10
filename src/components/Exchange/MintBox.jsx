@@ -1653,24 +1653,6 @@ const MintBox = (props) => {
                 </div>
               </div>
             </div>
-            {isStake && (
-              <div className="Exchange-swap-box-info">
-                <ExchangeInfoRow label="nNecc Balance">
-                  <div>{formatAmount(nNeccTokenBalance, 18, 4, true)}</div>
-                </ExchangeInfoRow>
-                <ExchangeInfoRow label="Claimable nNecc">
-                  <div>{formatAmount(claimablenNecc, 18, 4, true)}</div>
-                </ExchangeInfoRow>
-                <ExchangeInfoRow label="Distributable nNecc">
-                  <div>{formatAmount(mintFarmnNeccBalance, 18, 2, true)}</div>
-                </ExchangeInfoRow>
-                <ExchangeInfoRow label="Total Staked NDOL">
-                  <div>
-                    {formatAmount(totalStaked, fromToken?.decimals, 2, true)}
-                  </div>
-                </ExchangeInfoRow>
-              </div>
-            )}
           </React.Fragment>
         )}
 
@@ -1769,6 +1751,33 @@ const MintBox = (props) => {
               )}
             </ExchangeInfoRow>
           )}
+        </div>
+      )}
+
+      {isStake && (
+        <div className="Exchange-swap-market-box border App-box">
+          <div className="Exchange-swap-market-box-title">{swapOption}</div>
+          <ExchangeInfoRow label="nNecc Balance">
+            <div>{formatAmount(nNeccTokenBalance, 18, 4, true)}</div>
+          </ExchangeInfoRow>
+          <ExchangeInfoRow label="Claimable nNecc">
+            <div>{formatAmount(claimablenNecc, 18, 4, true)}</div>
+          </ExchangeInfoRow>
+          <ExchangeInfoRow label="Distributable nNecc">
+            <div>{formatAmount(mintFarmnNeccBalance, 18, 2, true)}</div>
+          </ExchangeInfoRow>
+          <ExchangeInfoRow label="Total Staked NDOL">
+            <div>{formatAmount(totalStaked, fromToken?.decimals, 2, true)}</div>
+          </ExchangeInfoRow>
+
+          <hr className="my-2 opacity-70" />
+
+          <ExchangeInfoRow
+            labelClassName="opacity-100 text-white"
+            label="1% of Bond purchases are distributed here"
+          >
+            <div>{"ⓘ"}</div>
+          </ExchangeInfoRow>
         </div>
       )}
 

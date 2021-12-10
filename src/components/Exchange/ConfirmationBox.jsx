@@ -59,7 +59,7 @@ export default function ConfirmationBox(props) {
     isRedeem,
     isRebase,
     isClaim,
-    isStake,
+    isInfo,
     isUnstake,
     isRedeemSecondary,
     setIsRedeemSecondary,
@@ -143,7 +143,7 @@ export default function ConfirmationBox(props) {
     if (isUnstake) {
       return "Confirm Unstake";
     }
-    if (isStake) {
+    if (isInfo) {
       return "Confirm Stake";
     }
     if (isBurn) {
@@ -188,7 +188,7 @@ export default function ConfirmationBox(props) {
     if (isUnstake) {
       return "Unstaking...";
     }
-    if (isStake) {
+    if (isInfo) {
       return "Staking...";
     }
     if (isSwap) {

@@ -134,7 +134,7 @@ export default function Bond() {
         from: getTokenBySymbol(CHAIN_ID, "NDOL").address,
         to: getTokenBySymbol(CHAIN_ID, "Necc").address,
       },
-      ["Stake"]: {
+      ["Info"]: {
         from: getTokenBySymbol(CHAIN_ID, "Necc").address,
         to: getTokenBySymbol(CHAIN_ID, "NDOL").address,
       },

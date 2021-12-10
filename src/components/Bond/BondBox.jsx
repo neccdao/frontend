@@ -221,7 +221,7 @@ export const BondBox = (props) => {
   const [isClaim, setIsClaim] = useState(false);
   const isBond = swapOption === "Bond";
   const isRedeem = swapOption === "Redeem";
-  const isStake = swapOption === "Stake";
+  const isInfo = swapOption === "Info";
 
   const [isSettingsVisible, setIsSettingsVisible] = useState(false);
   const [savedSlippageAmount, setSavedSlippageAmount] =
@@ -485,7 +485,7 @@ export const BondBox = (props) => {
           setToValue("");
           return;
         }
-        if (isStake) {
+        if (isInfo) {
           setToValue(fromValue);
           return;
         }
@@ -524,7 +524,7 @@ export const BondBox = (props) => {
     if (isBond) {
       updateSwapAmounts();
     }
-    if (isStake) {
+    if (isInfo) {
       updateSwapAmounts();
     }
   }, [
@@ -556,12 +556,9 @@ export const BondBox = (props) => {
     if (isRedeem && fromToken?.pendingPayoutFor?.eq(0)) {
       return "Nothing to claim";
     }
-    if (isStake) {
+    if (isInfo) {
       if (isSecondary) {
         return false;
-      }
-      if (isStake && (!NeccTokenBalance || NeccTokenBalance?.eq(0))) {
-        return "Nothing to stake";
       }
       if (!fromAmount || fromAmount.eq(0)) {
         return "Enter amount";
@@ -596,7 +593,7 @@ export const BondBox = (props) => {
     if (isRedeem) {
       return "Pending";
     }
-    if (isStake) {
+    if (isInfo) {
       if (fromToken?.vestingTerm?.toNumber()) {
         const untilDateTime =
           Date.now() / 1000 + fromToken?.vestingTerm?.toNumber();
@@ -619,7 +616,7 @@ export const BondBox = (props) => {
     if (isBond) {
       return getSwapError();
     }
-    if (isStake) {
+    if (isInfo) {
       return getSwapError(isSecondary);
     }
   };
@@ -676,7 +673,7 @@ export const BondBox = (props) => {
     if (isApproving) {
       return `Approving ${fromToken.symbol}...`;
     }
-    if (isStake) {
+    if (isInfo) {
       if (needStakingApproval) {
         return `Approve ${toToken.symbol}`;
       }
@@ -715,9 +712,6 @@ export const BondBox = (props) => {
     if (isRedeem) {
       return "Redeem and Stake";
     }
-    if (isStake) {
-      return "Stake";
-    }
   };
 
   const getSecondaryText = () => {
@@ -726,6 +720,9 @@ export const BondBox = (props) => {
       return error;
     }
 
+    if (isInfo) {
+      return "Rebase";
+    }
     return "Redeem and Stake";
   };
 
@@ -985,6 +982,7 @@ export const BondBox = (props) => {
     } finally {
       setIsSubmitting(false);
       setIsPendingConfirmation(false);
+      setIsClaim(false);
     }
   };
 
@@ -1091,14 +1089,11 @@ export const BondBox = (props) => {
       handleFulfilled(res, toastSuccessMessage, txMessage);
     } catch (err) {
       console.error(err);
-      if (stakeAfterClaim) {
-        toast.error("Redeem and Stake failed.");
-      } else {
-        toast.error("Redeem failed.");
-      }
+      toast.error("Redeem and Stake failed.");
     } finally {
       setIsSubmitting(false);
       setIsPendingConfirmation(false);
+      setIsRedeemSecondary(false);
     }
   };
 
@@ -1224,17 +1219,17 @@ export const BondBox = (props) => {
       setAnchorOnFromAmount(true);
       setFromValue("");
       setToValue("");
-    } else if (opt === "Stake") {
+    } else if (opt === "Info") {
       const updatedTokenSelection = JSON.parse(JSON.stringify(tokenSelection));
 
-      updatedTokenSelection["Stake"] = {
+      updatedTokenSelection["Info"] = {
         from: neccTokenSelection,
         to: neccTokenSelection,
       };
       setTokenSelection(updatedTokenSelection);
       setFromTokenAddress(neccTokenSelection);
       setToTokenAddress(neccTokenSelection);
-      setSwapOption("Stake");
+      setSwapOption("Info");
       setAnchorOnFromAmount(true);
       setFromValue("");
       setToValue("");
@@ -1270,7 +1265,7 @@ export const BondBox = (props) => {
       claim();
       return;
     }
-    if (isStake) {
+    if (isInfo) {
       stake();
       return;
     }
@@ -1285,7 +1280,7 @@ export const BondBox = (props) => {
   };
 
   function approveFromToken() {
-    if (isStake && needStakingApproval) {
+    if (isInfo && needStakingApproval) {
       approveTokens({
         setIsApproving,
         library,
@@ -1329,7 +1324,7 @@ export const BondBox = (props) => {
       return;
     }
 
-    if (isStake) {
+    if (isInfo) {
       if (needStakingApproval) {
         approveFromToken();
         return;
@@ -1419,7 +1414,7 @@ export const BondBox = (props) => {
       <div className="Exchange-swap-box-inner border">
         <div>
           <Tab
-            options={["Bond", "Redeem", "Stake"]}
+            options={["Bond", "Redeem", "Info"]}
             option={swapOption}
             onChange={onSwapOptionChange}
           />
@@ -1626,84 +1621,93 @@ export const BondBox = (props) => {
           </React.Fragment>
         )}
 
-        {isStake && (
+        {isInfo && (
           <React.Fragment>
-            <div className="Exchange-swap-section">
-              <div className="Exchange-swap-section-top">
-                <div className="muted">{"Stake"}</div>
-                {fromBalance && (
-                  <div
-                    className="muted align-right clickable"
-                    onClick={() => {
-                      setFromValue(
-                        formatAmountFree(
-                          fromBalance,
-                          fromToken.decimals,
-                          fromToken.decimals
-                        )
-                      );
-                      setAnchorOnFromAmount(true);
-                    }}
-                  >
-                    Balance: {formatAmount(NeccTokenBalance, 9, 6, true)}
-                  </div>
-                )}
-              </div>
-              <div className="Exchange-swap-section-bottom">
-                <div className="Exchange-swap-input-container">
-                  <input
-                    type="number"
-                    placeholder="0.0"
-                    className="Exchange-swap-input"
-                    value={fromValue}
-                    onChange={onFromValueChange}
-                  />
-                  {NeccTokenBalance?.gt(0) && (
-                    <div
-                      className="Exchange-swap-max"
-                      onClick={() => {
-                        setFromValue(
-                          formatAmountFree(
-                            NeccTokenBalance,
-                            toToken.decimals,
-                            toToken.decimals
-                          )
-                        );
-                        setAnchorOnFromAmount(true);
-                      }}
-                    >
-                      MAX
-                    </div>
-                  )}
-                </div>
-                <div>
-                  <div className="TokenSelector-box">{toToken.symbol}</div>
-                </div>
-              </div>
-            </div>
-
-            <div className="Exchange-swap-box-info">
+            <div className="Exchange-swap-box-info px-1 mt-6">
               <ExchangeInfoRow label="nNecc Balance">
                 <div>{formatAmount(nNeccTokenBalance, 18, 4, true)}</div>
               </ExchangeInfoRow>
+              <div className="Exchange-info-row">
+                <div className="Exchange-info-label">nNecc Bond Price </div>
+                <div className="align-right">
+                  {nNeccBondPrice && formatAmount(nNeccBondPrice, 18, 2, true)}{" "}
+                  USD
+                </div>
+              </div>
+
               <ExchangeInfoRow label="nNecc Market Price">
                 {nNeccMarketPrice &&
                   formatAmount(nNeccMarketPrice, 18, 2, true)}{" "}
               </ExchangeInfoRow>
+
+              <hr className="my-2" />
+
+              <div className="Exchange-info-row">
+                <div className="Exchange-info-label">APY</div>
+                <div className="align-right">
+                  {new Intl.NumberFormat("en-US").format(
+                    Number(trim(Number(apy) * 100, 1))
+                  )}{" "}
+                  %
+                </div>
+              </div>
+              <div className="Exchange-info-row">
+                <div className="Exchange-info-label">5 Day Rate</div>
+                <div className="align-right">
+                  {trim(Number(fiveDayRate) * 100, 4)} %
+                </div>
+              </div>
+
+              <div className="Exchange-info-row">
+                <div className="Exchange-info-label">
+                  Next Reward Percentage
+                </div>
+                <div className="align-right">
+                  {stakingRebasePercentage}
+                  {" %"}
+                </div>
+              </div>
+
+              <hr className="my-2" />
+
+              <div className="Exchange-info-row">
+                <div className="Exchange-info-label">Total Staked</div>
+                <div className="align-right">
+                  {fromToken &&
+                    formatAmount(stakingContractBalance, 9, 4, true)}{" "}
+                  {"Necc"}
+                </div>
+              </div>
+
+              <div className="Exchange-info-row">
+                <div className="Exchange-info-label">Current Index</div>
+                <div className="align-right">
+                  {fromToken && formatAmount(stakingCurrentIndex, 9, 4, true)}
+                </div>
+              </div>
+
+              <div className="Exchange-info-row">
+                <div className="Exchange-info-label">Next Rebase</div>
+                <div className="align-right">
+                  {fromToken && formatDateTime(nextRebase || Date.now() / 1000)}
+                </div>
+              </div>
             </div>
           </React.Fragment>
         )}
 
         <div className="Exchange-swap-button-container">
-          <button
-            className="App-cta Exchange-swap-button"
-            onClick={onClickPrimary}
-            disabled={!isPrimaryEnabled()}
-          >
-            {getPrimaryText()}
-          </button>
+          {!isInfo && (
+            <button
+              className="App-cta Exchange-swap-button"
+              onClick={onClickPrimary}
+              disabled={!isPrimaryEnabled()}
+            >
+              {getPrimaryText()}
+            </button>
+          )}
 
-          {isStake && (
+          {isInfo && (
             <button
               className="App-cta Exchange-swap-button mt-4"
               onClick={() => {
@@ -1711,11 +1715,11 @@ export const BondBox = (props) => {
                 onClickPrimary();
               }}
             >
-              Rebase
+              {getSecondaryText()}
             </button>
           )}
 
-          {isStake && warmupInfo?.deposit?.gt(0) && (
+          {isInfo && warmupInfo?.deposit?.gt(0) && (
             <button
               className="App-cta Exchange-swap-button mt-4"
               onClick={() => {
@@ -1734,7 +1738,7 @@ export const BondBox = (props) => {
           <div className="Exchange-swap-market-box-title">{swapOption}</div>
 
           <div className="Exchange-info-row">
-            <div className="Exchange-info-label">nNECC Market Price </div>
+            <div className="Exchange-info-label">nNecc Market Price </div>
             <div className="align-right">
               {nNeccMarketPrice && formatAmount(nNeccMarketPrice, 18, 2, true)}{" "}
               USD
@@ -1742,7 +1746,7 @@ export const BondBox = (props) => {
           </div>
 
           <div className="Exchange-info-row">
-            <div className="Exchange-info-label">nNECC Bond Price </div>
+            <div className="Exchange-info-label">nNecc Bond Price </div>
             <div className="align-right">
               {nNeccBondPrice && formatAmount(nNeccBondPrice, 18, 2, true)} USD
             </div>
@@ -1780,63 +1784,11 @@ export const BondBox = (props) => {
         </div>
       )}
 
-      {isStake && (
-        <div className="Exchange-swap-market-box border App-box">
-          <div className="Exchange-swap-market-box-title">{swapOption}</div>
-
-          <div className="Exchange-info-row">
-            <div className="Exchange-info-label">APY</div>
-            <div className="align-right">
-              {new Intl.NumberFormat("en-US").format(
-                Number(trim(Number(apy) * 100, 1))
-              )}{" "}
-              %
-            </div>
-          </div>
-          <div className="Exchange-info-row">
-            <div className="Exchange-info-label">5 Day Rate</div>
-            <div className="align-right">
-              {trim(Number(fiveDayRate) * 100, 4)} %
-            </div>
-          </div>
-
-          <div className="Exchange-info-row">
-            <div className="Exchange-info-label">Next Reward Percentage</div>
-            <div className="align-right">
-              {stakingRebasePercentage}
-              {" %"}
-            </div>
-          </div>
-
-          <div className="Exchange-info-row">
-            <div className="Exchange-info-label">Total Staked</div>
-            <div className="align-right">
-              {fromToken && formatAmount(stakingContractBalance, 9, 8, true)}{" "}
-              {"Necc"}
-            </div>
-          </div>
-
-          <div className="Exchange-info-row">
-            <div className="Exchange-info-label">Current Index</div>
-            <div className="align-right">
-              {fromToken && formatAmount(stakingCurrentIndex, 9, 8, true)}
-            </div>
-          </div>
-
-          <div className="Exchange-info-row">
-            <div className="Exchange-info-label">Next Rebase</div>
-            <div className="align-right">
-              {fromToken && formatDateTime(nextRebase || Date.now() / 1000)}
-            </div>
-          </div>
-        </div>
-      )}
-
       {isConfirming && (
         <ConfirmationBox
           isRedeem={isRedeem}
           isBond={isBond}
-          isStake={isStake}
+          isInfo={isInfo}
           isRebase={isRebase}
           isClaim={isClaim}
           isRedeemSecondary={isRedeemSecondary}
