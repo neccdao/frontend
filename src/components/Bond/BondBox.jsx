@@ -325,7 +325,7 @@ export const BondBox = (props) => {
       fetcher: fetcher(library, Token),
     });
   const { data: nNeccTokenAllowance, mutate: updatenNeccTokenAllowance } =
-    useSWR([active, NeccAddress, "allowance", account, NeccStaking], {
+    useSWR([active, nNeccAddress, "allowance", account, NeccStaking], {
       fetcher: fetcher(library, Token),
     });
   const { data: NeccTokenBalance, mutate: updateNeccTokenBalance } = useSWR(
@@ -466,6 +466,8 @@ export const BondBox = (props) => {
       library.on("block", () => {
         updateTokenAllowance(undefined, true);
         updateStakingTokenAllowance(undefined, true);
+        updatenNeccTokenAllowance(undefined, true);
+        updateNeccTokenBalance(undefined, true);
         updatenNeccTokenBalance(undefined, true);
         updatePrincipleValuation(undefined, true);
         updateBondPayoutFor(undefined, true);
@@ -480,6 +482,8 @@ export const BondBox = (props) => {
     library,
     updateTokenAllowance,
     updateStakingTokenAllowance,
+    updatenNeccTokenAllowance,
+    updateNeccTokenBalance,
     updatenNeccTokenBalance,
     updatePrincipleValuation,
     updateBondPayoutFor,
