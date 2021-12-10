@@ -1624,6 +1624,15 @@ export const BondBox = (props) => {
         {isInfo && (
           <React.Fragment>
             <div className="Exchange-swap-box-info px-1 mt-6">
+              <ExchangeInfoRow
+                labelClassName="opacity-100 text-white"
+                label="Necc Price * Current Index = nNecc Price "
+              >
+                <div>{"ⓘ"}</div>
+              </ExchangeInfoRow>
+
+              <hr className="mt-2 mb-4" />
+
               <ExchangeInfoRow label="nNecc Balance">
                 <div>{formatAmount(nNeccTokenBalance, 18, 4, true)}</div>
               </ExchangeInfoRow>
