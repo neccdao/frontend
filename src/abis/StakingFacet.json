@@ -210,9 +210,9 @@
           "type": "uint256"
         },
         {
-          "internalType": "bool",
-          "name": "_trigger",
-          "type": "bool"
+          "internalType": "address",
+          "name": "_recipient",
+          "type": "address"
         }
       ],
       "name": "unstake",

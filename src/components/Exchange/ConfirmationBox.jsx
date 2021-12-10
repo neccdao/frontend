@@ -57,14 +57,16 @@ export default function ConfirmationBox(props) {
     isLong,
     isBond,
     isRedeem,
+    isStake,
+    isUnstake,
     isRebase,
     isClaim,
     isInfo,
-    isUnstake,
     isRedeemSecondary,
     setIsRedeemSecondary,
     setIsRebase,
     setIsClaim,
+    setIsStake,
     setIsUnstake,
     isMarketOrder,
     orderType,
@@ -143,7 +145,7 @@ export default function ConfirmationBox(props) {
     if (isUnstake) {
       return "Confirm Unstake";
     }
-    if (isInfo) {
+    if (isStake) {
       return "Confirm Stake";
     }
     if (isBurn) {
@@ -188,7 +190,7 @@ export default function ConfirmationBox(props) {
     if (isUnstake) {
       return "Unstaking...";
     }
-    if (isInfo) {
+    if (isStake) {
       return "Staking...";
     }
     if (isSwap) {
@@ -387,9 +389,6 @@ export default function ConfirmationBox(props) {
         setIsVisible={() => {
           setIsConfirming && setIsConfirming(false);
           setIsRedeemSecondary && setIsRedeemSecondary(false);
-          setIsClaim && setIsClaim(false);
-          setIsUnstake && setIsUnstake(false);
-          setIsRebase && setIsRebase(false);
         }}
         label={title}
       >

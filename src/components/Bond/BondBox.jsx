@@ -219,6 +219,8 @@ export const BondBox = (props) => {
   const [isWaitingForApproval, setIsWaitingForApproval] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isClaim, setIsClaim] = useState(false);
+  const [isStake, setIsStake] = useState(false);
+  const [isUnstake, setIsUnstake] = useState(false);
   const isBond = swapOption === "Bond";
   const isRedeem = swapOption === "Redeem";
   const isInfo = swapOption === "Info";
@@ -322,7 +324,10 @@ export const BondBox = (props) => {
     useSWR([active, NeccAddress, "allowance", account, NeccStaking], {
       fetcher: fetcher(library, Token),
     });
-
+  const { data: nNeccTokenAllowance, mutate: updatenNeccTokenAllowance } =
+    useSWR([active, NeccAddress, "allowance", account, NeccStaking], {
+      fetcher: fetcher(library, Token),
+    });
   const { data: NeccTokenBalance, mutate: updateNeccTokenBalance } = useSWR(
     [active, NeccAddress, "balanceOf", account],
     {
@@ -339,7 +344,9 @@ export const BondBox = (props) => {
   const needApproval =
     tokenAllowance && fromAmount && fromAmount.gt(tokenAllowance);
   const needStakingApproval =
-    stakingTokenAllowance && fromAmount && fromAmount.gt(stakingTokenAllowance);
+    stakingTokenAllowance && NeccTokenBalance?.gt(stakingTokenAllowance);
+  const needUnstakingApproval =
+    nNeccTokenAllowance && nNeccTokenBalance?.gt(nNeccTokenAllowance);
 
   const prevFromTokenAddress = usePrevious(fromTokenAddress);
   const prevNeedApproval = usePrevious(needApproval);
@@ -560,12 +567,6 @@ export const BondBox = (props) => {
       if (isSecondary) {
         return false;
       }
-      if (!fromAmount || fromAmount.eq(0)) {
-        return "Enter amount";
-      }
-      if (!toAmount || toAmount.eq(0)) {
-        return "Enter amount";
-      }
     }
     if (isBond) {
       if (!fromAmount || fromAmount.eq(0)) {
@@ -671,11 +672,20 @@ export const BondBox = (props) => {
     }
 
     if (isApproving) {
+      if (needUnstakingApproval) {
+        return `Approving nNecc ...`;
+      }
+      if (needStakingApproval) {
+        return `Approving Necc ...`;
+      }
       return `Approving ${fromToken.symbol}...`;
     }
     if (isInfo) {
+      if (needUnstakingApproval) {
+        return `Approve nNecc for Unstaking`;
+      }
       if (needStakingApproval) {
-        return `Approve ${toToken.symbol}`;
+        return `Approve Necc for Staking`;
       }
     }
     if (needApproval) {
@@ -699,6 +709,10 @@ export const BondBox = (props) => {
       if (isBond) {
         return "Bond...";
       }
+
+      if (isInfo) {
+        return nNeccTokenBalance?.gt(0) ? "Unstake..." : "Stake...";
+      }
     }
 
     if (!isMarketOrder) return `Create ${orderType.toLowerCase()} order`;
@@ -711,6 +725,10 @@ export const BondBox = (props) => {
     }
     if (isRedeem) {
       return "Redeem and Stake";
+    }
+
+    if (isInfo) {
+      return nNeccTokenBalance?.gt(0) ? "Unstake nNecc" : "Stake Necc";
     }
   };
 
@@ -768,106 +786,6 @@ export const BondBox = (props) => {
     setPendingTxns([...pendingTxns, pendingTxn]);
   };
 
-  const wrap = async () => {
-    setIsSubmitting(true);
-
-    const contract = new ethers.Contract(
-      NATIVE_TOKEN_ADDRESS,
-      WETH.abi,
-      library.getSigner()
-    );
-    const gasLimit = await getGasLimit(contract, "deposit", [], fromAmount);
-    contract
-      .deposit({ value: fromAmount, gasLimit })
-      .then(async (res) => {
-        const txUrl = getExplorerUrl(CHAIN_ID) + "tx/" + res.hash;
-        toast.success(
-          <div>
-            Bond submitted!{" "}
-            <a href={txUrl} target="_blank" rel="noopener noreferrer">
-              View status.
-            </a>
-            <br />
-          </div>
-        );
-        setAnchorOnFromAmount(true);
-        setFromValue("");
-        setToValue("");
-        const pendingTxn = {
-          hash: res.hash,
-          message: `Bonded ${formatAmount(
-            fromAmount,
-            fromToken.decimals,
-            4,
-            true
-          )} ${fromToken.symbol} for ${formatAmount(
-            toAmount,
-            toToken.decimals,
-            4,
-            true
-          )} ${toToken.symbol}`,
-        };
-        setPendingTxns([...pendingTxns, pendingTxn]);
-      })
-      .catch((e) => {
-        console.error(e);
-        toast.error("Swap failed.");
-      })
-      .finally(() => {
-        setIsSubmitting(false);
-      });
-  };
-
-  const unwrap = async () => {
-    setIsSubmitting(true);
-
-    const contract = new ethers.Contract(
-      NATIVE_TOKEN_ADDRESS,
-      WETH.abi,
-      library.getSigner()
-    );
-    const gasLimit = await getGasLimit(contract, "withdraw", [fromAmount]);
-    contract
-      .withdraw(fromAmount, { gasLimit })
-      .then(async (res) => {
-        const txUrl = getExplorerUrl(CHAIN_ID) + "tx/" + res.hash;
-        toast.success(
-          <div>
-            Bond submitted!{" "}
-            <a href={txUrl} target="_blank" rel="noopener noreferrer">
-              View status.
-            </a>
-            <br />
-          </div>
-        );
-        setAnchorOnFromAmount(true);
-        setFromValue("");
-        setToValue("");
-        const pendingTxn = {
-          hash: res.hash,
-          message: `Bonded ${formatAmount(
-            fromAmount,
-            fromToken.decimals,
-            4,
-            true
-          )} ${fromToken.symbol} for ${formatAmount(
-            toAmount,
-            toToken.decimals,
-            4,
-            true
-          )} ${toToken.symbol}`,
-        };
-        setPendingTxns([...pendingTxns, pendingTxn]);
-      })
-      .catch((e) => {
-        console.error(e);
-        toast.error("Bond failed.");
-      })
-      .finally(() => {
-        setIsSubmitting(false);
-      });
-  };
-
   const rebase = async () => {
     setIsSubmitting(true);
 
@@ -922,6 +840,7 @@ export const BondBox = (props) => {
       toast.error("Rebase failed");
     } finally {
       setIsSubmitting(false);
+      setIsConfirming(false);
       setIsPendingConfirmation(false);
       setIsRebase(false);
     }
@@ -981,6 +900,7 @@ export const BondBox = (props) => {
       toast.error("Claim failed");
     } finally {
       setIsSubmitting(false);
+      setIsConfirming(false);
       setIsPendingConfirmation(false);
       setIsClaim(false);
     }
@@ -996,7 +916,7 @@ export const BondBox = (props) => {
 
     method = "stake";
     value = bigNumberify(0);
-    params = [fromAmount, account];
+    params = [NeccTokenBalance, account];
 
     contract = new ethers.Contract(
       NeccStaking,
@@ -1035,7 +955,64 @@ export const BondBox = (props) => {
       toast.error("Stake failed");
     } finally {
       setIsSubmitting(false);
+      setIsConfirming(false);
       setIsPendingConfirmation(false);
+      setIsStake(false);
+    }
+  };
+
+  const unstake = async () => {
+    setIsSubmitting(true);
+
+    let method;
+    let contract;
+    let value;
+    let params;
+
+    method = "unstake";
+    value = bigNumberify(0);
+    params = [nNeccTokenBalance, account];
+
+    contract = new ethers.Contract(
+      NeccStaking,
+      Staking.abi,
+      library.getSigner()
+    );
+
+    if (shouldRaiseGasError(toTokens[0], fromAmount)) {
+      setIsSubmitting(false);
+      toast.error(
+        `Leave at least ${formatAmount(DUST_BNB, 18, 3)} ETH for gas`
+      );
+      return;
+    }
+
+    try {
+      const gasLimit = await getGasLimit(contract, method, params, value);
+      const res = await contract[method](...params, { value, gasLimit });
+      const txUrl = getExplorerUrl(CHAIN_ID) + "tx/" + res.hash;
+      const toastSuccessMessage = (
+        <div>
+          Unstake submitted!{" "}
+          <a href={txUrl} target="_blank" rel="noopener noreferrer">
+            View status.
+          </a>
+          <br />
+        </div>
+      );
+
+      const unstakeMessage = `Unstaked nNecc`;
+      const txMessage = unstakeMessage;
+
+      handleFulfilled(res, toastSuccessMessage, txMessage);
+    } catch (err) {
+      console.error(err);
+      toast.error("Unstake failed");
+    } finally {
+      setIsSubmitting(false);
+      setIsConfirming(false);
+      setIsPendingConfirmation(false);
+      setIsUnstake(false);
     }
   };
 
@@ -1092,28 +1069,13 @@ export const BondBox = (props) => {
       toast.error("Redeem and Stake failed.");
     } finally {
       setIsSubmitting(false);
+      setIsConfirming(false);
       setIsPendingConfirmation(false);
       setIsRedeemSecondary(false);
     }
   };
 
   const bond = async () => {
-    if (
-      fromTokenAddress === AddressZero &&
-      toTokenAddress === NATIVE_TOKEN_ADDRESS
-    ) {
-      wrap();
-      return;
-    }
-
-    if (
-      fromTokenAddress === NATIVE_TOKEN_ADDRESS &&
-      toTokenAddress === AddressZero
-    ) {
-      unwrap();
-      return;
-    }
-
     setIsSubmitting(true);
 
     let method;
@@ -1198,6 +1160,7 @@ export const BondBox = (props) => {
       toast.error("Bond failed.");
     } finally {
       setIsSubmitting(false);
+      setIsConfirming(false);
       setIsPendingConfirmation(false);
     }
   };
@@ -1266,7 +1229,14 @@ export const BondBox = (props) => {
       return;
     }
     if (isInfo) {
-      stake();
+      if (nNeccTokenBalance?.gt(0)) {
+        unstake();
+        return;
+      }
+      if (NeccTokenBalance?.gt(0)) {
+        stake();
+        return;
+      }
       return;
     }
     if (isRedeem) {
@@ -1280,6 +1250,23 @@ export const BondBox = (props) => {
   };
 
   function approveFromToken() {
+    if (isInfo && needUnstakingApproval) {
+      approveTokens({
+        setIsApproving,
+        library,
+        tokenAddress: nNeccAddress,
+        spender: NeccStaking,
+        chainId: CHAIN_ID,
+        onApproveSubmitted: () => {
+          setIsWaitingForApproval(true);
+        },
+        infoTokens,
+        getTokenInfo,
+        pendingTxns,
+        setPendingTxns,
+      });
+      return;
+    }
     if (isInfo && needStakingApproval) {
       approveTokens({
         setIsApproving,
@@ -1295,6 +1282,7 @@ export const BondBox = (props) => {
         pendingTxns,
         setPendingTxns,
       });
+      return;
     } else {
       approveTokens({
         setIsApproving,
@@ -1310,6 +1298,7 @@ export const BondBox = (props) => {
         pendingTxns,
         setPendingTxns,
       });
+      return;
     }
   }
 
@@ -1319,16 +1308,20 @@ export const BondBox = (props) => {
       return;
     }
 
-    if (needApproval) {
-      approveFromToken();
-      return;
-    }
-
     if (isInfo) {
+      if (needUnstakingApproval) {
+        approveFromToken();
+        return;
+      }
       if (needStakingApproval) {
         approveFromToken();
         return;
       }
+    }
+
+    if (needApproval) {
+      approveFromToken();
+      return;
     }
 
     setIsConfirming(true);
@@ -1633,8 +1626,11 @@ export const BondBox = (props) => {
 
               <hr className="mt-2 mb-4" />
 
+              <ExchangeInfoRow label="Necc Balance">
+                <div>{formatAmount(NeccTokenBalance, 9, 4, true)}</div>
+              </ExchangeInfoRow>
               <ExchangeInfoRow label="nNecc Balance">
-                <div>{formatAmount(nNeccTokenBalance, 18, 4, true)}</div>
+                <div>{formatAmount(nNeccTokenBalance, 18, 2, true)}</div>
               </ExchangeInfoRow>
               <div className="Exchange-info-row">
                 <div className="Exchange-info-label">nNecc Bond Price </div>
@@ -1710,6 +1706,25 @@ export const BondBox = (props) => {
             <button
               className="App-cta Exchange-swap-button"
               onClick={onClickPrimary}
+              disabled={!isPrimaryEnabled()}
+            >
+              {getPrimaryText()}
+            </button>
+          )}
+
+          {isInfo && (
+            <button
+              className="App-cta Exchange-swap-button"
+              onClick={() => {
+                if (nNeccTokenBalance?.gt(0)) {
+                  setIsStake(false);
+                  setIsUnstake(true);
+                } else {
+                  setIsUnstake(false);
+                  setIsStake(true);
+                }
+                onClickPrimary();
+              }}
               disabled={!isPrimaryEnabled()}
             >
               {getPrimaryText()}
@@ -1800,11 +1815,15 @@ export const BondBox = (props) => {
           isInfo={isInfo}
           isRebase={isRebase}
           isClaim={isClaim}
+          isStake={isStake}
+          isUnstake={isUnstake}
           isRedeemSecondary={isRedeemSecondary}
           isMarketOrder={isMarketOrder}
           setIsRedeemSecondary={setIsRedeemSecondary}
           setIsRebase={setIsRebase}
           setIsClaim={setIsClaim}
+          setIsStake={setIsStake}
+          setIsUnstake={setIsUnstake}
           orderType={orderType}
           fromToken={fromToken}
           fromTokenInfo={fromTokenInfo}
