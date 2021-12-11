@@ -191,16 +191,16 @@ export default function Zap() {
     fundingRateInfo
   );
 
-  const { data: maxUsdg, mutate: updateMaxUsdg } = useSWR(
+  const { data: maxNdol, mutate: updateMaxNdol } = useSWR(
     [active, vaultAddress, "getMaxNDOLAmount"],
     {
       fetcher: fetcher(library, Vault),
     }
   );
 
-  let reducedMaxUsdg;
-  if (maxUsdg) {
-    reducedMaxUsdg = maxUsdg; // maxUsdg.mul(99).div(100)
+  let reducedMaxNdol;
+  if (maxNdol) {
+    reducedMaxNdol = maxNdol; // maxNdol.mul(99).div(100)
   }
 
   useEffect(() => {
@@ -255,7 +255,7 @@ export default function Zap() {
       library.on("block", () => {
         updateVaultTokenInfo(undefined, true);
         updateTokenBalances(undefined, true);
-        updateMaxUsdg(undefined, true);
+        updateMaxNdol(undefined, true);
       });
       return () => {
         library.removeAllListeners("block");
@@ -266,7 +266,7 @@ export default function Zap() {
     library,
     updateVaultTokenInfo,
     updateTokenBalances,
-    updateMaxUsdg,
+    updateMaxNdol,
   ]);
 
   const [flagOrdersEnabled] = useLocalStorageSerializeKey(
@@ -295,7 +295,7 @@ export default function Zap() {
           setToTokenAddress={setToTokenAddress}
           swapOption={swapOption}
           setSwapOption={setSwapOption}
-          maxUsdg={reducedMaxUsdg}
+          maxNdol={reducedMaxNdol}
           pendingTxns={pendingTxns}
           setPendingTxns={setPendingTxns}
           tokenSelection={tokenSelection}
@@ -309,7 +309,7 @@ export default function Zap() {
           <div className="Exchange-wallet-tokens-content border">
             {/* <ExchangeWalletTokens
               tokens={tokens}
-              mintingCap={maxUsdg}
+              mintingCap={maxNdol}
               infoTokens={infoTokens}
               onSelectToken={onSelectWalletToken}
             /> */}

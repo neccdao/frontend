@@ -968,7 +968,7 @@
     },
     {
       "inputs": [],
-      "name": "getUsdgMaxPrice",
+      "name": "getNdolMaxPrice",
       "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
       "stateMutability": "pure",
       "type": "function"
@@ -977,7 +977,7 @@
       "inputs": [
         { "internalType": "address", "name": "_otherToken", "type": "address" }
       ],
-      "name": "getUsdgMinPrice",
+      "name": "getNdolMinPrice",
       "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
       "stateMutability": "view",
       "type": "function"

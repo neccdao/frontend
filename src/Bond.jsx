@@ -81,25 +81,6 @@ function getInfoTokens(
 
   for (let i = 0; i < whitelistedTokens.length; i++) {
     let token = JSON.parse(JSON.stringify(whitelistedTokens[i]));
-    // if (vaultTokenInfo) {
-    //   token.poolAmount = vaultTokenInfo[i * vaultPropsLength];
-    //   token.reservedAmount = vaultTokenInfo[i * vaultPropsLength + 1];
-    //   // TODO hack for testnet, remove it
-    //   token.availableAmount = (token.poolAmount || bigNumberify(0)).sub(
-    //     token.reservedAmount || 0
-    //   );
-    //   token.ndolAmount = vaultTokenInfo[i * vaultPropsLength + 2];
-    //   token.redemptionAmount = vaultTokenInfo[i * vaultPropsLength + 3];
-    //   if (token.address === NDOL_ADDRESS) {
-    //     token.minPrice = expandDecimals(1, USD_DECIMALS);
-    //     token.maxPrice = expandDecimals(1, USD_DECIMALS);
-    //   } else {
-    //     token.minPrice = vaultTokenInfo[i * vaultPropsLength + 4];
-    //     token.maxPrice = vaultTokenInfo[i * vaultPropsLength + 5];
-    //   }
-    //   token.guaranteedUsd = vaultTokenInfo[i * vaultPropsLength + 6];
-    // }
-
     const tokenBondsInfo = bondsInfo[token.symbol + "Bond"];
     if (tokenBondsInfo) {
       token = { ...token, ...tokenBondsInfo, isBond: true };
@@ -394,22 +375,6 @@ export default function Bond() {
       stakingContractBalance,
       warmupInfo: stakingWarmupInfo,
     },
-    // WETHBond: {
-    //   price: ndolBondPrice,
-    //   maxPayout: ndolBondMaxPayout,
-    //   standardizedDebtRatio: ndolBondStandardizedDebtRatio,
-    //   pendingPayoutFor: ndolBondPendingPayoutFor,
-    //   interestDue: ndolBondInfo?.payout,
-    //   fullyVestingTime: ndolBondInfo?.vesting?.add(ndolBondInfo?.lastTime),
-    //   vestingTerm: ndolBondTerms?.vestingTerm,
-    //   apy,
-    //   fiveDayRate,
-    //   nextRebase: stakingEpoch?.endTime,
-    //   currentIndex: stakingCurrentIndex,
-    //   staked: stakingCurrentIndex,
-    //   stakingContractBalance,
-    //   warmupInfo: stakingWarmupInfo,
-    // },
   };
 
   useEffect(() => {
@@ -459,32 +424,7 @@ export default function Bond() {
     return () => clearInterval(interval);
   }, [library, pendingTxns]);
 
-  useEffect(() => {
-    if (active) {
-      library.on("block", async (blockNumber) => {
-        // updateVaultTokenInfo(undefined, true);
-        updateTokenBalances(undefined, true);
-        updateNDOLBondPrice(undefined, true);
-        updateNDOLBondMaxPayout(undefined, true);
-        updateNDOLBondStandardizedDebtRatio(undefined, true);
-        updateNDOLBondPendingPayoutFor(undefined, true);
-        updateNDOLBondInfo(undefined, true);
-        updateNDOLBondTerms(undefined, true);
-        updateStakingEpoch(undefined, true);
-        updateStakingWarmupInfo(undefined, true);
-        updateStakingCurrentIndex(undefined, true);
-        updateStakingContractBalance(undefined, true);
-        updatesNeccCirculatingSupply(undefined, true);
-        updateCurrentDebt(undefined, true);
-      });
-      return () => {
-        library.removeAllListeners("block");
-      };
-    }
-  }, [
-    active,
-    library,
-    // updateVaultTokenInfo,
+  const updateDataFunctions = [
     updateTokenBalances,
     updateNDOLBondPrice,
     updateNDOLBondMaxPayout,
@@ -498,7 +438,20 @@ export default function Bond() {
     updateStakingContractBalance,
     updatesNeccCirculatingSupply,
     updateCurrentDebt,
-  ]);
+  ];
+
+  useEffect(() => {
+    if (active) {
+      library.on("block", () => {
+        updateDataFunctions.forEach((updateDataFunction) => {
+          updateDataFunction(undefined, true);
+        });
+      });
+      return () => {
+        library.removeListener("block");
+      };
+    }
+  }, [active, library, ...updateDataFunctions]);
 
   const infoTokens = getInfoTokens(
     tokens,

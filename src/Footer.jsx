@@ -6,18 +6,18 @@ import {
   FaGithub,
   FaDiscord,
   FaDiscourse,
+  FaGithubAlt,
 } from "react-icons/fa";
 
 import "./css/Footer.css";
 
 export default function Footer() {
   // TODO: Footer social links
-  return null;
   return (
     <div className="Footer flex justify-center">
       <a
         className="App-social-link"
-        href="https://twitter.com/GambitProtocol"
+        href="https://twitter.com/neccdao"
         target="_blank"
         rel="noopener noreferrer"
       >
@@ -25,7 +25,7 @@ export default function Footer() {
       </a>
       <a
         className="App-social-link"
-        href="http://gambitprotocol.medium.com"
+        href="http://neccdao.medium.com"
         target="_blank"
         rel="noopener noreferrer"
       >
@@ -33,23 +33,23 @@ export default function Footer() {
       </a>
       <a
         className="App-social-link"
-        href="https://github.com/xvi10"
+        href="https://github.com/neccdao"
         target="_blank"
         rel="noopener noreferrer"
       >
         <FaGithub />
       </a>
-      <a
+      {/* <a
         className="App-social-link"
-        href="https://t.me/GambitProtocol"
+        href="https://t.me/neccdao"
         target="_blank"
         rel="noopener noreferrer"
       >
         <FaTelegramPlane />
-      </a>
+      </a> */}
       <a
         className="App-social-link"
-        href="https://discord.gg/cxjZYR4gQK"
+        href="https://discord.necc.io"
         target="_blank"
         rel="noopener noreferrer"
       >
@@ -57,11 +57,11 @@ export default function Footer() {
       </a>
       <a
         className="App-social-link"
-        href="https://gov.gambit.financial/"
+        href="https://proposals.necc.io/"
         target="_blank"
         rel="noopener noreferrer"
       >
-        <FaDiscourse />
+        <FaGithubAlt />
       </a>
     </div>
   );

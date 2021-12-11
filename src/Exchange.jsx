@@ -48,7 +48,6 @@ import Vault from "./abis/Vault.json";
 // import DeltaYieldTracker from "./abis/DeltaYieldTracker.json";
 
 import SwapBox from "./components/Exchange/SwapBox";
-import ExchangeTVChart from "./components/Exchange/ExchangeTVChart";
 import PositionSeller from "./components/Exchange/PositionSeller";
 import OrdersList from "./components/Exchange/OrdersList";
 import History from "./components/Exchange/History";
@@ -532,26 +531,25 @@ export default function Exchange() {
     return () => clearInterval(interval);
   }, [library, pendingTxns]);
 
-  useEffect(() => {
-    if (active) {
-      library.on("block", () => {
-        updateVaultTokenInfo(undefined, true);
-        updateTokenBalances(undefined, true);
-        updatePositionData(undefined, true);
-        updateFundingRateInfo(undefined, true);
-      });
-      return () => {
-        library.removeAllListeners("block");
-      };
-    }
-  }, [
-    active,
-    library,
+  const updateDataFunctions = [
     updateVaultTokenInfo,
     updateTokenBalances,
     updatePositionData,
     updateFundingRateInfo,
-  ]);
+  ];
+
+  useEffect(() => {
+    if (active) {
+      library.on("block", () => {
+        updateDataFunctions.forEach((updateDataFunction) => {
+          updateDataFunction(undefined, true);
+        });
+      });
+      return () => {
+        library.removeListener("block");
+      };
+    }
+  }, [active, library, ...updateDataFunctions]);
 
   const infoTokens = getInfoTokens(
     tokens,
@@ -638,19 +636,6 @@ export default function Exchange() {
 
   const onSelectWalletToken = (token) => {
     setFromTokenAddress(token.address);
-  };
-
-  const renderChart = () => {
-    if (chartType === CHART_TV) {
-      return (
-        <ExchangeTVChart
-          fromTokenAddress={fromTokenAddress}
-          toTokenAddress={toTokenAddress}
-          infoTokens={infoTokens}
-          swapOption={swapOption}
-        />
-      );
-    }
   };
 
   return (
