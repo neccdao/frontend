@@ -49,7 +49,7 @@ export default function Footer() {
       </a> */}
       <a
         className="App-social-link"
-        href="https://discord.necc.io"
+        href="https://discord.gg/PwaesU6MVx"
         target="_blank"
         rel="noopener noreferrer"
       >
@@ -57,7 +57,7 @@ export default function Footer() {
       </a>
       <a
         className="App-social-link"
-        href="https://proposals.necc.io/"
+        href="https://github.com/orgs/neccdao/projects/1"
         target="_blank"
         rel="noopener noreferrer"
       >
