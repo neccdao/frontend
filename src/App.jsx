@@ -25,6 +25,7 @@ import "./css/tailwind-index.css";
 import "./css/Shared.css";
 import "./css/App.css";
 import Bond from "./Bond";
+import { ErrorBoundary } from "@sentry/react";
 
 if ("ethereum" in window) {
   window.ethereum.autoRefreshOnNetworkChange = false;
@@ -50,28 +51,29 @@ function App() {
           <div className="App">
             <div className="App-background fixed z-0 w-full h-full"></div>
             <div className="App-highlight"></div>
-            <div className="App-content">
-              <Header />
-              <Switch>
-                <Route exact path="/">
-                  <Exchange />
-                </Route>
-                <Route exact path="/trade">
-                  <Exchange />
-                </Route>
-                <Route exact path="/mint">
-                  <Mint />
-                </Route>
-                <Route exact path="/zap">
-                  <Zap />
-                </Route>
-                <Route exact path="/data">
-                  <Data />
-                </Route>
-                <Route exact path="/bond">
-                  <Bond />
-                </Route>
-                {/* <Route exact path="/presale">
+            <ErrorBoundary showDialog={true}>
+              <div className="App-content">
+                <Header />
+                <Switch>
+                  <Route exact path="/">
+                    <Exchange />
+                  </Route>
+                  <Route exact path="/trade">
+                    <Exchange />
+                  </Route>
+                  <Route exact path="/mint">
+                    <Mint />
+                  </Route>
+                  <Route exact path="/zap">
+                    <Zap />
+                  </Route>
+                  <Route exact path="/data">
+                    <Data />
+                  </Route>
+                  <Route exact path="/bond">
+                    <Bond />
+                  </Route>
+                  {/* <Route exact path="/presale">
                   <Presale />
                 </Route>
                 <Route exact path="/earn">
@@ -86,19 +88,14 @@ function App() {
                 <Route exact path="/actions/:account">
                   <Actions />
                 </Route> */}
-              </Switch>
-            </div>
+                </Switch>
+              </div>
+            </ErrorBoundary>
           </div>
           <ToastContainer
             limit={3}
-            transition={Zoom}
             position="bottom-right"
-            autoClose={6000}
             hideProgressBar={true}
-            newestOnTop={true}
-            closeOnClick={false}
-            draggable={false}
-            pauseOnHover
           />
         </ApolloProvider>
       </Web3ReactProvider>
