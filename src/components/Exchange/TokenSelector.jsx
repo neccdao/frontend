@@ -69,14 +69,6 @@ export default function TokenSelector(props) {
                 </div>
                 <div className="TokenSelector-content-row">
                   <div className="TokenSelector-token-name">{token.name}</div>
-                  {showMintingCap && !mintAmount && (
-                    <div className="align-right">-</div>
-                  )}
-                  {!showMintingCap && balanceUsd && balanceUsd.gt(0) && (
-                    <div className="align-right">
-                      ${formatAmount(balanceUsd, 30, 2, true)}
-                    </div>
-                  )}
                 </div>
               </div>
             );
