@@ -501,32 +501,8 @@ export function getSwapFeeBasisPoints(isStable) {
   return SWAP_FEE_BASIS_POINTS;
 }
 
-// BSC TESTNET
-// const RPC_PROVIDERS = [
-//   "https://data-seed-prebsc-1-s1.binance.org:8545",
-//   "https://data-seed-prebsc-2-s1.binance.org:8545",
-//   "https://data-seed-prebsc-1-s2.binance.org:8545",
-//   "https://data-seed-prebsc-2-s2.binance.org:8545",
-//   "https://data-seed-prebsc-1-s3.binance.org:8545",
-//   "https://data-seed-prebsc-2-s3.binance.org:8545"
-// ]
-
-// BSC MAINNET
-const RPC_PROVIDERS = [
-  "https://bsc-dataseed.binance.org",
-  "https://bsc-dataseed1.defibit.io",
-  "https://bsc-dataseed1.ninicoin.io",
-  "https://bsc-dataseed2.defibit.io",
-  "https://bsc-dataseed3.defibit.io",
-  "https://bsc-dataseed4.defibit.io",
-  "https://bsc-dataseed2.ninicoin.io",
-  "https://bsc-dataseed3.ninicoin.io",
-  "https://bsc-dataseed4.ninicoin.io",
-  "https://bsc-dataseed1.binance.org",
-  "https://bsc-dataseed2.binance.org",
-  "https://bsc-dataseed3.binance.org",
-  "https://bsc-dataseed4.binance.org",
-];
+// AURORA MAINNET
+const RPC_PROVIDERS = ["https://mainnet.aurora.dev"];
 
 export function shortenAddress(address) {
   if (!address) {
@@ -564,7 +540,6 @@ export function useEagerConnect() {
     injected.isAuthorized().then((isAuthorized) => {
       if (isAuthorized) {
         activate(injected, undefined, true).catch(() => {
-          toast.error("Could not connect to injected web3");
           setTried(true);
         });
       } else {
@@ -1072,11 +1047,11 @@ export const getConnectWalletHandler = (activate) => {
               Your wallet is not connected to the Rinkeby Supported Network.
             </div>
             <br />
-            <div className="clickable underline margin-bottom">
-              Switch to Local Network
-            </div>
-            <div className="clickable underline" onClick={addRinkebyNetwork}>
-              Add Local Network
+            <div
+              className="clickable underline margin-bottom"
+              onClick={addRinkebyNetwork}
+            >
+              Switch to Rinkeby Network
             </div>
           </div>
         );
