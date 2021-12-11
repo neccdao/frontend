@@ -564,6 +564,7 @@ export function useEagerConnect() {
     injected.isAuthorized().then((isAuthorized) => {
       if (isAuthorized) {
         activate(injected, undefined, true).catch(() => {
+          toast.error("Could not connect to injected web3");
           setTried(true);
         });
       } else {
@@ -1025,14 +1026,20 @@ export const addRinkebyNetwork = async () => {
       params: [{ chainId: "0x" + TESTNET.toString(16) }],
     });
   } catch (err) {
+    toast.error("Failed to switch to Rinkeby network.");
     // This error code indicates that the chain has not been added to MetaMask.
     if (err.code === 4902) {
       try {
+        toast.error("Failed to add the Rinkeby network.");
         await window.ethereum
           .request({ method: "wallet_addEthereumChain", params: data })
-          .catch();
+          .catch((err) => {
+            toast.error("Failed to add the Rinkeby network.");
+            console.error(err);
+          });
       } catch (addError) {
         console.error(addError);
+        toast.error("Failed to add the Rinkeby network.");
       }
     }
   }
@@ -1102,6 +1109,7 @@ export const addToken = async (token) => {
       },
     });
   } catch (error) {
+    console.error(error);
     toast.error("Could not add token to MetaMask");
   }
 };

@@ -1,5 +1,6 @@
-import React from 'react'
-import { ApolloClient, InMemoryCache, gql } from '@apollo/client'
+import React from "react";
+import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
+import { toast } from "react-toastify";
 
 export default function Debug() {
   const API_URL = "https://api.thegraph.com/subgraphs/name/deividask/chainlink";
@@ -18,21 +19,22 @@ export default function Debug() {
     }
   }
 }
-  `
+  `;
 
   const client = new ApolloClient({
     uri: API_URL,
-    cache: new InMemoryCache()
+    cache: new InMemoryCache(),
   });
 
-  client.query({
-    query: gql(tokensQuery)
-  })
-  .then(data => console.info("Subgraph data: ", data))
-  .catch(err => { console.info("Error fetching data: ", err) });
+  client
+    .query({
+      query: gql(tokensQuery),
+    })
+    .then((data) => console.info("Subgraph data: ", data))
+    .catch((err) => {
+      toast.error(err.message);
+      console.info("Error fetching data: ", err);
+    });
 
-  return(
-    <div className="Debug">
-    </div>
-  )
+  return <div className="Debug"></div>;
 }
