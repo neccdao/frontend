@@ -94,14 +94,8 @@ function App() {
           </div>
           <ToastContainer
             limit={3}
-            transition={Zoom}
             position="bottom-right"
-            autoClose={5000}
             hideProgressBar={true}
-            newestOnTop={true}
-            closeOnClick={false}
-            draggable={false}
-            pauseOnHover={true}
           />
         </ApolloProvider>
       </Web3ReactProvider>
