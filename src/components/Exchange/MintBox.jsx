@@ -202,7 +202,7 @@ const MintBox = (props) => {
     swapOption,
     setSwapOption,
     positionsMap,
-    maxUsdg,
+    maxNdol,
     pendingTxns,
     setPendingTxns,
     tokenSelection,
@@ -479,37 +479,31 @@ const MintBox = (props) => {
     }
   }, [toTokens, toTokenAddress, setToTokenAddress]);
 
+  const updateDataFunctions = [
+    updateMintFarmTokenAllowance,
+    updateTokenAllowance,
+    updateTargetAdjustedFee,
+    updatenNeccTokenBalance,
+    updateClaimablenNecc,
+    updateStakedBalance,
+    updateTotalStaked,
+    updateStakingEpoch,
+    npdatesNeccCirculatingSupply,
+    updateMintFarmnNeccBalance,
+  ];
+
   useEffect(() => {
     if (active) {
       library.on("block", () => {
-        updateMintFarmTokenAllowance(undefined, true);
-        updateTokenAllowance(undefined, true);
-        updateTargetAdjustedFee(undefined, true);
-        updatenNeccTokenBalance(undefined, true);
-        updateClaimablenNecc(undefined, true);
-        updateStakedBalance(undefined, true);
-        updateTotalStaked(undefined, true);
-        updateStakingEpoch(undefined, true);
-        npdatesNeccCirculatingSupply(undefined, true);
-        updateMintFarmnNeccBalance(undefined, true);
+        updateDataFunctions.forEach((updateDataFunction) => {
+          updateDataFunction(undefined, true);
+        });
       });
       return () => {
         library.removeListener("block");
       };
     }
-  }, [
-    active,
-    library,
-    updateTokenAllowance,
-    updateTargetAdjustedFee,
-    updateMintFarmTokenAllowance,
-    updatenNeccTokenBalance,
-    updateStakedBalance,
-    updateClaimablenNecc,
-    updateTotalStaked,
-    updateStakingEpoch,
-    npdatesNeccCirculatingSupply,
-  ]);
+  }, [active, library, ...updateDataFunctions]);
 
   useEffect(() => {
     const updateSwapAmounts = () => {
@@ -1581,7 +1575,7 @@ const MintBox = (props) => {
                       onSelectToken={onSelectFromToken}
                       tokens={fromTokens}
                       infoTokens={infoTokens}
-                      mintingCap={maxUsdg}
+                      mintingCap={maxNdol}
                       showMintingCap={isBurn || isMint}
                     />
                   ) : (

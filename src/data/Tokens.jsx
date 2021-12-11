@@ -2,125 +2,6 @@ import { ethers } from "ethers";
 import { getContract } from "../Addresses";
 
 export const TOKENS = {
-  56: [
-    {
-      name: "Bitcoin (BTCB)",
-      symbol: "BTC",
-      decimals: 18,
-      address: "0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c",
-      coingeckoUrl: "https://www.coingecko.com/en/coins/binance-bitcoin",
-      imageUrl:
-        "https://assets.coingecko.com/coins/images/14108/small/Binance-bitcoin.png",
-    },
-    {
-      name: "Ethereum",
-      symbol: "ETH",
-      decimals: 18,
-      address: "0x2170Ed0880ac9A755fd29B2688956BD959F933F8",
-      coingeckoUrl: "https://www.coingecko.com/en/coins/ethereum",
-      imageUrl:
-        "https://assets.coingecko.com/coins/images/279/small/ethereum.png",
-    },
-    {
-      name: "Binance Coin",
-      symbol: "BNB",
-      decimals: 18,
-      address: ethers.constants.AddressZero,
-      coingeckoUrl: "https://www.coingecko.com/en/coins/binance-coin",
-      imageUrl:
-        "https://assets.coingecko.com/coins/images/825/small/binance-coin-logo.png",
-    },
-    {
-      name: "Wrapped Binance Coin",
-      symbol: "WBNB",
-      decimals: 18,
-      address: getContract(56, "NATIVE_TOKEN"),
-      isWrapped: true,
-      coingeckoUrl: "https://www.coingecko.com/en/coins/binance-coin",
-      imageUrl:
-        "https://assets.coingecko.com/coins/images/825/small/binance-coin-logo.png",
-    },
-    {
-      name: "USD Gambit",
-      symbol: "NDOL",
-      decimals: 18,
-      address: getContract(56, "NDOL"),
-      isUsdg: true,
-      coingeckoUrl: "https://www.coingecko.com/en/coins/usd-gambit",
-      imageUrl:
-        "https://assets.coingecko.com/coins/images/15886/small/ndol-02.png",
-    },
-    {
-      name: "Binance USD",
-      symbol: "BUSD",
-      decimals: 18,
-      address: "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56",
-      isStable: true,
-      coingeckoUrl: "https://www.coingecko.com/en/coins/binance-usd",
-      imageUrl: "https://assets.coingecko.com/coins/images/9576/small/BUSD.png",
-    },
-    {
-      name: "USD Coin",
-      symbol: "USDC",
-      decimals: 18,
-      address: "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
-      isStable: true,
-      coingeckoUrl: "https://www.coingecko.com/en/coins/usd-coin",
-      imageUrl:
-        "https://assets.coingecko.com/coins/images/6319/small/USD_Coin_icon.png",
-    },
-    {
-      name: "Tether",
-      symbol: "USDT",
-      decimals: 18,
-      address: "0x55d398326f99059fF775485246999027B3197955",
-      isStable: true,
-      coingeckoUrl: "https://www.coingecko.com/en/coins/tether",
-      imageUrl:
-        "https://assets.coingecko.com/coins/images/325/small/Tether-logo.png",
-    },
-  ],
-  97: [
-    {
-      name: "Bitcoin (BTCB)",
-      symbol: "BTC",
-      decimals: 8,
-      address: "0xb19C12715134bee7c4b1Ca593ee9E430dABe7b56",
-    },
-    {
-      name: "Ethereum",
-      symbol: "ETH",
-      decimals: 18,
-      address: "0x1958f7C067226c7C8Ac310Dc994D0cebAbfb2B02",
-    },
-    {
-      name: "Binance Coin",
-      symbol: "BNB",
-      decimals: 18,
-      address: ethers.constants.AddressZero,
-    },
-    {
-      name: "Wrapped Binance Coin",
-      symbol: "WBNB",
-      decimals: 18,
-      address: "0x612777Eea37a44F7a95E3B101C39e1E2695fa6C2",
-      isWrapped: true,
-    },
-    {
-      name: "USD Gambit",
-      symbol: "NDOL",
-      decimals: 18,
-      address: getContract(97, "NDOL"),
-      isUsdg: true,
-    },
-    {
-      name: "Binance USD",
-      symbol: "BUSD",
-      decimals: 18,
-      address: "0x3F223C4E5ac67099CB695834b20cCd5E5D5AA9Ef",
-      isStable: true,
-    },
-  ],
   // RINKEBY
   4: [
     {
@@ -153,7 +34,7 @@ export const TOKENS = {
       symbol: "NDOL",
       decimals: 18,
       address: getContract(4, "NDOL"),
-      isUsdg: true,
+      isNdol: true,
     },
     {
       name: "Necc",
@@ -175,6 +56,7 @@ export const TOKENS = {
     //   isLP: true,
     // },
   ],
+  // Local
   1337: [
     {
       name: "NEAR (wNEAR)",
@@ -206,7 +88,7 @@ export const TOKENS = {
       symbol: "NDOL",
       decimals: 18,
       address: getContract(1337, "NDOL"),
-      isUsdg: true,
+      isNdol: true,
     },
     {
       name: "Necc",
@@ -230,7 +112,7 @@ export const TOKENS = {
   ],
 };
 
-const CHAIN_IDS = [56, 97, 4, 1337];
+const CHAIN_IDS = [4, 1337];
 
 const TOKENS_MAP = {};
 const TOKENS_BY_SYMBOL_MAP = {};

@@ -17,9 +17,8 @@ import {
   FUNDING_RATE_PRECISION,
   formatDateTime,
 } from "./Helpers";
-import { getContract, XGMT_EXCLUDED_ACCOUNTS } from "./Addresses";
+import { getContract } from "./Addresses";
 import { getTokenBySymbol, getWhitelistedTokens, TOKENS } from "./data/Tokens";
-import { getFeeHistory } from "./data/Fees";
 import { useQuery, gql } from "@apollo/client";
 
 import Footer from "./Footer";
@@ -39,7 +38,10 @@ const PRECISION = expandDecimals(1, 30);
 const TOKEN_SYMBOLS = ["BTC", "WETH"];
 
 function getToken(chainId, address) {
-  const CHAIN_IDS = [56, 97, 4];
+  const CHAIN_IDS = [
+    4,
+    // , 1337
+  ];
 
   const TOKENS_MAP = {};
   const TOKENS_BY_SYMBOL_MAP = {};
@@ -314,10 +316,6 @@ const GET_COLLATERALS = gql`
 `;
 
 export default function Data() {
-  // const tokensUrl = "https://gambit-server-staging.uc.r.appspot.com/tokens";
-  // const { data: tokens, mutate: updateTokens } = useSWR([tokensUrl], {
-  //   fetcher: (...args) => fetch(...args).then((res) => res.json()),
-  // });
   const { connector, activate, active, account, library, chainId } =
     useWeb3React();
 
@@ -325,7 +323,7 @@ export default function Data() {
   const vaultAddress = getContract(CHAIN_ID, "Vault");
   const ndolAddress = getContract(CHAIN_ID, "NDOL");
   const NATIVE_TOKEN_ADDRESS = getContract(CHAIN_ID, "NATIVE_TOKEN");
-  const { data: ndolSupply, mutate: updateUsdgSupply } = useSWR(
+  const { data: ndolSupply, mutate: updateNdolSupply } = useSWR(
     [false, ndolAddress, "totalSupply"],
     {
       fetcher: fetcher(library, NDOL),
@@ -348,6 +346,22 @@ export default function Data() {
       ]),
     }
   );
+
+  const updateDataFunctions = [updateNdolSupply, updateVaultTokenInfo];
+
+  useEffect(() => {
+    if (active) {
+      library.on("block", () => {
+        updateDataFunctions.forEach((updateDataFunction) => {
+          updateDataFunction(undefined, true);
+        });
+      });
+      return () => {
+        library.removeListener("block");
+      };
+    }
+  }, [active, library, ...updateDataFunctions]);
+
   const {
     loading,
     error,
@@ -374,46 +388,8 @@ export default function Data() {
     tokenMap = infoTokensData.tokenMap;
   }
   const tokenStats = getTokenStats(infoTokens);
-  // const volumeInfo = getVolumeInfo(dailyVolume);
-  // const { volumes: dailyVolumes } = getDailyVolumes(dailyVolume);
-  // const totalVolumeSum = getTotalVolume(totalVolume);
-
-  // const dailyVolumeUrl =
-  //   "https://gambit-server-staging.uc.r.appspot.com/daily_volume";
-  // const { data: dailyVolume, mutate: updateDailyVolume } = useSWR(
-  //   [dailyVolumeUrl],
-  //   {
-  //     fetcher: (...args) => fetch(...args).then((res) => res.json()),
-  //   }
-  // );
-
-  // const totalVolumeUrl =
-  //   "https://gambit-server-staging.uc.r.appspot.com/total_volume";
-  // const { data: totalVolume, mutate: updateTotalVolume } = useSWR(
-  //   [totalVolumeUrl],
-  //   {
-  //     fetcher: (...args) => fetch(...args).then((res) => res.json()),
-  //   }
-  // );
 
   const showNDOLAmount = true;
-
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     updatePositionStats(undefined, true);
-  //     updateDailyVolume(undefined, true);
-  //     updateTotalVolume(undefined, true);
-  //     updateUsdgSupply(undefined, true);
-  //     updateFees(undefined, true);
-  //   }, 60 * 1000);
-  //   return () => clearInterval(interval);
-  // }, [
-  //   updatePositionStats,
-  //   updateDailyVolume,
-  //   updateTotalVolume,
-  //   updateUsdgSupply,
-  //   updateFees,
-  // ]);
 
   let feeText;
   let totalFeesUsd = bigNumberify(0);
@@ -452,13 +428,13 @@ export default function Data() {
     }
   }
 
-  const hourValue = parseInt(
-    (new Date() - new Date().setUTCHours(0, 0, 0, 0)) / (60 * 60 * 1000)
-  );
-  const minuteValue = parseInt(
-    (new Date() - new Date().setUTCHours(0, 0, 0, 0)) / (60 * 1000)
-  );
-  let volumeLabel = hourValue > 0 ? `${hourValue}h` : `${minuteValue}m`;
+  // const hourValue = parseInt(
+  //   (new Date() - new Date().setUTCHours(0, 0, 0, 0)) / (60 * 60 * 1000)
+  // );
+  // const minuteValue = parseInt(
+  //   (new Date() - new Date().setUTCHours(0, 0, 0, 0)) / (60 * 1000)
+  // );
+  // let volumeLabel = hourValue > 0 ? `${hourValue}h` : `${minuteValue}m`;
 
   const shouldPrintExtraInfo = false;
   // if (shouldPrintExtraInfo) {
@@ -695,7 +671,7 @@ export default function Data() {
                   ${formatAmount(totalVolumeSum, USD_DECIMALS, 0, true)}
                 </div>
                 <div className="Dashboard-title-secondary">
-                  Total Volume Since 28 April 2021
+                  Total Volume
                 </div>
               </div>
               <div className="Dashboard-volume-list Dashboard-list">

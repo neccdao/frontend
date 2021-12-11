@@ -234,7 +234,7 @@ export default function SwapBox(props) {
     swapOption,
     setSwapOption,
     positionsMap,
-    maxUsdg,
+    maxNdol,
     pendingTxns,
     setPendingTxns,
     tokenSelection,
@@ -243,7 +243,6 @@ export default function SwapBox(props) {
     isConfirming,
     isPendingConfirmation,
     setIsPendingConfirmation,
-    flagOrdersEnabled,
   } = props;
 
   const accountUrl = getAccountUrl(chainId, account);
@@ -285,9 +284,6 @@ export default function SwapBox(props) {
     [CHAIN_ID, "Order-option"],
     MARKET
   );
-  if (!flagOrdersEnabled) {
-    orderType = MARKET;
-  }
 
   const onOrderOptionChange = (option) => {
     setOrderType(option);
@@ -774,16 +770,7 @@ export default function SwapBox(props) {
 
     if (isLong) {
       let requiredAmount = toAmount;
-      // TODO: Fix and uncomment if swapAmount is fixed from Vault redemptionAmount
-      // if (fromTokenAddress !== toTokenAddress) {
-      //   const { amount: swapAmount } = getNextToAmount(
-      //     fromAmount,
-      //     fromTokenAddress,
-      //     toTokenAddress,
-      //     infoTokens
-      //   );
-      //   requiredAmount = requiredAmount.add(swapAmount);
-      // }
+
       if (
         toToken &&
         toTokenAddress !== NDOL_ADDRESS &&
@@ -1551,14 +1538,6 @@ export default function SwapBox(props) {
             option={swapOption}
             onChange={onSwapOptionChange}
           />
-          {/* {flagOrdersEnabled && (
-            <Tab
-              options={orderTypes}
-              type="inline"
-              option={orderType}
-              onChange={onOrderOptionChange}
-            />
-          )} */}
         </div>
         {showFromAndToSection && (
           <React.Fragment>
@@ -1632,7 +1611,7 @@ export default function SwapBox(props) {
                     onSelectToken={onSelectFromToken}
                     tokens={fromTokens}
                     infoTokens={infoTokens}
-                    mintingCap={maxUsdg}
+                    mintingCap={maxNdol}
                     showMintingCap={isSwap}
                   />
                 </div>

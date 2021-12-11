@@ -221,17 +221,20 @@ export default function Mint() {
     return () => clearInterval(interval);
   }, [library, pendingTxns]);
 
+  const updateDataFunctions = [updateVaultTokenInfo, updateTokenBalances];
+
   useEffect(() => {
     if (active) {
       library.on("block", () => {
-        updateVaultTokenInfo(undefined, true);
-        updateTokenBalances(undefined, true);
+        updateDataFunctions.forEach((updateDataFunction) => {
+          updateDataFunction(undefined, true);
+        });
       });
       return () => {
-        library.removeAllListeners("block");
+        library.removeListener("block");
       };
     }
-  }, [active, library, updateVaultTokenInfo, updateTokenBalances]);
+  }, [active, library, ...updateDataFunctions]);
 
   const infoTokens = getInfoTokens(
     tokens,

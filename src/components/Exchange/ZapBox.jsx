@@ -195,7 +195,7 @@ const ZapBox = (props) => {
     swapOption,
     setSwapOption,
     positionsMap,
-    maxUsdg,
+    maxNdol,
     pendingTxns,
     setPendingTxns,
     tokenSelection,
@@ -992,7 +992,7 @@ const ZapBox = (props) => {
                       onSelectToken={onSelectFromToken}
                       tokens={fromTokens}
                       infoTokens={infoTokens}
-                      mintingCap={maxUsdg}
+                      mintingCap={maxNdol}
                       showMintingCap={isWithdraw || isDeposit}
                     />
                   ) : (

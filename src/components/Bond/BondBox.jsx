@@ -184,7 +184,7 @@ export const BondBox = (props) => {
     setToTokenAddress,
     swapOption,
     setSwapOption,
-    maxUsdg,
+    maxNdol,
     pendingTxns,
     setPendingTxns,
     tokenSelection,
@@ -461,25 +461,7 @@ export const BondBox = (props) => {
     }
   }, [toTokens, toTokenAddress, setToTokenAddress]);
 
-  useEffect(() => {
-    if (active) {
-      library.on("block", () => {
-        updateTokenAllowance(undefined, true);
-        updateStakingTokenAllowance(undefined, true);
-        updatenNeccTokenAllowance(undefined, true);
-        updateNeccTokenBalance(undefined, true);
-        updatenNeccTokenBalance(undefined, true);
-        updatePrincipleValuation(undefined, true);
-        updateBondPayoutFor(undefined, true);
-        updatendolnNECCPairReserves(undefined, true);
-      });
-      return () => {
-        library.removeListener("block");
-      };
-    }
-  }, [
-    active,
-    library,
+  const updateDataFunctions = [
     updateTokenAllowance,
     updateStakingTokenAllowance,
     updatenNeccTokenAllowance,
@@ -487,7 +469,21 @@ export const BondBox = (props) => {
     updatenNeccTokenBalance,
     updatePrincipleValuation,
     updateBondPayoutFor,
-  ]);
+    updatendolnNECCPairReserves,
+  ];
+
+  useEffect(() => {
+    if (active) {
+      library.on("block", () => {
+        updateDataFunctions.forEach((updateDataFunction) => {
+          updateDataFunction(undefined, true);
+        });
+      });
+      return () => {
+        library.removeListener("block");
+      };
+    }
+  }, [active, library, ...updateDataFunctions]);
 
   useEffect(() => {
     const updateSwapAmounts = () => {
@@ -1549,7 +1545,7 @@ export const BondBox = (props) => {
                       onSelectToken={onSelectFromToken}
                       tokens={fromTokens}
                       infoTokens={infoTokens}
-                      mintingCap={maxUsdg}
+                      mintingCap={maxNdol}
                       showBondingCap={isRedeem || isBond}
                     />
                   ) : (
