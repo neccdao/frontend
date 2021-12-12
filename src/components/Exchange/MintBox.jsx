@@ -1573,7 +1573,9 @@ const MintBox = (props) => {
                       chainId={CHAIN_ID}
                       tokenAddress={fromTokenAddress}
                       onSelectToken={onSelectFromToken}
-                      tokens={fromTokens}
+                      tokens={fromTokens.filter(
+                        (token) => !token?.symbol?.toLowerCase()?.includes("lp")
+                      )}
                       infoTokens={infoTokens}
                       mintingCap={maxNdol}
                       showMintingCap={isBurn || isMint}

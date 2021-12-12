@@ -254,38 +254,40 @@ export default function Mint() {
 
   return (
     <div className="Exchange">
-      <div className="flex items-center justify-center h-screen">
-        <MintBox
-          flagOrdersEnabled={flagOrdersEnabled}
-          chainId={chainId}
-          infoTokens={infoTokens}
-          active={active}
-          connectWallet={connectWallet}
-          library={library}
-          account={account}
-          positionsMap={{}}
-          fromTokenAddress={fromTokenAddress}
-          setFromTokenAddress={setFromTokenAddress}
-          toTokenAddress={toTokenAddress}
-          setToTokenAddress={setToTokenAddress}
-          swapOption={swapOption}
-          setSwapOption={setSwapOption}
-          pendingTxns={pendingTxns}
-          setPendingTxns={setPendingTxns}
-          tokenSelection={tokenSelection}
-          setTokenSelection={setTokenSelection}
-          isConfirming={isConfirming}
-          setIsConfirming={setIsConfirming}
-          isPendingConfirmation={isPendingConfirmation}
-          setIsPendingConfirmation={setIsPendingConfirmation}
-        />
-        <div className="Exchange-wallet-tokens">
-          <div className="Exchange-wallet-tokens-content border">
-            <ExchangeWalletTokens
-              tokens={tokens}
-              infoTokens={infoTokens}
-              onSelectToken={onSelectWalletToken}
-            />
+      <div>
+        <div className="flex items-center justify-center h-screen">
+          <MintBox
+            flagOrdersEnabled={flagOrdersEnabled}
+            chainId={chainId}
+            infoTokens={infoTokens}
+            active={active}
+            connectWallet={connectWallet}
+            library={library}
+            account={account}
+            positionsMap={{}}
+            fromTokenAddress={fromTokenAddress}
+            setFromTokenAddress={setFromTokenAddress}
+            toTokenAddress={toTokenAddress}
+            setToTokenAddress={setToTokenAddress}
+            swapOption={swapOption}
+            setSwapOption={setSwapOption}
+            pendingTxns={pendingTxns}
+            setPendingTxns={setPendingTxns}
+            tokenSelection={tokenSelection}
+            setTokenSelection={setTokenSelection}
+            isConfirming={isConfirming}
+            setIsConfirming={setIsConfirming}
+            isPendingConfirmation={isPendingConfirmation}
+            setIsPendingConfirmation={setIsPendingConfirmation}
+          />
+          <div className="Exchange-wallet-tokens">
+            <div className="Exchange-wallet-tokens-content border">
+              <ExchangeWalletTokens
+                tokens={tokens}
+                infoTokens={infoTokens}
+                onSelectToken={onSelectWalletToken}
+              />
+            </div>
           </div>
         </div>
       </div>
