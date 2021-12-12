@@ -58,7 +58,7 @@ const NeccTokenInfo = ({ neccAddress }) => {
         <img src={coingeckoImg} alt="CoinGecko" />
       </a>
       <a
-        href={`https://rinkeby.etherscan.io/token/${neccAddress}`}
+        href={`https://explorer.mainnet.aurora.dev/token/${neccAddress}`}
         className="h-8 w-8"
         target="_blank"
         rel="noopener noreferrer"
