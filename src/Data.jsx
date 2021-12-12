@@ -16,6 +16,7 @@ import {
   addToken,
   FUNDING_RATE_PRECISION,
   formatDateTime,
+  MAINNET,
 } from "./Helpers";
 import { getContract } from "./Addresses";
 import { getTokenBySymbol, getWhitelistedTokens, TOKENS } from "./data/Tokens";
@@ -35,11 +36,11 @@ import { useWeb3React } from "@web3-react/core";
 const USD_DECIMALS = 30;
 const PRECISION = expandDecimals(1, 30);
 
-const TOKEN_SYMBOLS = ["BTC", "WETH"];
+const TOKEN_SYMBOLS = ["NEAR", "WETH", "BTC"];
 
 function getToken(chainId, address) {
   const CHAIN_IDS = [
-    4,
+    MAINNET,
     // , 1337
   ];
 
@@ -121,7 +122,6 @@ function getInfoTokens(tokens, vaultTokenInfo) {
     const symbol = TOKEN_SYMBOLS[i];
     info.push(tokenMap[symbol]);
   }
-
   return { infoTokens: info.filter(Boolean), tokenMap };
 }
 
@@ -319,6 +319,7 @@ export default function Data() {
   const { connector, activate, active, account, library, chainId } =
     useWeb3React();
 
+  const NDOLToken = getTokenBySymbol(CHAIN_ID, "NDOL");
   const readerAddress = getContract(CHAIN_ID, "Reader");
   const vaultAddress = getContract(CHAIN_ID, "Vault");
   const ndolAddress = getContract(CHAIN_ID, "NDOL");
@@ -477,11 +478,11 @@ export default function Data() {
                   alt="MetaMask"
                   onClick={() =>
                     addToken({
-                      address: "0x85E76cbf4893c1fbcB34dCF1239A91CE2A4CF5a7",
-                      symbol: "NDOL",
+                      address: NDOLToken?.address,
+                      symbol: NDOLToken?.symbol,
                       info: {
                         decimals: 18,
-                        imageUrl: "https://assets.necc.io/ndol token.svg",
+                        imageUrl: NDOLToken?.imageUrl,
                       },
                     })
                   }
@@ -494,7 +495,7 @@ export default function Data() {
                   <img src={coingeckoImg} alt="CoinGecko" />
                 </a>
                 <a
-                  href="https://explorer.mainnet.aurora.dev/token/0xNDOL"
+                  href={getTokenUrl(CHAIN_ID, NDOLToken?.address)}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
