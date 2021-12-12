@@ -166,7 +166,7 @@ export const TOKENS = {
   ],
 };
 
-const CHAIN_IDS = [4, 1337];
+const CHAIN_IDS = [1313161554, 4, 1337];
 
 const TOKENS_MAP = {};
 const TOKENS_BY_SYMBOL_MAP = {};
