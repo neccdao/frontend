@@ -19,13 +19,14 @@ import fp from "evm-fp";
 
 const { AddressZero } = ethers.constants;
 
-export const MAINNET = 56;
+// AURORA MAINNET
+export const MAINNET = 1313161554;
 // NOTE - RINKEBY CHAIN ID
 export const TESTNET = 4;
 export const LOCAL = 1337;
 // TODO take it from web3
 export const CHAIN_ID =
-  process.env.NODE_ENV === "development" ? LOCAL : TESTNET;
+  process.env.NODE_ENV === "development" ? LOCAL : MAINNET;
 export const NATIVE_TOKEN_ADDRESS = getContract(CHAIN_ID, "NATIVE_TOKEN");
 export const NDOL_ADDRESS = getContract(CHAIN_ID, "NDOL");
 const MAX_LEVERAGE = 50 * 10000;
@@ -603,7 +604,7 @@ export function useInactiveListener(suppress = false) {
 export function getProvider() {
   // getDefaultProvider("rinkeby");
   return new ethers.providers.JsonRpcBatchProvider(
-    "https://eth-rinkeby.alchemyapi.io/v2/gpPol1dDeOYB7OaCiXQ-T7XuZRu3KGll"
+    "https://mainnet.aurora.dev"
   );
 }
 
@@ -841,6 +842,9 @@ export function numberWithCommas(x) {
 }
 
 export function getExplorerUrl(chainId) {
+  if (chainId === MAINNET) {
+    return "https://explorer.mainnet.aurora.dev/";
+  }
   if (chainId === TESTNET) {
     return "https://rinkeby.etherscan.io/";
   }
@@ -980,10 +984,10 @@ export const getTokenInfo = (infoTokens, tokenAddress, replaceNative) => {
   return infoTokens[tokenAddress];
 };
 
-export const addRinkebyNetwork = async () => {
+export const addAuroraNetwork = async () => {
   const data = [
     {
-      chainId: "0x" + TESTNET.toString(16),
+      chainId: "0x" + MAINNET.toString(16),
       chainName: "Rinkeby",
       nativeCurrency: {
         name: "ETH",
@@ -991,7 +995,7 @@ export const addRinkebyNetwork = async () => {
         decimals: 18,
       },
       rpcUrls: RPC_PROVIDERS,
-      blockExplorerUrls: ["https://rinkeby.etherscan.io"],
+      blockExplorerUrls: ["https://explorer.mainnet.aurora.dev"],
     },
   ];
 
@@ -1001,20 +1005,20 @@ export const addRinkebyNetwork = async () => {
       params: [{ chainId: "0x" + TESTNET.toString(16) }],
     });
   } catch (err) {
-    toast.error("Failed to switch to Rinkeby network.");
+    toast.error("Failed to switch to Aurora network.");
     // This error code indicates that the chain has not been added to MetaMask.
     if (err.code === 4902) {
       try {
-        toast.error("Failed to add the Rinkeby network.");
+        toast.error("Failed to add the Aurora network.");
         await window.ethereum
           .request({ method: "wallet_addEthereumChain", params: data })
           .catch((err) => {
-            toast.error("Failed to add the Rinkeby network.");
+            toast.error("Failed to add the Aurora network.");
             console.error(err);
           });
       } catch (addError) {
         console.error(addError);
-        toast.error("Failed to add the Rinkeby network.");
+        toast.error("Failed to add the Aurora network.");
       }
     }
   }
@@ -1044,14 +1048,14 @@ export const getConnectWalletHandler = (activate) => {
         toast.error(
           <div>
             <div>
-              Your wallet is not connected to the Rinkeby Supported Network.
+              Your wallet is not connected to the Aurora Supported Network.
             </div>
             <br />
             <div
               className="clickable underline margin-bottom"
-              onClick={addRinkebyNetwork}
+              onClick={addAuroraNetwork}
             >
-              Switch to Rinkeby Network
+              Switch to Aurora Network
             </div>
           </div>
         );

@@ -2,6 +2,60 @@ import { ethers } from "ethers";
 import { getContract } from "../Addresses";
 
 export const TOKENS = {
+  // AURORA MAINNET
+  1313161554: [
+    {
+      name: "NEAR (wNEAR)",
+      symbol: "NEAR",
+      decimals: 24,
+      address: getContract(1313161554, "NEAR"),
+    },
+    {
+      name: "Bitcoin (WBTC)",
+      symbol: "BTC",
+      decimals: 8,
+      address: getContract(1313161554, "BTC"),
+    },
+    {
+      name: "ETH",
+      symbol: "ETH",
+      decimals: 18,
+      address: ethers.constants.AddressZero,
+    },
+    {
+      name: "Wrapped Ethereum",
+      symbol: "WETH",
+      decimals: 18,
+      address: getContract(1313161554, "NATIVE_TOKEN"),
+      isWrapped: true, // NOTE - Seems required even though shown in from token selector list
+    },
+    {
+      name: "Necc Dollars",
+      symbol: "NDOL",
+      decimals: 18,
+      address: getContract(1313161554, "NDOL"),
+      isNdol: true,
+    },
+    {
+      name: "Necc",
+      symbol: "Necc",
+      decimals: 9,
+      address: getContract(1313161554, "Necc"),
+    },
+    {
+      name: "sNecc",
+      symbol: "sNecc",
+      decimals: 9,
+      address: getContract(1313161554, "sNecc"),
+    },
+    {
+      name: "NDOL-nNecc LP",
+      symbol: "NDOLnNeccLP",
+      decimals: 18,
+      address: getContract(1313161554, "NDOL_NNECC_PAIR"),
+      isLP: true,
+    },
+  ],
   // RINKEBY
   4: [
     {
@@ -112,7 +166,7 @@ export const TOKENS = {
   ],
 };
 
-const CHAIN_IDS = [4, 1337];
+const CHAIN_IDS = [1313161554, 4, 1337];
 
 const TOKENS_MAP = {};
 const TOKENS_BY_SYMBOL_MAP = {};
