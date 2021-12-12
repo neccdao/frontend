@@ -24,7 +24,7 @@ const FEED_ID_MAP = {
 // TODO: Change when indexed on Arbitrum
 // TODO: Update per tagged version
 const NECC_SUBGRAPH_URL =
-  "https://api.thegraph.com/subgraphs/name/rej156/necc-rinkeby";
+  "https://api.thegraph.com/subgraphs/name/rej156/necc-aurora";
 export function getNeccSubgraphClient(version = "v0.0.50") {
   const client = new ApolloClient({
     cache: new InMemoryCache(),
