@@ -241,7 +241,7 @@ export default function History(props) {
               USD_DECIMALS,
               2,
               true
-            )} USD, ${indexToken.symbol} Price: ${formatAmount(
+            )} USD PnL, ${indexToken.symbol} Price: ${formatAmount(
               params.price,
               USD_DECIMALS,
               2,
