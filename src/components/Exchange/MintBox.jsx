@@ -1638,7 +1638,9 @@ const MintBox = (props) => {
                       chainId={CHAIN_ID}
                       tokenAddress={toTokenAddress}
                       onSelectToken={onSelectToToken}
-                      tokens={toTokens}
+                      tokens={toTokens?.filter(
+                        (token) => !token?.symbol?.toLowerCase()?.includes("lp")
+                      )}
                       infoTokens={infoTokens}
                     />
                   ) : (
