@@ -451,6 +451,12 @@ const MintBox = (props) => {
     triggerPriceUsd
   );
 
+  const redemptionValue = toTokenInfo?.redemptionAmount
+    ?.mul(toTokenInfo?.maxPrice)
+    ?.div(expandDecimals(1, toTokenInfo?.decimals));
+  // console.log("redemptionValue?.toString()");
+  // console.log(redemptionValue?.toString());
+
   useEffect(() => {
     if (
       fromTokenAddress === prevFromTokenAddress &&
@@ -1720,17 +1726,31 @@ const MintBox = (props) => {
         <div className="Exchange-swap-market-box border App-box">
           <div className="Exchange-swap-market-box-title">{swapOption}</div>
           <div className="Exchange-info-row">
-            <div className="Exchange-info-label">{fromToken.symbol} Price</div>
-            <div className="align-right">
-              {fromTokenInfo &&
-                formatAmount(
-                  fromTokenInfo.minPrice,
-                  USD_DECIMALS,
-                  5,
-                  true
-                )}{" "}
-              USD
-            </div>
+            {isMint ? (
+              <React.Fragment>
+                <div className="Exchange-info-label">
+                  {fromToken.symbol} Price
+                </div>
+                <div className="align-right">
+                  {fromTokenInfo &&
+                    formatAmount(
+                      fromTokenInfo.maxPrice,
+                      USD_DECIMALS,
+                      2,
+                      true
+                    )}{" "}
+                  USD
+                </div>
+              </React.Fragment>
+            ) : (
+              <React.Fragment>
+                <div className="Exchange-info-label">Redemption Value</div>
+                <div className="align-right">
+                  {redemptionValue &&
+                    formatAmount(redemptionValue, USD_DECIMALS, 3, true)}{" "}
+                </div>
+              </React.Fragment>
+            )}
           </div>
           <div className="Exchange-info-row">
             <div className="Exchange-info-label">{toToken.symbol} Price</div>

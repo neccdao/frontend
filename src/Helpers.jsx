@@ -16,6 +16,7 @@ import OrderBook from "./abis/OrderBook.json";
 
 import { getTokenBySymbol, getWhitelistedTokens } from "./data/Tokens";
 import fp from "evm-fp";
+import { from } from "@apollo/client";
 
 const { AddressZero } = ethers.constants;
 
@@ -260,6 +261,22 @@ export function getNextToAmount(
               .mul(toToken.redemptionAmount)
               .div(expandDecimals(1, toToken.decimals));
 
+      return {
+        amount: toAmount
+          .mul(BASIS_POINTS_DIVISOR - feeBasisPoints)
+          .div(BASIS_POINTS_DIVISOR),
+        feeBasisPoints,
+      };
+    } else {
+      const feeBasisPoints = getSwapFeeBasisPoints(
+        fromToken.isStable && toToken.isStable
+      );
+      const toAmount =
+        ratio && !ratio.isZero()
+          ? toAmountBasedOnRatio
+          : fromAmount
+              .mul(redemptionValue)
+              .div(toTokenPriceUsd || toToken.maxPrice || toToken.price);
       return {
         amount: toAmount
           .mul(BASIS_POINTS_DIVISOR - feeBasisPoints)
