@@ -114,7 +114,7 @@ td {
   border-image-slice: 1; */
   box-shadow: rgb(15 17 21 / 25%) 0px 4px 6px, rgb(15 17 21 / 10%) 0px 5px 7px;
   border: 1px solid #4c566a;
-  border-radius: 8px;
+  border-radius: 20px;
 }
 
 .align-right {

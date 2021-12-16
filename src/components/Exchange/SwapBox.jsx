@@ -1975,6 +1975,19 @@ export default function SwapBox(props) {
             {isLong ? "Long" : "Short"}&nbsp;{toToken.symbol}
           </div>
           <div className="Exchange-info-row">
+            <div className="Exchange-info-label">Available Amount</div>
+            <div className="align-right">
+              {toTokenInfo &&
+                formatAmount(
+                  toTokenInfo?.availableAmount,
+                  toTokenInfo?.decimals,
+                  4
+                )}{" "}
+              {toTokenInfo?.symbol}
+            </div>
+          </div>
+
+          <div className="Exchange-info-row">
             <div className="Exchange-info-label">Borrow Rate</div>
             <div className="align-right">
               {(isLong || isShort) &&
