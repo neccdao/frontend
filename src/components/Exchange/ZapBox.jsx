@@ -883,8 +883,8 @@ const ZapBox = (props) => {
           Save
         </button>
       </Modal>
-      <div className="Exchange-swap-wallet-box border">
-        {active && (
+      {active && (
+        <div className="Exchange-swap-wallet-box border">
           <div className="Exchange-swap-account">
             <a href={accountUrl} target="_blank" rel="noopener noreferrer">
               <div className="Exchange-swap-address">
@@ -901,16 +901,8 @@ const ZapBox = (props) => {
               onClick={openSettings}
             />
           </div>
-        )}
-        {!active && (
-          <div
-            className="Exchange-swap-connect-wallet"
-            onClick={props.connectWallet}
-          >
-            Connect Wallet
-          </div>
-        )}
-      </div>
+        </div>
+      )}
       <div className="Exchange-swap-box-inner border">
         <div>
           <Tab

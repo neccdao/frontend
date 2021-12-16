@@ -1498,8 +1498,8 @@ export default function SwapBox(props) {
           Save
         </button>
       </Modal>
-      <div className="Exchange-swap-wallet-box border">
-        {active && (
+      {active && (
+        <div className="Exchange-swap-wallet-box border">
           <div className="Exchange-swap-account">
             <a href={accountUrl} target="_blank" rel="noopener noreferrer">
               <div className="Exchange-swap-address">
@@ -1507,30 +1507,22 @@ export default function SwapBox(props) {
               </div>
             </a>
             <a href={accountUrl} target="_blank" rel="noopener noreferrer">
-              <div
+              <a
                 href={accountUrl}
                 className="Exchange-swap-txns-status"
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 {pendingTxns.length} {pendingTxns.length === 1 ? "Tx" : "Txs"}
-              </div>
+              </a>
             </a>
             <AiFillSetting
               className="Exchange-swap-settings"
               onClick={openSettings}
             />
           </div>
-        )}
-        {!active && (
-          <div
-            className="Exchange-swap-connect-wallet"
-            onClick={props.connectWallet}
-          >
-            Connect Wallet
-          </div>
-        )}
-      </div>
+        </div>
+      )}
       <div className="Exchange-swap-box-inner border">
         <div>
           <Tab
@@ -1983,19 +1975,7 @@ export default function SwapBox(props) {
             {isLong ? "Long" : "Short"}&nbsp;{toToken.symbol}
           </div>
           <div className="Exchange-info-row">
-            <div className="Exchange-info-label">Entry Price</div>
-            <div className="align-right">
-              {formatAmount(entryMarkPrice, USD_DECIMALS, 2, true)} USD
-            </div>
-          </div>
-          <div className="Exchange-info-row">
-            <div className="Exchange-info-label">Exit Price</div>
-            <div className="align-right">
-              {formatAmount(exitMarkPrice, USD_DECIMALS, 2, true)} USD
-            </div>
-          </div>
-          <div className="Exchange-info-row">
-            <div className="Exchange-info-label">Borrow Fee</div>
+            <div className="Exchange-info-label">Borrow Rate</div>
             <div className="align-right">
               {(isLong || isShort) &&
                 toTokenInfo &&
