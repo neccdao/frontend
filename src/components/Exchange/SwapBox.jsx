@@ -1880,12 +1880,17 @@ export default function SwapBox(props) {
                         )}
                       </span>
                       <BsArrowRight className="transition-arrow" />
+                      {nextAveragePrice &&
+                        `$${formatAmount(
+                          nextAveragePrice,
+                          USD_DECIMALS,
+                          2,
+                          true
+                        )}`}
+                      {!nextAveragePrice && `-`}
                     </div>
                   </div>
                 )}
-                {nextAveragePrice &&
-                  `$${formatAmount(nextAveragePrice, USD_DECIMALS, 2, true)}`}
-                {!nextAveragePrice && `-`}
               </div>
             </div>
             <div className="Exchange-info-row">
@@ -1904,19 +1909,19 @@ export default function SwapBox(props) {
                         )}
                       </span>
                       <BsArrowRight className="transition-arrow" />
+                      {toAmount &&
+                        displayLiquidationPrice &&
+                        `$${formatAmount(
+                          displayLiquidationPrice,
+                          USD_DECIMALS,
+                          2,
+                          true
+                        )}`}
+                      {!toAmount && displayLiquidationPrice && `-`}
+                      {!displayLiquidationPrice && `-`}
                     </div>
                   </div>
                 )}
-                {toAmount &&
-                  displayLiquidationPrice &&
-                  `$${formatAmount(
-                    displayLiquidationPrice,
-                    USD_DECIMALS,
-                    2,
-                    true
-                  )}`}
-                {!toAmount && displayLiquidationPrice && `-`}
-                {!displayLiquidationPrice && `-`}
               </div>
             </div>
             <ExchangeInfoRow label="Fees">
