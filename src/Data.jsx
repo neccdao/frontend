@@ -32,6 +32,7 @@ import "./css/Dashboard.css";
 import metamaskImg from "./img/metamask.png";
 import coingeckoImg from "./img/coingecko.png";
 import { useWeb3React } from "@web3-react/core";
+import { useState } from "react";
 
 const USD_DECIMALS = 30;
 const PRECISION = expandDecimals(1, 30);
@@ -330,12 +331,9 @@ export default function Data() {
       fetcher: fetcher(library, NDOL),
     }
   );
-  const whitelistedTokens = TOKEN_SYMBOLS.map((symbol) =>
-    symbol === "ETH"
-      ? getContract(CHAIN_ID, "NATIVE_TOKEN")
-      : getTokenBySymbol(CHAIN_ID, symbol).address
-  );
-
+  const whitelistedTokenAddresses = TOKEN_SYMBOLS.map((symbol) => {
+    return getTokenBySymbol(CHAIN_ID, symbol)?.address;
+  });
   const { data: vaultTokenInfo, mutate: updateVaultTokenInfo } = useSWR(
     [active, readerAddress, "getVaultTokenInfo"],
     {
@@ -343,10 +341,20 @@ export default function Data() {
         vaultAddress,
         NATIVE_TOKEN_ADDRESS,
         expandDecimals(1, 18),
-        whitelistedTokens,
+        whitelistedTokenAddresses,
       ]),
     }
   );
+
+  const {
+    loading,
+    error,
+    data: collateralsData,
+    refetch,
+    fetchMore,
+  } = useQuery(GET_COLLATERALS, {
+    variables: {},
+  });
 
   const updateDataFunctions = [updateNdolSupply, updateVaultTokenInfo];
 
@@ -362,16 +370,6 @@ export default function Data() {
       };
     }
   }, [active, library, ...updateDataFunctions]);
-
-  const {
-    loading,
-    error,
-    data: collateralsData,
-    refetch,
-    fetchMore,
-  } = useQuery(GET_COLLATERALS, {
-    variables: {},
-  });
 
   if (loading)
     return (
@@ -396,7 +394,7 @@ export default function Data() {
   let totalFeesUsd = bigNumberify(0);
   let totalLongPositionSizes = bigNumberify(0);
   let totalShortPositionSizes = bigNumberify(0);
-  if (infoTokens && infoTokens.length > 0) {
+  if (infoTokens?.length === tokens?.length) {
     feeText = infoTokens
       .map(
         (token) =>
@@ -406,11 +404,10 @@ export default function Data() {
       )
       .join(", ");
 
-    for (let i = 0; i < infoTokens.length; i++) {
-      const token = infoTokens[i];
+    infoTokens?.map((token) => {
       const info = tokenMap ? tokenMap[token.symbol] : undefined;
       if (!info) {
-        continue;
+        return;
       }
       const feeUsd = info.minPrice
         ? bigNumberify(token.feeReserves)
@@ -418,6 +415,7 @@ export default function Data() {
             ?.mul(expandDecimals(1, 30 - token.decimals))
             ?.div(expandDecimals(1, 30))
         : bigNumberify(0);
+
       totalFeesUsd = totalFeesUsd.add(feeUsd);
 
       totalLongPositionSizes = totalLongPositionSizes.add(
@@ -426,7 +424,7 @@ export default function Data() {
       totalShortPositionSizes = totalShortPositionSizes.add(
         token.shortOpenInterest
       );
-    }
+    });
   }
 
   // const hourValue = parseInt(
@@ -443,146 +441,149 @@ export default function Data() {
   //   printVolumeSummary(volumeSummary);
   // }
 
-  return (
-    <div className="Data Page">
-      <div className="Dashboard-title App-hero">
-        <div className="Dashboard-title-primary App-hero-primary">
-          ${formatAmount(tokenStats.aum, USD_DECIMALS, 0, true)}
-        </div>
-        <div className="Dashboard-title-secondary">Assets Under Management</div>
-      </div>
-      {feeText && (
-        <div className="Dashboard-fee-info">
-          {"Total fees earned: "}
-          {formatAmount(totalFeesUsd, USD_DECIMALS, 2, true)} USD
-          <br />
-          Fee assets: {feeText}
-        </div>
-      )}
-      <div className="Dashboard-note">
-        Long positions:{" "}
-        {formatAmount(totalLongPositionSizes, USD_DECIMALS, 2, true)} USD, Short
-        positions:{" "}
-        {formatAmount(totalShortPositionSizes, USD_DECIMALS, 2, true)} USD
-        {/* {volumeLabel} volume:{" "}
-        {formatAmount(volumeInfo.totalVolume, USD_DECIMALS, 2, true)} USD */}
-      </div>
-      <div className="Dashboard-token-list-container">
-        <div className="Dashboard-token-list Dashboard-list">
-          <div className="border Dashboard-token-card ndol App-card primary">
-            <div className="Dashboard-token-title App-card-title">
-              <div className="Dashboard-token-title-text">NDOL</div>
-              <div className="Dashboard-token-title-options flex items-center">
-                <img
-                  src={metamaskImg}
-                  alt="MetaMask"
-                  onClick={() =>
-                    addToken({
-                      address: NDOLToken?.address,
-                      symbol: NDOLToken?.symbol,
-                      info: {
-                        decimals: 18,
-                        imageUrl: NDOLToken?.imageUrl,
-                      },
-                    })
-                  }
-                />
-                <a
-                  href="https://www.coingecko.com/en/coins/ndol"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <img src={coingeckoImg} alt="CoinGecko" />
-                </a>
-                <a
-                  href={getTokenUrl(CHAIN_ID, NDOLToken?.address)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <img
-                    src="https://doc.aurora.dev/_img/favicon.svg"
-                    alt="AuroraScan"
-                  />
-                </a>
-              </div>
-              <div className="label">Supply</div>
-              <div>{formatAmount(ndolSupply, 18, 0, true)} NDOL</div>
-            </div>
+  if (totalFeesUsd.gt(0)) {
+    return (
+      <div className="Data Page">
+        <div className="Dashboard-title App-hero">
+          <div className="Dashboard-title-primary App-hero-primary">
+            ${formatAmount(tokenStats.aum, USD_DECIMALS, 0, true)}
           </div>
-          {infoTokens &&
-            infoTokens.map((token) => (
-              <div
-                className="border Dashboard-token-card App-card"
-                key={token.address}
-              >
-                <div className="Dashboard-token-title App-card-title">
-                  <div className="Dashboard-token-title-text">
-                    {token.symbol}
-                  </div>
-                  <div className="Dashboard-token-title-options flex items-center">
+          <div className="Dashboard-title-secondary">
+            Assets Under Management
+          </div>
+        </div>
+        {totalFeesUsd?.gt(0) && (
+          <div className="Dashboard-fee-info">
+            {"Total fees earned: "}
+            {formatAmount(totalFeesUsd, USD_DECIMALS, 2, true)} USD
+            <br />
+            Fee assets: {feeText}
+          </div>
+        )}
+        <div className="Dashboard-note">
+          Long positions:{" "}
+          {formatAmount(totalLongPositionSizes, USD_DECIMALS, 2, true)} USD,
+          Short positions:{" "}
+          {formatAmount(totalShortPositionSizes, USD_DECIMALS, 2, true)} USD
+          {/* {volumeLabel} volume:{" "}
+        {formatAmount(volumeInfo.totalVolume, USD_DECIMALS, 2, true)} USD */}
+        </div>
+        <div className="Dashboard-token-list-container">
+          <div className="Dashboard-token-list Dashboard-list">
+            <div className="border Dashboard-token-card ndol App-card primary">
+              <div className="Dashboard-token-title App-card-title">
+                <div className="Dashboard-token-title-text">NDOL</div>
+                <div className="Dashboard-token-title-options flex items-center">
+                  <img
+                    src={metamaskImg}
+                    alt="MetaMask"
+                    onClick={() =>
+                      addToken({
+                        address: NDOLToken?.address,
+                        symbol: NDOLToken?.symbol,
+                        info: {
+                          decimals: 18,
+                          imageUrl: NDOLToken?.imageUrl,
+                        },
+                      })
+                    }
+                  />
+                  <a
+                    href="https://www.coingecko.com/en/coins/ndol"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <img src={coingeckoImg} alt="CoinGecko" />
+                  </a>
+                  <a
+                    href={getTokenUrl(CHAIN_ID, NDOLToken?.address)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     <img
-                      src={metamaskImg}
-                      alt="MetaMask"
-                      onClick={() => addToken(token)}
+                      src="https://doc.aurora.dev/_img/favicon.svg"
+                      alt="AuroraScan"
                     />
-                    <a
-                      href={token.info.coingeckoUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <img src={coingeckoImg} alt="CoinGecko" />
-                    </a>
-                    <a
-                      href={getTokenUrl(CHAIN_ID, token.address)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <img
-                        src={"https://doc.aurora.dev/_img/favicon.svg"}
-                        alt="AuroraScan"
-                      />
-                    </a>
-                  </div>
+                  </a>
                 </div>
-                <div className="Dashboard-token-card-bottom App-card-content">
-                  <div className="Dashboard-token-info App-card-row">
-                    <div className="label">Pool</div>
-                    <div>
-                      {formatAmount(
-                        token.managedAmount,
-                        token.decimals,
-                        8,
-                        true
-                      )}{" "}
-                      {token.symbol} ($
-                      {formatAmount(token.managedUsd, USD_DECIMALS, 0, true)})
+                <div className="label">Supply</div>
+                <div>{formatAmount(ndolSupply, 18, 0, true)} NDOL</div>
+              </div>
+            </div>
+            {infoTokens &&
+              infoTokens.map((token) => (
+                <div
+                  className="border Dashboard-token-card App-card"
+                  key={token.address}
+                >
+                  <div className="Dashboard-token-title App-card-title">
+                    <div className="Dashboard-token-title-text">
+                      {token.symbol}
+                    </div>
+                    <div className="Dashboard-token-title-options flex items-center">
+                      <img
+                        src={metamaskImg}
+                        alt="MetaMask"
+                        onClick={() => addToken(token)}
+                      />
+                      <a
+                        href={token.info.coingeckoUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <img src={coingeckoImg} alt="CoinGecko" />
+                      </a>
+                      <a
+                        href={getTokenUrl(CHAIN_ID, token.address)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <img
+                          src={"https://doc.aurora.dev/_img/favicon.svg"}
+                          alt="AuroraScan"
+                        />
+                      </a>
                     </div>
                   </div>
-                  <div className="Dashboard-token-info App-card-row">
-                    <div className="label">Reserved</div>
-                    <div>
-                      {formatAmount(
-                        token.reservedAmounts,
-                        token.decimals,
-                        4,
-                        true
-                      )}
-                    </div>
-                  </div>
-                  {showNDOLAmount && (
+                  <div className="Dashboard-token-card-bottom App-card-content">
                     <div className="Dashboard-token-info App-card-row">
-                      <div className="label">NDOL Minted</div>
+                      <div className="label">Pool</div>
                       <div>
-                        {formatAmount(token.ndolAmounts, 18, 0, true)} USD
+                        {formatAmount(
+                          token.managedAmount,
+                          token.decimals,
+                          8,
+                          true
+                        )}{" "}
+                        {token.symbol} ($
+                        {formatAmount(token.managedUsd, USD_DECIMALS, 0, true)})
                       </div>
                     </div>
-                  )}
-                  <div className="App-card-row">
-                    <div className="label">Utilization</div>
-                    <div>{formatAmount(token.utilization, 4, 2, true)}%</div>
-                  </div>
-                  <hr />
-                  {/* <div className="App-card-row">
+                    <div className="Dashboard-token-info App-card-row">
+                      <div className="label">Reserved</div>
+                      <div>
+                        {formatAmount(
+                          token.reservedAmounts,
+                          token.decimals,
+                          4,
+                          true
+                        )}
+                      </div>
+                    </div>
+                    {showNDOLAmount && (
+                      <div className="Dashboard-token-info App-card-row">
+                        <div className="label">NDOL Minted</div>
+                        <div>
+                          {formatAmount(token.ndolAmounts, 18, 0, true)} USD
+                        </div>
+                      </div>
+                    )}
+                    <div className="App-card-row">
+                      <div className="label">Utilization</div>
+                      <div>{formatAmount(token.utilization, 4, 2, true)}%</div>
+                    </div>
+                    <hr />
+                    {/* <div className="App-card-row">
                         <div className="label">{volumeLabel} Volume</div>
                         <div>
                           {formatAmount(
@@ -595,77 +596,77 @@ export default function Data() {
                         </div>
                       </div> */}
 
-                  <div className="App-card-row">
-                    <div className="label">Cumulative Funding Rate</div>
-                    <div>
-                      {formatAmount(token.cumulativeFundingRate, 4, 4, true)}%
+                    <div className="App-card-row">
+                      <div className="label">Cumulative Funding Rate</div>
+                      <div>
+                        {formatAmount(token.cumulativeFundingRate, 4, 4, true)}%
+                      </div>
                     </div>
-                  </div>
-                  <div className="App-card-row">
-                    <div className="label">Last Funding</div>
-                    <div>{formatDateTime(token.lastFundingTime)}</div>
-                  </div>
-                  <hr />
-                  <div className="App-card-row">
-                    <div className="label">Long Open Interest</div>
-                    <div>
-                      {formatAmount(
-                        token.longOpenInterest,
-                        USD_DECIMALS,
-                        2,
-                        true
-                      )}{" "}
-                      USD
+                    <div className="App-card-row">
+                      <div className="label">Last Funding</div>
+                      <div>{formatDateTime(token.lastFundingTime)}</div>
                     </div>
-                  </div>
-                  <div className="App-card-row">
-                    <div className="label">Short Open Interest</div>
-                    <div>
-                      {formatAmount(
-                        token.shortOpenInterest,
-                        USD_DECIMALS,
-                        2,
-                        true
-                      )}{" "}
-                      USD
+                    <hr />
+                    <div className="App-card-row">
+                      <div className="label">Long Open Interest</div>
+                      <div>
+                        {formatAmount(
+                          token.longOpenInterest,
+                          USD_DECIMALS,
+                          2,
+                          true
+                        )}{" "}
+                        USD
+                      </div>
                     </div>
-                  </div>
-                  <div className="App-card-row">
-                    <div className="label">Long Liquidations</div>
-                    <div>
-                      {formatAmount(
-                        token.longLiquidations,
-                        USD_DECIMALS,
-                        2,
-                        true
-                      )}
-                      {" USD"}
+                    <div className="App-card-row">
+                      <div className="label">Short Open Interest</div>
+                      <div>
+                        {formatAmount(
+                          token.shortOpenInterest,
+                          USD_DECIMALS,
+                          2,
+                          true
+                        )}{" "}
+                        USD
+                      </div>
                     </div>
-                  </div>
-                  <div className="App-card-row">
-                    <div className="label">Short Liquidations</div>
-                    <div>
-                      {formatAmount(
-                        token.shortLiquidations,
-                        USD_DECIMALS,
-                        2,
-                        true
-                      )}
-                      {" USD"}
+                    <div className="App-card-row">
+                      <div className="label">Long Liquidations</div>
+                      <div>
+                        {formatAmount(
+                          token.longLiquidations,
+                          USD_DECIMALS,
+                          2,
+                          true
+                        )}
+                        {" USD"}
+                      </div>
                     </div>
-                  </div>
-                  <div className="App-card-row">
-                    <div className="label">Longs</div>
-                    <div>{token.longs}</div>
-                  </div>
-                  <div className="App-card-row">
-                    <div className="label">Shorts</div>
-                    <div>{token.shorts}</div>
+                    <div className="App-card-row">
+                      <div className="label">Short Liquidations</div>
+                      <div>
+                        {formatAmount(
+                          token.shortLiquidations,
+                          USD_DECIMALS,
+                          2,
+                          true
+                        )}
+                        {" USD"}
+                      </div>
+                    </div>
+                    <div className="App-card-row">
+                      <div className="label">Longs</div>
+                      <div>{token.longs}</div>
+                    </div>
+                    <div className="App-card-row">
+                      <div className="label">Shorts</div>
+                      <div>{token.shorts}</div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          {/* {dailyVolumes && dailyVolumes.length > 0 && (
+              ))}
+            {/* {dailyVolumes && dailyVolumes.length > 0 && (
             <div>
               <div className="App-hero">
                 <div className="Dashboard-volumes-header App-hero-primary">
@@ -700,9 +701,11 @@ export default function Data() {
               </div>
             </div>
           )} */}
+          </div>
+          <Footer />
         </div>
-        <Footer />
       </div>
-    </div>
-  );
+    );
+  }
+  return null;
 }
