@@ -359,6 +359,9 @@ export default function Data() {
   const updateDataFunctions = [updateNdolSupply, updateVaultTokenInfo];
 
   useEffect(() => {
+    updateDataFunctions.forEach((updateDataFunction) => {
+      updateDataFunction(undefined, true);
+    });
     if (active) {
       library.on("block", () => {
         updateDataFunctions.forEach((updateDataFunction) => {
