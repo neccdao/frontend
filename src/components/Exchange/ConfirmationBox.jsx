@@ -478,41 +478,43 @@ export default function ConfirmationBox(props) {
           */}
             <ExchangeInfoRow label="Leverage">
               {hasExistingPosition && toAmount && toAmount.gt(0) && (
-                <div className="inline-block muted">
-                  {formatAmount(existingPosition.leverage, 4, 2)}x
+                <div className="ml-auto flex items-center">
+                  <span className="muted">
+                    {formatAmount(existingPosition.leverage, 4, 2)}x
+                  </span>
                   <BsArrowRight className="transition-arrow" />
+                  {toAmount && leverage && leverage.gt(0) && (
+                    <span>${formatAmount(leverage, 4, 2)}x</span>
+                  )}
+                  {leverage && leverage.eq(0) && `-`}
+                  {!toAmount && leverage && leverage.gt(0) && `-`}
                 </div>
               )}
-              {toAmount &&
-                leverage &&
-                leverage.gt(0) &&
-                `${formatAmount(leverage, 4, 2)}x`}
-              {!toAmount && leverage && leverage.gt(0) && `-`}
-              {leverage && leverage.eq(0) && `-`}
             </ExchangeInfoRow>
             <ExchangeInfoRow label="Liq. Price">
               {hasExistingPosition && toAmount && toAmount.gt(0) && (
-                <div className="inline-block muted">
-                  $
-                  {formatAmount(
-                    existingLiquidationPrice,
-                    USD_DECIMALS,
-                    2,
-                    true
-                  )}
+                <div className="ml-auto flex items-center">
+                  <span className="muted">
+                    {formatAmount(
+                      existingLiquidationPrice,
+                      USD_DECIMALS,
+                      2,
+                      true
+                    )}
+                  </span>
                   <BsArrowRight className="transition-arrow" />
+                  {toAmount &&
+                    displayLiquidationPrice &&
+                    `$${formatAmount(
+                      displayLiquidationPrice,
+                      USD_DECIMALS,
+                      2,
+                      true
+                    )}`}
+                  {!toAmount && displayLiquidationPrice && `-`}
+                  {!displayLiquidationPrice && `-`}
                 </div>
               )}
-              {toAmount &&
-                displayLiquidationPrice &&
-                `$${formatAmount(
-                  displayLiquidationPrice,
-                  USD_DECIMALS,
-                  2,
-                  true
-                )}`}
-              {!toAmount && displayLiquidationPrice && `-`}
-              {!displayLiquidationPrice && `-`}
             </ExchangeInfoRow>
             {showSpread && (
               <ExchangeInfoRow

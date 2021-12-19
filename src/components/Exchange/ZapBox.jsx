@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 
-import Slider, { SliderTooltip } from "rc-slider";
 import "rc-slider/assets/index.css";
 
 import { toast } from "react-toastify";
@@ -8,9 +7,7 @@ import useSWR from "swr";
 import { ethers } from "ethers";
 
 import Modal from "../Modal/Modal";
-import { IoMdSwap } from "react-icons/io";
 import { AiFillSetting } from "react-icons/ai";
-import { BsArrowRight } from "react-icons/bs";
 
 import {
   getAccountUrl,

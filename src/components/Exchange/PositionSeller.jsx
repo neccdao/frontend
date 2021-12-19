@@ -520,18 +520,22 @@ export default function PositionSeller(props) {
               <div className="Exchange-info-label">Size</div>
               <div className="align-right">
                 {position && position.size && fromAmount && (
-                  <div>
-                    <div className="inline-block muted">
-                      ${formatAmount(position.size, USD_DECIMALS, 2, true)}
+                  <div className="flex items-center">
+                    <div className="ml-auto flex items-center">
+                      <span className="muted">
+                        ${formatAmount(position.size, USD_DECIMALS, 2, true)}
+                      </span>
                       <BsArrowRight className="transition-arrow" />
+                      <span>
+                        $
+                        {formatAmount(
+                          position.size.sub(fromAmount),
+                          USD_DECIMALS,
+                          2,
+                          true
+                        )}
+                      </span>
                     </div>
-                    $
-                    {formatAmount(
-                      position.size.sub(fromAmount),
-                      USD_DECIMALS,
-                      2,
-                      true
-                    )}
                   </div>
                 )}
                 {position && position.size && !fromAmount && (
@@ -545,13 +549,15 @@ export default function PositionSeller(props) {
               <div className="Exchange-info-label">Collateral</div>
               <div className="align-right">
                 {nextCollateral && (
-                  <div>
-                    <div className="inline-block muted">
+                  <div className="flex items-center">
+                    <span className="muted ml-auto">
                       $
                       {formatAmount(position.collateral, USD_DECIMALS, 2, true)}
-                      <BsArrowRight className="transition-arrow" />
-                    </div>
-                    ${formatAmount(nextCollateral, USD_DECIMALS, 2, true)}
+                    </span>
+                    <BsArrowRight className="transition-arrow" />
+                    <span>
+                      ${formatAmount(nextCollateral, USD_DECIMALS, 2, true)}
+                    </span>
                   </div>
                 )}
                 {!nextCollateral &&
@@ -574,12 +580,14 @@ export default function PositionSeller(props) {
                         <div>{formatAmount(position.leverage, 4, 2)}x</div>
                       )}
                       {nextLeverage && (
-                        <div>
-                          <div className="inline-block muted">
-                            {formatAmount(position.leverage, 4, 2)}x
+                        <div className="flex items-center">
+                          <div className="ml-auto flex items-center">
+                            <span className="muted">
+                              {formatAmount(position.leverage, 4, 2)}x
+                            </span>
                             <BsArrowRight className="transition-arrow" />
                           </div>
-                          {formatAmount(nextLeverage, 4, 2)}x
+                          <span>{formatAmount(nextLeverage, 4, 2)}x</span>
                         </div>
                       )}
                     </div>
@@ -604,24 +612,28 @@ export default function PositionSeller(props) {
                       </div>
                     )}
                     {nextLiquidationPrice && (
-                      <div>
-                        <div className="inline-block muted">
-                          $
-                          {formatAmount(
-                            liquidationPrice,
-                            USD_DECIMALS,
-                            2,
-                            true
-                          )}
+                      <div className="flex items-center">
+                        <div className="ml-auto flex items-center">
+                          <span className="muted">
+                            $
+                            {formatAmount(
+                              liquidationPrice,
+                              USD_DECIMALS,
+                              2,
+                              true
+                            )}
+                          </span>
                           <BsArrowRight className="transition-arrow" />
+                          <span>
+                            $
+                            {formatAmount(
+                              nextLiquidationPrice,
+                              USD_DECIMALS,
+                              2,
+                              true
+                            )}
+                          </span>
                         </div>
-                        $
-                        {formatAmount(
-                          nextLiquidationPrice,
-                          USD_DECIMALS,
-                          2,
-                          true
-                        )}
                       </div>
                     )}
                   </div>

@@ -12,9 +12,7 @@ export default function ExchangeInfoRow(props) {
         {label}
       </div>
       <div
-        className={`align-right ${
-          isWarning ? "Exchange-info-value-warning" : ""
-        }`}
+        className={`ml-auto ${isWarning ? "Exchange-info-value-warning" : ""}`}
       >
         {children || value}
       </div>

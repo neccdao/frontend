@@ -1868,15 +1868,17 @@ export default function SwapBox(props) {
               <div className="Exchange-info-label">Entry Price</div>
               <div className="align-right">
                 {hasExistingPosition && toAmount && toAmount.gt(0) && (
-                  <div className="inline-block muted">
-                    <div className="flex items-center">
-                      $
-                      {formatAmount(
-                        existingPosition.averagePrice,
-                        USD_DECIMALS,
-                        2,
-                        true
-                      )}
+                  <div className="flex items-center ">
+                    <div className="ml-auto flex items-center">
+                      <span className="muted">
+                        $
+                        {formatAmount(
+                          existingPosition.averagePrice,
+                          USD_DECIMALS,
+                          2,
+                          true
+                        )}
+                      </span>
                       <BsArrowRight className="transition-arrow" />
                     </div>
                   </div>
@@ -1890,15 +1892,17 @@ export default function SwapBox(props) {
               <div className="Exchange-info-label">Liq. Price</div>
               <div className="align-right">
                 {hasExistingPosition && toAmount && toAmount.gt(0) && (
-                  <div className="inline-block muted">
-                    <div className="flex items-center">
-                      $
-                      {formatAmount(
-                        existingLiquidationPrice,
-                        USD_DECIMALS,
-                        2,
-                        true
-                      )}
+                  <div className="flex items-center">
+                    <div className="ml-auto flex items-center">
+                      <span className="muted">
+                        $
+                        {formatAmount(
+                          existingLiquidationPrice,
+                          USD_DECIMALS,
+                          2,
+                          true
+                        )}
+                      </span>
                       <BsArrowRight className="transition-arrow" />
                     </div>
                   </div>

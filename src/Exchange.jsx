@@ -110,8 +110,13 @@ function getPositions(positionQuery, positionData, infoTokens) {
         position.deltaStr = position.hasProfit ? "+" : "-";
         position.deltaPercentageStr = position.hasProfit ? "+" : "-";
       }
-      position.deltaStr += `$${formatAmount(position.delta, USD_DECIMALS, 2)}`;
-      position.deltaPercentageStr += `${formatAmount(
+
+      position.deltaStr += `$${formatAmountFree(
+        position.delta,
+        USD_DECIMALS,
+        2
+      )}`;
+      position.deltaPercentageStr += `${formatAmountFree(
         position.deltaPercentage,
         2,
         2
