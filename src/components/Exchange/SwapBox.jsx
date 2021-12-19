@@ -128,7 +128,7 @@ function getNextAveragePrice({
   } else {
     divisor = hasProfit ? nextSize.sub(delta) : nextSize.add(delta);
   }
-  const nextAveragePrice = nextPrice.mul(nextSize).div(divisor);
+  const nextAveragePrice = nextPrice?.mul(nextSize)?.div(divisor);
   return nextAveragePrice;
 }
 
@@ -161,10 +161,10 @@ function getNextFromAmount(
     ratio &&
     !ratio.isZero() &&
     toAmount
-      .mul(ratio)
-      .div(PRECISION)
-      .mul(toToken.decimals)
-      .div(fromToken.decimals);
+      ?.mul(ratio)
+      ?.div(PRECISION)
+      ?.mul(toToken.decimals)
+      ?.div(fromToken.decimals);
 
   if (toTokenAddress === NDOL_ADDRESS) {
     const feeBasisPoints = getSwapFeeBasisPoints(fromToken.isStable);
@@ -907,15 +907,17 @@ export default function SwapBox(props) {
         const nextToAmountUsd = nextToAmount
           .mul(indexTokenInfo.minPrice)
           .div(expandDecimals(1, indexTokenInfo.decimals));
+
         if (
           fromTokenAddress === NDOL_ADDRESS &&
-          nextToAmountUsd.lt(fromUsdMin.mul(98).div(100))
+          nextToAmountUsd?.lt(fromUsdMin?.mul(98)?.div(100))
         ) {
           return "High NDOL Slippage, Long Anyway";
         }
       }
       return `Long ${toToken.symbol}`;
     }
+
     if (isShort) {
       const indexTokenAddress =
         toTokenAddress === AddressZero ? NATIVE_TOKEN_ADDRESS : toTokenAddress;
@@ -930,9 +932,10 @@ export default function SwapBox(props) {
         const nextToAmountUsd = nextToAmount
           .mul(indexTokenInfo.minPrice)
           .div(expandDecimals(1, indexTokenInfo.decimals));
+
         if (
           fromTokenAddress === NDOL_ADDRESS &&
-          nextToAmountUsd.lt(fromUsdMin.mul(98).div(100))
+          nextToAmountUsd?.lt(fromUsdMin?.mul(98)?.div(100))
         ) {
           return "High NDOL Slippage, Short Anyway";
         }

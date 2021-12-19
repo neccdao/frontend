@@ -103,7 +103,7 @@ function getPositions(positionQuery, positionData, infoTokens) {
 
     if (position.collateral?.gt(0)) {
       position.deltaPercentage = position.delta
-        .mul(BASIS_POINTS_DIVISOR)
+        ?.mul(BASIS_POINTS_DIVISOR)
         ?.div(position.collateral);
 
       if (position.delta.gt(0)) {

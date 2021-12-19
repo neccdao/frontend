@@ -15,8 +15,8 @@ export default function ExchangeWalletTokens(props) {
         let balanceUsd;
         if (balance && info.maxPrice) {
           balanceUsd = balance
-            .mul(info.maxPrice)
-            .div(expandDecimals(1, token.decimals));
+            ?.mul(info.maxPrice)
+            ?.div(expandDecimals(1, token.decimals));
         }
 
         return (
