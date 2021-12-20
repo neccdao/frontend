@@ -1019,7 +1019,7 @@ export const addAuroraNetwork = async () => {
   try {
     await ethereum.request({
       method: "wallet_switchEthereumChain",
-      params: [{ chainId: "0x" + TESTNET.toString(16) }],
+      params: [{ chainId: "0x" + MAINNET.toString(16) }],
     });
   } catch (err) {
     toast.error("Failed to switch to Aurora network.");
