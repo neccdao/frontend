@@ -485,7 +485,7 @@ export default function Bond() {
 
   return (
     <div className="Exchange">
-      <div className="flex items-center justify-center h-screen">
+      <div className="flex items-center justify-center min-h-screen">
         <BondBox
           flagOrdersEnabled={flagOrdersEnabled}
           chainId={chainId}
@@ -533,8 +533,6 @@ export default function Bond() {
           </div>
         </div>
       </div>
-
-      <Footer />
     </div>
   );
 }

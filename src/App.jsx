@@ -10,12 +10,7 @@ import Exchange from "./Exchange";
 import Mint from "./Mint";
 import Zap from "./Zap";
 import Data from "./Data";
-
-// import Home from "./Home";
-// import Presale from "./Presale";
-// import Stake from "./Stake";
-// import Actions from "./Actions";
-// import Debug from "./Debug";
+import Footer from "./Footer";
 
 import { cssTransition } from "react-toastify";
 import { ToastContainer } from "react-toastify";
@@ -52,8 +47,8 @@ function App() {
             <div className="App-background fixed z-0 w-full h-full"></div>
             <div className="App-highlight"></div>
             <ErrorBoundary showDialog={true}>
+              <Header />
               <div className="App-content">
-                <Header />
                 <Switch>
                   <Route exact path="/">
                     <Exchange />
@@ -90,6 +85,7 @@ function App() {
                 </Route> */}
                 </Switch>
               </div>
+              <Footer />
             </ErrorBoundary>
           </div>
           <ToastContainer

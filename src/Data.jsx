@@ -705,7 +705,6 @@ export default function Data() {
             </div>
           )} */}
           </div>
-          <Footer />
         </div>
       </div>
     );
