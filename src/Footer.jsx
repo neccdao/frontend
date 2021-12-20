@@ -49,7 +49,7 @@ export default function Footer() {
       </a> */}
       <a
         className="App-social-link"
-        href="https://discord.gg/PwaesU6MVx"
+        href="https://discord.gg/jUcjEauuvw"
         target="_blank"
         rel="noopener noreferrer"
       >
