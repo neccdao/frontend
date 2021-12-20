@@ -495,7 +495,6 @@ const MintBox = (props) => {
     updateStakedBalance,
     updateTotalStaked,
     updateStakingEpoch,
-    npdatesNeccCirculatingSupply,
     updateMintFarmnNeccBalance,
   ];
 
