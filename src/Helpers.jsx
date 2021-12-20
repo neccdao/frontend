@@ -1005,7 +1005,7 @@ export const addAuroraNetwork = async () => {
   const data = [
     {
       chainId: "0x" + MAINNET.toString(16),
-      chainName: "Rinkeby",
+      chainName: "Aurora",
       nativeCurrency: {
         name: "ETH",
         symbol: "ETH",
