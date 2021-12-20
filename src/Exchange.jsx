@@ -686,8 +686,6 @@ export default function Exchange() {
         {/* {renderChart()} */}
         <div className="Exchange-lists">{getListSection()}</div>
       </div>
-
-      <Footer />
     </div>
   );
 }

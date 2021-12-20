@@ -280,7 +280,7 @@ export default function Zap() {
 
   return (
     <div className="Exchange">
-      <div className="flex items-center justify-center h-screen">
+      <div className="flex items-center justify-center min-h-screen">
         <ZapBox
           flagOrdersEnabled={flagOrdersEnabled}
           chainId={chainId}
@@ -316,8 +316,6 @@ export default function Zap() {
           </div>
         </div>
       </div>
-
-      <Footer />
     </div>
   );
 }

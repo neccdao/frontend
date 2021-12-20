@@ -255,7 +255,7 @@ export default function Mint() {
   return (
     <div className="Exchange">
       <div>
-        <div className="flex items-center justify-center h-screen">
+        <div className="flex items-center justify-center min-h-screen">
           <MintBox
             flagOrdersEnabled={flagOrdersEnabled}
             chainId={chainId}
@@ -291,8 +291,6 @@ export default function Mint() {
           </div>
         </div>
       </div>
-
-      <Footer />
     </div>
   );
 }
