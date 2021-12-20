@@ -320,6 +320,7 @@ const MintBox = (props) => {
   const mintFarmAddress = getContract(CHAIN_ID, "MintFarm");
   const stakingAddress = getContract(CHAIN_ID, "NeccStaking");
   const nNeccAddress = getContract(CHAIN_ID, "nNecc");
+  const ndolAddress = getContract(CHAIN_ID, "NDOL");
   const mintDistributorAddress = getContract(CHAIN_ID, "MintDistributor");
 
   const fromToken = getToken(CHAIN_ID, fromTokenAddress);
@@ -349,16 +350,16 @@ const MintBox = (props) => {
   );
 
   const { data: mintFarmTokenAllowance, mutate: updateMintFarmTokenAllowance } =
-    useSWR([active, fromTokenAddress, "allowance", account, mintFarmAddress], {
+    useSWR([active, ndolAddress, "allowance", account, mintFarmAddress], {
       fetcher: fetcher(library, Token),
     });
 
-  const {
-    data: mintDistributornNeccTokenBalance,
-    mutate: updateMintDistributornNeccTokenBalance,
-  } = useSWR([active, nNeccAddress, "balanceOf", mintDistributorAddress], {
-    fetcher: fetcher(library, Token),
-  });
+  // const {
+  //   data: mintDistributornNeccTokenBalance,
+  //   mutate: updateMintDistributornNeccTokenBalance,
+  // } = useSWR([active, nNeccAddress, "balanceOf", mintDistributorAddress], {
+  //   fetcher: fetcher(library, Token),
+  // });
 
   const { data: stakedBalance, mutate: updateStakedBalance } = useSWR(
     [active, mintFarmAddress, "staked", account],
@@ -393,10 +394,10 @@ const MintBox = (props) => {
     }
   );
 
-  const { data: nNeccCirculatingSupply, mutate: npdatesNeccCirculatingSupply } =
-    useSWR([active, nNeccAddress, "circulatingSupply"], {
-      fetcher: fetcher(library, nNecc, []),
-    });
+  // const { data: nNeccCirculatingSupply, mutate: npdatesNeccCirculatingSupply } =
+  //   useSWR([active, nNeccAddress, "circulatingSupply"], {
+  //     fetcher: fetcher(library, nNecc, []),
+  //   });
 
   const { data: targetAdjustedFee, mutate: updateTargetAdjustedFee } = useSWR(
     [
@@ -669,8 +670,10 @@ const MintBox = (props) => {
     if (error) {
       return false;
     }
-    if ((needMintFarmApproval && isWaitingForApproval) || isApproving) {
-      return false;
+    if (isStake) {
+      if ((needMintFarmApproval && isWaitingForApproval) || isApproving) {
+        return false;
+      }
     }
     if ((needApproval && isWaitingForApproval) || isApproving) {
       return false;
@@ -703,8 +706,10 @@ const MintBox = (props) => {
     if (isApproving) {
       return `Approving ${fromToken.symbol}...`;
     }
-    if (needMintFarmApproval) {
-      return `Approve ${fromToken.symbol}`;
+    if (isStake) {
+      if (needMintFarmApproval) {
+        return `Approve ${fromToken.symbol}`;
+      }
     }
     if (needApproval) {
       return `Approve ${fromToken.symbol}`;
@@ -1352,9 +1357,11 @@ const MintBox = (props) => {
       return;
     }
 
-    if (needMintFarmApproval) {
-      approveFromToken(true);
-      return;
+    if (isStake) {
+      if (needMintFarmApproval) {
+        approveFromToken(true);
+        return;
+      }
     }
 
     if (needApproval) {
