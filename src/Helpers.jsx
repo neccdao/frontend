@@ -34,7 +34,6 @@ const MAX_LEVERAGE = 50 * 10000;
 
 export const USD_DECIMALS = 30;
 export const BASIS_POINTS_DIVISOR = 10000;
-export const DUST_BNB = "2000000000000000";
 export const DUST_USD = expandDecimals(1, USD_DECIMALS);
 export const PRECISION = expandDecimals(1, 30);
 export const MARGIN_FEE_BASIS_POINTS = 10;

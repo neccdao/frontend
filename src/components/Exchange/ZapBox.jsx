@@ -29,7 +29,6 @@ import {
   STOP,
   LIMIT,
   THRESHOLD_REDEMPTION_VALUE,
-  DUST_BNB,
   getExplorerUrl,
   getSwapFeeBasisPoints,
   usePrevious,
@@ -52,7 +51,6 @@ import {
   getGasLimit,
   useLocalStorageSerializeKey,
 } from "../../Helpers";
-import { approvePlugin } from "../../Api";
 import { getContract } from "../../Addresses";
 
 import Tab from "../Tab/Tab";
@@ -622,19 +620,6 @@ const ZapBox = (props) => {
       );
     }
 
-    if (
-      shouldRaiseGasError(
-        getTokenInfo(infoTokens, fromTokenAddress),
-        fromAmount
-      )
-    ) {
-      setIsSubmitting(false);
-      toast.error(
-        `Leave at least ${formatAmount(DUST_BNB, 18, 3)} ETH for gas`
-      );
-      return;
-    }
-
     const gasLimit = await getGasLimit(contract, method, params, value);
     contract[method](...params, { value, gasLimit })
       .then(async (res) => {
@@ -684,19 +669,6 @@ const ZapBox = (props) => {
         ZapSP.abi,
         library.getSigner()
       );
-    }
-
-    if (
-      shouldRaiseGasError(
-        getTokenInfo(infoTokens, fromTokenAddress),
-        fromAmount
-      )
-    ) {
-      setIsSubmitting(false);
-      toast.error(
-        `Leave at least ${formatAmount(DUST_BNB, 18, 3)} ETH for gas`
-      );
-      return;
     }
 
     const gasLimit = await getGasLimit(contract, method, params, value);

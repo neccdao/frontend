@@ -46,7 +46,19 @@ function App() {
           <div className="App">
             <div className="App-background fixed z-0 w-full h-full"></div>
             <div className="App-highlight"></div>
-            <ErrorBoundary showDialog={true}>
+            <ErrorBoundary
+              showDialog={true}
+              fallback={
+                <div className="min-h-screen min-w-full flex items-center justify-center absolute z-50">
+                  <a
+                    className="text-nord11"
+                    href="https://discord.gg/EfVdTcx45K"
+                  >
+                    Can dev do something???
+                  </a>
+                </div>
+              }
+            >
               <Header />
               <div className="App-content">
                 <Switch>
@@ -68,21 +80,6 @@ function App() {
                   <Route exact path="/bond">
                     <Bond />
                   </Route>
-                  {/* <Route exact path="/presale">
-                  <Presale />
-                </Route>
-                <Route exact path="/earn">
-                  <Stake />
-                </Route>
-                <Route exact path="/about">
-                  <Home />
-                </Route>
-                <Route exact path="/debug">
-                  <Debug />
-                </Route>
-                <Route exact path="/actions/:account">
-                  <Actions />
-                </Route> */}
                 </Switch>
               </div>
               <Footer />

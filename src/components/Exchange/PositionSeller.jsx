@@ -10,7 +10,6 @@ import {
   DEFAULT_SLIPPAGE_AMOUNT,
   USD_DECIMALS,
   CHAIN_ID,
-  DUST_USD,
   BASIS_POINTS_DIVISOR,
   NDOL_ADDRESS,
   getExplorerUrl,
@@ -29,6 +28,7 @@ import {
   STOP,
   getGasLimit,
   useLocalStorageSerializeKey,
+  DUST_USD,
 } from "../../Helpers";
 import { getContract } from "../../Addresses";
 import Router from "../../abis/Router.json";

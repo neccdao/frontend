@@ -8,7 +8,6 @@ import {
   USD_DECIMALS,
   CHAIN_ID,
   BASIS_POINTS_DIVISOR,
-  DUST_BNB,
   formatAmount,
   bigNumberify,
   getExplorerUrl,
@@ -288,19 +287,6 @@ export default function PositionEditor(props) {
       method = "increasePositionETH";
       value = fromAmount;
       params = [path, indexTokenAddress, 0, 0, position.isLong, priceLimit];
-    }
-
-    if (
-      shouldRaiseGasError(
-        getTokenInfo(infoTokens, collateralTokenAddress),
-        fromAmount
-      )
-    ) {
-      setIsSwapping(false);
-      toast.error(
-        `Leave at least ${formatAmount(DUST_BNB, 18, 3)} BNB for gas`
-      );
-      return;
     }
 
     const contract = new ethers.Contract(

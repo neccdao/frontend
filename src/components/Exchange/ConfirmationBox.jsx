@@ -289,7 +289,6 @@ export default function ConfirmationBox(props) {
     }
   }
 
-  // TODO handle unaprproved order plugin
   const renderMain = () => {
     if (isRedeem) {
       const untilDateTime =
@@ -371,17 +370,6 @@ export default function ConfirmationBox(props) {
     );
   };
 
-  function renderExecutionFee() {
-    if (isMarketOrder) {
-      return null;
-    }
-    return (
-      <ExchangeInfoRow label="Execution Fees">
-        {formatAmount(DEFAULT_ORDER_EXECUTION_GAS_AMOUNT, 18, 4)} BNB
-      </ExchangeInfoRow>
-    );
-  }
-
   return (
     <div className="Confirmation-box">
       <Modal
@@ -441,8 +429,6 @@ export default function ConfirmationBox(props) {
                 </div>
               </div>
             )}
-            {(isSwap || isBurn || isMint || isLong || isShort) &&
-              renderExecutionFee()}
             {fromTokenUsd && (
               <div className="Exchange-info-row">
                 <div className="Exchange-info-label">
@@ -468,7 +454,6 @@ export default function ConfirmationBox(props) {
             <ExchangeInfoRow label="Fees">
               {formatAmount(feesUsd, USD_DECIMALS, 2, true)} USD
             </ExchangeInfoRow>
-            {renderExecutionFee()}
             {isLong && (
               <ExchangeInfoRow label="Profits In" value={toToken.symbol} />
             )}

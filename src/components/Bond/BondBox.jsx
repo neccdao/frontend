@@ -29,7 +29,6 @@ import {
   STOP,
   LIMIT,
   THRESHOLD_REDEMPTION_VALUE,
-  DUST_BNB,
   getExplorerUrl,
   getSwapFeeBasisPoints,
   usePrevious,
@@ -55,7 +54,6 @@ import {
   formatDate,
   trim,
 } from "../../Helpers";
-import { approvePlugin } from "../../Api";
 import { getContract } from "../../Addresses";
 
 import Tab from "../Tab/Tab";
@@ -550,8 +548,6 @@ export const BondBox = (props) => {
     triggerRatio,
   ]);
 
-  const [isPluginApproving, setIsPluginApproving] = useState(false);
-
   const getSwapError = (isSecondary) => {
     if (isBond) {
       if (fromTokenAddress === toTokenAddress) {
@@ -690,10 +686,6 @@ export const BondBox = (props) => {
       return `Approve ${fromToken.symbol}`;
     }
 
-    if (isPluginApproving) {
-      return "Approving Order Book...";
-    }
-
     if (isSubmitting) {
       if (!isMarketOrder) {
         return "Creating order...";
@@ -702,7 +694,7 @@ export const BondBox = (props) => {
         return "Redeem and Staking ...";
       }
       if (isRedeem) {
-        return "Redeem...";
+        return "Redeem and Staking...";
       }
       if (isBond) {
         return "Bond...";
@@ -802,19 +794,6 @@ export const BondBox = (props) => {
       library.getSigner()
     );
 
-    if (
-      shouldRaiseGasError(
-        getTokenInfo(infoTokens, fromTokenAddress),
-        fromAmount
-      )
-    ) {
-      setIsSubmitting(false);
-      toast.error(
-        `Leave at least ${formatAmount(DUST_BNB, 18, 3)} ETH for gas`
-      );
-      return;
-    }
-
     try {
       const gasLimit = await getGasLimit(contract, method, params, value);
       const res = await contract[method](...params, { value, gasLimit });
@@ -861,19 +840,6 @@ export const BondBox = (props) => {
       Staking.abi,
       library.getSigner()
     );
-
-    if (
-      shouldRaiseGasError(
-        getTokenInfo(infoTokens, fromTokenAddress),
-        fromAmount
-      )
-    ) {
-      setIsSubmitting(false);
-      toast.error(
-        `Leave at least ${formatAmount(DUST_BNB, 18, 3)} ETH for gas`
-      );
-      return;
-    }
 
     try {
       const gasLimit = await getGasLimit(contract, method, params, value);
@@ -922,14 +888,6 @@ export const BondBox = (props) => {
       library.getSigner()
     );
 
-    if (shouldRaiseGasError(toTokens[0], fromAmount)) {
-      setIsSubmitting(false);
-      toast.error(
-        `Leave at least ${formatAmount(DUST_BNB, 18, 3)} ETH for gas`
-      );
-      return;
-    }
-
     try {
       const gasLimit = await getGasLimit(contract, method, params, value);
       const res = await contract[method](...params, { value, gasLimit });
@@ -977,14 +935,6 @@ export const BondBox = (props) => {
       library.getSigner()
     );
 
-    if (shouldRaiseGasError(toTokens[0], fromAmount)) {
-      setIsSubmitting(false);
-      toast.error(
-        `Leave at least ${formatAmount(DUST_BNB, 18, 3)} ETH for gas`
-      );
-      return;
-    }
-
     try {
       const gasLimit = await getGasLimit(contract, method, params, value);
       const res = await contract[method](...params, { value, gasLimit });
@@ -1031,19 +981,6 @@ export const BondBox = (props) => {
       BondDepositoryFacet.abi,
       library.getSigner()
     );
-
-    if (
-      shouldRaiseGasError(
-        getTokenInfo(infoTokens, fromTokenAddress),
-        fromAmount
-      )
-    ) {
-      setIsSubmitting(false);
-      toast.error(
-        `Leave at least ${formatAmount(DUST_BNB, 18, 3)} ETH for gas`
-      );
-      return;
-    }
 
     try {
       const gasLimit = await getGasLimit(contract, method, params, value);
@@ -1095,19 +1032,6 @@ export const BondBox = (props) => {
         BondDepositoryFacet.abi,
         library.getSigner()
       );
-    }
-
-    if (
-      shouldRaiseGasError(
-        getTokenInfo(infoTokens, fromTokenAddress),
-        fromAmount
-      )
-    ) {
-      setIsSubmitting(false);
-      toast.error(
-        `Leave at least ${formatAmount(DUST_BNB, 18, 3)} ETH for gas`
-      );
-      return;
     }
 
     try {

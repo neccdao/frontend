@@ -34,7 +34,6 @@ import {
   STOP,
   LIMIT,
   THRESHOLD_REDEMPTION_VALUE,
-  DUST_BNB,
   getExplorerUrl,
   getSwapFeeBasisPoints,
   usePrevious,
@@ -57,7 +56,6 @@ import {
   getGasLimit,
   useLocalStorageSerializeKey,
 } from "../../Helpers";
-import { approvePlugin } from "../../Api";
 import { getContract } from "../../Addresses";
 
 import Checkbox from "../Checkbox/Checkbox";
@@ -611,10 +609,6 @@ export default function SwapBox(props) {
     }
   }, [toTokenAddress, prevToTokenAddress, swapOption, positionsMap]);
 
-  const [isWaitingForPluginApproval, setIsWaitingForPluginApproval] =
-    useState(false);
-  const [isPluginApproving, setIsPluginApproving] = useState(false);
-
   let entryMarkPrice;
   let exitMarkPrice;
   if (toTokenInfo) {
@@ -864,10 +858,6 @@ export default function SwapBox(props) {
     }
     if (needApproval) {
       return `Approve ${fromToken.symbol}`;
-    }
-
-    if (isPluginApproving) {
-      return "Approving Order Book...";
     }
 
     if (isSubmitting) {
@@ -1189,19 +1179,6 @@ export default function SwapBox(props) {
       );
     }
 
-    if (
-      shouldRaiseGasError(
-        getTokenInfo(infoTokens, fromTokenAddress),
-        fromAmount
-      )
-    ) {
-      setIsSubmitting(false);
-      toast.error(
-        `Leave at least ${formatAmount(DUST_BNB, 18, 3)} BNB for gas`
-      );
-      return;
-    }
-
     const gasLimit = await getGasLimit(contract, method, params, value);
     contract[method](...params, { value, gasLimit })
       .then(async (res) => {
@@ -1307,19 +1284,6 @@ export default function SwapBox(props) {
       method = "increasePositionETH";
       value = boundedFromAmount;
       params = [path, indexTokenAddress, 0, toUsdMax, isLong, priceLimit];
-    }
-
-    if (
-      shouldRaiseGasError(
-        getTokenInfo(infoTokens, fromTokenAddress),
-        fromAmount
-      )
-    ) {
-      setIsSubmitting(false);
-      toast.error(
-        `Leave at least ${formatAmount(DUST_BNB, 18, 3)} BNB for gas`
-      );
-      return;
     }
 
     const contract = new ethers.Contract(
