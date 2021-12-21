@@ -32,7 +32,6 @@ import {
   STOP,
   LIMIT,
   THRESHOLD_REDEMPTION_VALUE,
-  DUST_BNB,
   getExplorerUrl,
   getSwapFeeBasisPoints,
   usePrevious,
@@ -57,7 +56,6 @@ import {
   SWAP_FEE_BASIS_POINTS,
   trim,
 } from "../../Helpers";
-import { approvePlugin } from "../../Api";
 import { getContract } from "../../Addresses";
 
 import Tab from "../Tab/Tab";
@@ -394,7 +392,7 @@ const MintBox = (props) => {
     }
   );
 
-  // const { data: nNeccCirculatingSupply, mutate: npdatesNeccCirculatingSupply } =
+  // const { data: nNeccCirculatingSupply, mutate: updatesNeccCirculatingSupply } =
   //   useSWR([active, nNeccAddress, "circulatingSupply"], {
   //     fetcher: fetcher(library, nNecc, []),
   //   });
@@ -1001,19 +999,6 @@ const MintBox = (props) => {
       );
     }
 
-    if (
-      shouldRaiseGasError(
-        getTokenInfo(infoTokens, fromTokenAddress),
-        fromAmount
-      )
-    ) {
-      setIsSubmitting(false);
-      toast.error(
-        `Leave at least ${formatAmount(DUST_BNB, 18, 3)} BNB for gas`
-      );
-      return;
-    }
-
     const isBurn = path[0] === getTokenBySymbol(CHAIN_ID, "NDOL")?.address;
     const gasLimit = await getGasLimit(contract, method, params, value);
     contract[method](...params, { value, gasLimit })
@@ -1086,19 +1071,6 @@ const MintBox = (props) => {
       library.getSigner()
     );
 
-    if (
-      shouldRaiseGasError(
-        getTokenInfo(infoTokens, fromTokenAddress),
-        fromAmount
-      )
-    ) {
-      setIsSubmitting(false);
-      toast.error(
-        `Leave at least ${formatAmount(DUST_BNB, 18, 3)} ETH for gas`
-      );
-      return;
-    }
-
     const gasLimit = await getGasLimit(contract, method, params, value);
     contract[method](...params, { value, gasLimit })
       .then(async (res) => {
@@ -1149,19 +1121,6 @@ const MintBox = (props) => {
       library.getSigner()
     );
 
-    if (
-      shouldRaiseGasError(
-        getTokenInfo(infoTokens, fromTokenAddress),
-        fromAmount
-      )
-    ) {
-      setIsSubmitting(false);
-      toast.error(
-        `Leave at least ${formatAmount(DUST_BNB, 18, 3)} ETH for gas`
-      );
-      return;
-    }
-
     const gasLimit = await getGasLimit(contract, method, params, value);
     contract[method](...params, { value, gasLimit })
       .then(async (res) => {
@@ -1211,19 +1170,6 @@ const MintBox = (props) => {
       MintFarm.abi,
       library.getSigner()
     );
-
-    if (
-      shouldRaiseGasError(
-        getTokenInfo(infoTokens, fromTokenAddress),
-        fromAmount
-      )
-    ) {
-      setIsSubmitting(false);
-      toast.error(
-        `Leave at least ${formatAmount(DUST_BNB, 18, 3)} ETH for gas`
-      );
-      return;
-    }
 
     const gasLimit = await getGasLimit(contract, method, params, value);
     contract[method](...params, { value, gasLimit })
