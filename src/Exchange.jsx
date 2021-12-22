@@ -107,22 +107,14 @@ function getPositions(positionQuery, positionData, infoTokens) {
         ?.div(position.collateral);
 
       if (position.delta.gt(0)) {
-        position.deltaStr = position.hasProfit ? "+" : "-";
-        position.deltaPercentageStr = position.hasProfit ? "+" : "-";
+        position.deltaStr = `${
+          position.hasProfit ? "+" : "-"
+        }$${formatAmountFree(position.delta, USD_DECIMALS, 2)}`;
+        position.deltaPercentageStr = `${
+          position.hasProfit ? "+" : "-"
+        }${formatAmountFree(position.deltaPercentage, 2, 2)}%`;
       }
-
-      position.deltaStr += `$${formatAmountFree(
-        position.delta,
-        USD_DECIMALS,
-        2
-      )}`;
-      position.deltaPercentageStr += `${formatAmountFree(
-        position.deltaPercentage,
-        2,
-        2
-      )}%`;
     }
-
     position.leverage = getLeverage({
       size: position.size,
       collateral: position.collateral,
