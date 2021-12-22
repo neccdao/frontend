@@ -168,8 +168,8 @@ export default function PositionSeller(props) {
       receiveAmount = position.collateral;
     }
 
-    if (sizeDelta) {
-      adjustedDelta = position.delta.mul(sizeDelta).div(position.size);
+    if (sizeDelta && position.delta && position.size) {
+      adjustedDelta = position?.delta?.mul(sizeDelta)?.div(position.size);
     }
 
     if (position.hasProfit) {
