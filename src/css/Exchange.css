@@ -106,7 +106,8 @@
 
 .Exchange-swap-account .Exchange-swap-address,
 .Exchange-swap-account .Exchange-swap-txns-status {
-  opacity: 0.7;
+  opacity: 0.8;
+  text-decoration: underline;
 }
 
 .Exchange-swap-txns-status {
@@ -120,6 +121,7 @@
   vertical-align: middle;
   margin-top: 0.1rem;
   cursor: pointer;
+  align-self: center;
 }
 
 .Exchange-swap-settings:hover {
