@@ -354,9 +354,9 @@ export default function SwapBox(props) {
 
   const whitelistedTokens = getWhitelistedTokens(CHAIN_ID);
   const tokens = getTokens(CHAIN_ID);
-  const fromTokens = tokens?.filter((token) => !token.isLP);
+  const fromTokens = tokens?.filter((token) => !token.isLP && !token.isNdol);
   const indexTokens = whitelistedTokens.filter(
-    (token) => !token.isStable && !token.isWrapped && !token.isLP
+    (token) => !token.isNdol && !token.isWrapped && !token.isLP
   );
   const toTokens = isSwap ? tokens : indexTokens;
 
@@ -940,25 +940,26 @@ export default function SwapBox(props) {
     setFromTokenAddress(token.address);
     setIsWaitingForApproval(false);
 
+    const to = token?.isWrapped ? AddressZero : token.address;
+
     const updatedTokenSelection = JSON.parse(JSON.stringify(tokenSelection));
     updatedTokenSelection[swapOption] = {
       from: token.address,
-      to: toTokenAddress,
+      to,
     };
+    setToTokenAddress(to);
     setTokenSelection(updatedTokenSelection);
-  };
-
-  const onSelectShortCollateralAddress = (token) => {
-    setShortCollateralAddress(token.address);
   };
 
   const onSelectToToken = (token) => {
     setToTokenAddress(token.address);
     const updatedTokenSelection = JSON.parse(JSON.stringify(tokenSelection));
     updatedTokenSelection[swapOption] = {
-      from: fromTokenAddress,
+      from: token.address,
       to: token.address,
     };
+
+    setFromTokenAddress(token.address);
     setTokenSelection(updatedTokenSelection);
   };
 
