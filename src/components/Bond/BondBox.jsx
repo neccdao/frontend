@@ -1626,7 +1626,7 @@ export const BondBox = (props) => {
             </button>
           )}
 
-          {isBond && fromTokenAddress === ndolNNECCPairAddress && (
+          {isBond && (
             <div className="mt-4">
               <div className="">
                 <button className="App-cta  !bg-nord10 min-w-full">
