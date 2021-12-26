@@ -43,6 +43,7 @@ import {
 import ReaderFacet from "./abis/ReaderFacet.json";
 import BondDepositoryFacet from "./abis/BondDepositoryFacet.json";
 import sNecc from "./abis/sNeccFacet.json";
+import nNecc from "./abis/nNeccFacet.json";
 import Staking from "./abis/StakingFacet.json";
 import TreasuryFacet from "./abis/TreasuryFacet.json";
 import BondingCalculatorFacet from "./abis/BondingCalculatorFacet.json";
@@ -262,6 +263,17 @@ export default function Bond() {
     useSWR([active, sNeccAddress, "circulatingSupply"], {
       fetcher: fetcher(library, sNecc, []),
     });
+
+  const { data: nNeccTotalSupply, mutate: updatenNeccTotalSupply } = useSWR(
+    [active, nNeccAddress, "totalSupply"],
+    {
+      fetcher: fetcher(library, nNecc, []),
+    }
+  );
+
+  const nNeccCirculatingSupply = nNeccTotalSupply?.sub(
+    expandDecimals(125_000, 18)
+  );
 
   // const { data: sNeccTotalSupply, mutate: updatesNeccTotalSupply } = useSWR(
   //   [active, sNeccAddress, "totalSupply"],
@@ -522,6 +534,7 @@ export default function Bond() {
           currentDebt={currentDebt}
           nextRebase={stakingEpoch?.endTime}
           bondPrice={ndolBondPrice}
+          nNeccCirculatingSupply={nNeccCirculatingSupply}
         />
         <div className="Exchange-wallet-tokens">
           <div className="Exchange-wallet-tokens-content border">
