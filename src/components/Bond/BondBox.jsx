@@ -1560,6 +1560,15 @@ export const BondBox = (props) => {
                   formatAmount(nNeccMarketPrice, 18, 2, true)}{" "}
               </ExchangeInfoRow>
 
+              <div className="Exchange-info-row">
+                <div className="Exchange-info-label">Circulating Supply</div>
+                <div className="align-right">
+                  {nNeccCirculatingSupply &&
+                    formatAmount(nNeccCirculatingSupply, 18, 2, true)}{" "}
+                  {"nNecc"}
+                </div>
+              </div>
+
               <hr className="my-2" />
 
               <div className="Exchange-info-row">
@@ -1589,15 +1598,6 @@ export const BondBox = (props) => {
               </div>
 
               <hr className="my-2" />
-
-              <div className="Exchange-info-row">
-                <div className="Exchange-info-label">Circulating Supply</div>
-                <div className="align-right">
-                  {nNeccCirculatingSupply &&
-                    formatAmount(nNeccCirculatingSupply, 18, 2, true)}{" "}
-                  {"nNecc"}
-                </div>
-              </div>
 
               <div className="Exchange-info-row">
                 <div className="Exchange-info-label">Total Staked</div>
