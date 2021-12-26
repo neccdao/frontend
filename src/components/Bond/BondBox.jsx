@@ -1660,18 +1660,6 @@ export const BondBox = (props) => {
             </button>
           )}
 
-          {isInfo && (
-            <button
-              className="App-cta Exchange-swap-button mt-4"
-              onClick={() => {
-                setIsRebase(true);
-                onClickPrimary();
-              }}
-            >
-              {getSecondaryText()}
-            </button>
-          )}
-
           {isInfo && warmupInfo?.deposit?.gt(0) && (
             <button
               className="App-cta Exchange-swap-button mt-4"
