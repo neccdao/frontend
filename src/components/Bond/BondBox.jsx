@@ -1626,6 +1626,21 @@ export const BondBox = (props) => {
             </button>
           )}
 
+          {isBond && fromTokenAddress === ndolNNECCPairAddress && (
+            <div className="mt-4">
+              <div className="">
+                <button className="App-cta  !bg-nord10 min-w-full">
+                  <a
+                    target="_blank"
+                    href="https://www.trisolaris.io/#/add/0xC86Ca2BB9C9c9c9F140d832dE00BfA9e153FA1e3/0x449f661c53aE0611a24c2883a910A563A7e42489"
+                  >
+                    Add Liquidity for NDOL/nNECC LP tokens
+                  </a>
+                </button>
+              </div>
+            </div>
+          )}
+
           {isInfo && (
             <button
               className="App-cta Exchange-swap-button"
