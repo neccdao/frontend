@@ -260,7 +260,8 @@ export function getBondTokens(chainId) {
       return token;
     }
     if (token.symbol?.toLowerCase().includes("lp")) {
-      return token;
+      // TODO: once lp bonds fixed
+      return false;
     }
     return false;
   });
