@@ -272,7 +272,7 @@ export default function Bond() {
   );
 
   const nNeccCirculatingSupply = nNeccTotalSupply?.sub(
-    expandDecimals(125_000, 18)
+    expandDecimals(124_890, 18)
   );
 
   // const { data: sNeccTotalSupply, mutate: updatesNeccTotalSupply } = useSWR(
