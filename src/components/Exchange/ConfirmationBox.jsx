@@ -487,7 +487,7 @@ export default function ConfirmationBox(props) {
                       true
                     )}
                   <BsArrowRight className="transition-arrow" />
-                </div>
+                  </div>
                 </div>
               )}
               {toAmount &&
@@ -497,7 +497,7 @@ export default function ConfirmationBox(props) {
                   USD_DECIMALS,
                   2,
                   true
-                )}`}
+              )}`}
               {!toAmount && displayLiquidationPrice && `-`}
               {!displayLiquidationPrice && `-`}
             </ExchangeInfoRow>
