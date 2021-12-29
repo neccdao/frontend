@@ -1836,9 +1836,9 @@ export default function SwapBox(props) {
               <div className="Exchange-info-label">Entry Price</div>
               <div className="align-right">
                 {hasExistingPosition && toAmount && toAmount.gt(0) && (
-                  <div className="flex items-center ">
-                    <div className="ml-auto flex items-center">
-                      <span className="muted">
+                  <React.Fragment>
+                    <div className="inline-block muted">
+                      <div className="flex items-center">
                         $
                         {formatAmount(
                           existingPosition.averagePrice,
@@ -1846,28 +1846,28 @@ export default function SwapBox(props) {
                           2,
                           true
                         )}
-                      </span>
-                      <BsArrowRight className="transition-arrow" />
-                      {nextAveragePrice &&
-                        `$${formatAmount(
-                          nextAveragePrice,
-                          USD_DECIMALS,
-                          2,
-                          true
-                        )}`}
-                      {!nextAveragePrice && `-`}
+                        <BsArrowRight className="transition-arrow" />
+                      </div>
                     </div>
-                  </div>
+                  </React.Fragment>
                 )}
+                {nextAveragePrice && toAmount && toAmount.gt(0) &&
+                `$${formatAmount(
+                  nextAveragePrice,
+                  USD_DECIMALS,
+                  2,
+                  true
+                )}`}
+                {(!nextAveragePrice || !toAmount) && `-`}
               </div>
             </div>
             <div className="Exchange-info-row">
               <div className="Exchange-info-label">Liq. Price</div>
               <div className="align-right">
                 {hasExistingPosition && toAmount && toAmount.gt(0) && (
-                  <div className="flex items-center">
-                    <div className="ml-auto flex items-center">
-                      <span className="muted">
+                  <React.Fragment>
+                    <div className="inline-block muted">
+                      <div className="flex items-center">
                         $
                         {formatAmount(
                           existingLiquidationPrice,
@@ -1875,21 +1875,20 @@ export default function SwapBox(props) {
                           2,
                           true
                         )}
-                      </span>
-                      <BsArrowRight className="transition-arrow" />
-                      {toAmount &&
-                        displayLiquidationPrice &&
-                        `$${formatAmount(
-                          displayLiquidationPrice,
-                          USD_DECIMALS,
-                          2,
-                          true
-                        )}`}
-                      {!toAmount && displayLiquidationPrice && `-`}
-                      {!displayLiquidationPrice && `-`}
+                        <BsArrowRight className="transition-arrow" />
+                      </div>
                     </div>
-                  </div>
+                  </React.Fragment>
                 )}
+                {toAmount && displayLiquidationPrice &&
+                `$${formatAmount(
+                  displayLiquidationPrice,
+                  USD_DECIMALS,
+                  2,
+                  true
+                )}`}
+                {!toAmount && displayLiquidationPrice && `-`}
+                {!displayLiquidationPrice && `-`}
               </div>
             </div>
             <ExchangeInfoRow label="Fees">
