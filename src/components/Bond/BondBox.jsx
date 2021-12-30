@@ -377,6 +377,8 @@ export const BondBox = (props) => {
     ? bigNumberify(ndolnNECCPairMarketPrice)?.mul(expandDecimals(1, 18))
     : bigNumberify(0);
 
+  const nNeccMarketCap = nNeccCirculatingSupply?.mul(nNeccMarketPrice);
+
   const nNeccBondPrice =
     bondPrice && stakingCurrentIndex
       ? bigNumberify(bondPrice)
@@ -1558,6 +1560,7 @@ export const BondBox = (props) => {
               <ExchangeInfoRow label="nNecc Market Price">
                 {nNeccMarketPrice &&
                   formatAmount(nNeccMarketPrice, 18, 2, true)}{" "}
+                  USD
               </ExchangeInfoRow>
 
               <div className="Exchange-info-row">
@@ -1568,6 +1571,13 @@ export const BondBox = (props) => {
                   {"nNecc"}
                 </div>
               </div>
+
+
+              <ExchangeInfoRow label="nNecc Market Cap">
+                {nNeccMarketCap &&
+                  formatAmount(nNeccMarketCap, 36, 0, true)}{" "}
+                  USD
+              </ExchangeInfoRow>
 
               <hr className="my-2" />
 
