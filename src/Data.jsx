@@ -104,6 +104,9 @@ function getInfoTokens(tokens, vaultTokenInfo) {
       : bigNumberify(0);
     token.availableUsd = availableUsd;
     token.managedUsd = availableUsd?.add(token.guaranteedUsd);
+    token.poolAmountsUsd = bigNumberify(token.poolAmounts)
+      ?.mul(token.maxPrice)
+      .div(expandDecimals(1, token.decimals));
     token.managedAmount = token.minPrice
       ? token.managedUsd
           .mul(expandDecimals(1, token.decimals))
@@ -140,7 +143,7 @@ function getTokenStats(tokens) {
 
   for (let i = 0; i < tokens.length; i++) {
     const token = tokens[i];
-    stats.aum = stats.aum.add(token.managedUsd);
+    stats.aum = stats.aum.add(token.poolAmountsUsd);
     stats.ndol = stats.ndol.add(token.ndolAmounts);
     stats.longUtilizationUsd = stats.longUtilizationUsd.add(
       token.utilizationUsd
@@ -444,7 +447,7 @@ export default function Data() {
   //   printVolumeSummary(volumeSummary);
   // }
 
-  if (totalFeesUsd.gt(0)) {
+  if (totalLongPositionSizes?.toString()) {
     return (
       <div className="Data Page">
         <div className="Dashboard-title App-hero">
@@ -553,13 +556,19 @@ export default function Data() {
                       <div className="label">Pool</div>
                       <div>
                         {formatAmount(
-                          token.managedAmount,
+                          token.poolAmounts,
                           token.decimals,
-                          8,
+                          4,
                           true
                         )}{" "}
                         {token.symbol} ($
-                        {formatAmount(token.managedUsd, USD_DECIMALS, 0, true)})
+                        {formatAmount(
+                          token.poolAmountsUsd,
+                          USD_DECIMALS,
+                          0,
+                          true
+                        )}
+                        )
                       </div>
                     </div>
                     <div className="Dashboard-token-info App-card-row">
