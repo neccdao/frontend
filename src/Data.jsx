@@ -106,7 +106,7 @@ function getInfoTokens(tokens, vaultTokenInfo) {
     token.managedUsd = availableUsd?.add(token.guaranteedUsd);
     token.poolAmountsUsd = bigNumberify(token.poolAmounts)
       ?.mul(token.maxPrice)
-      .div(expandDecimals(1, token.decimals));
+      ?.div(expandDecimals(1, token.decimals));
     token.managedAmount = token.minPrice
       ? token.managedUsd
           .mul(expandDecimals(1, token.decimals))
