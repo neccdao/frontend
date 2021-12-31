@@ -435,7 +435,7 @@ export const BondBox = (props) => {
     ?.mul(fromToken.price);
 
   const debtTxFailMessage = fromToken?.isNdol ? "(Txs fail above 2m)"
-    : fromToken.isLP ? "(Txs fail above 16k)" 
+    : fromToken?.isLP ? "(Txs fail above 16k)" 
     : ""
 
   useEffect(() => {
