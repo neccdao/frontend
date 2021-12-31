@@ -434,6 +434,10 @@ export const BondBox = (props) => {
     ?.mul(expandDecimals(1, 3))
     ?.mul(fromToken.price);
 
+  const debtTxFailMessage = fromToken?.isNdol ? "(Txs fail above 2m)"
+    : fromToken.isLP ? "(Txs fail above 16k)" 
+    : ""
+
   useEffect(() => {
     if (
       fromTokenAddress === prevFromTokenAddress &&
@@ -1738,7 +1742,7 @@ export const BondBox = (props) => {
 
           <div className="Exchange-info-row">
             <div className="Exchange-info-label">
-              Current Debt (Txs fail above 2M)
+                Current Debt {debtTxFailMessage}
             </div>
             <div className="align-right">
               {formatAmount(currentDebt, 9, 2, true)} %
