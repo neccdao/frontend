@@ -1742,7 +1742,7 @@ export const BondBox = (props) => {
 
           <div className="Exchange-info-row">
             <div className="Exchange-info-label">
-                Current Debt {debtTxFailMessage}
+              Current Debt {debtTxFailMessage}
             </div>
             <div className="align-right">
               {formatAmount(currentDebt, 9, 2, true)} %
