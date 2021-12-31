@@ -553,13 +553,21 @@ export default function Data() {
                       <div className="label">Pool</div>
                       <div>
                         {formatAmount(
-                          token.managedAmount,
+                          token.poolAmounts,
                           token.decimals,
-                          8,
+                          4,
                           true
                         )}{" "}
                         {token.symbol} ($
-                        {formatAmount(token.managedUsd, USD_DECIMALS, 0, true)})
+                        {formatAmount(
+                          bigNumberify(token?.poolAmounts)
+                            ?.mul(token.minPrice)
+                            .div(expandDecimals(1, token.decimals)),
+                          USD_DECIMALS,
+                          0,
+                          true
+                        )}
+                        )
                       </div>
                     </div>
                     <div className="Dashboard-token-info App-card-row">
