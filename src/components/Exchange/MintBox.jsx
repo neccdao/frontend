@@ -470,7 +470,7 @@ const MintBox = (props) => {
   averageRedemptionRate = averageRedemptionRate.div(bigNumberify(3));
   let warnLowRedemptionRate = ((averageRedemptionRate) &&
     (!averageRedemptionRate.eq(bigNumberify(0)) &&
-    (averageRedemptionRate.gt(bigNumberify(800000000000000000000000000000))))) ? 
+    (averageRedemptionRate.lte(bigNumberify(900000000000000000000000000000))))) ? 
     true : false
 
   useEffect(() => {
