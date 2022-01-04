@@ -310,6 +310,10 @@ const MintBox = (props) => {
     swapOption === "Burn"
       ? tokens.filter((token) => token.symbol !== "NDOL")
       : tokens;
+  const collateralTokens = tokens.filter((token) => 
+    (token.symbol !== "NDOL") && 
+    (token.symbol !== "WETH") && 
+    (!token?.symbol?.toLowerCase()?.includes("lp")));
 
   const orderBookAddress = getContract(CHAIN_ID, "OrderBook");
   const nativeTokenAddress = getContract(CHAIN_ID, "NATIVE_TOKEN");
@@ -455,6 +459,19 @@ const MintBox = (props) => {
     ?.div(expandDecimals(1, toTokenInfo?.decimals));
   // console.log("redemptionValue?.toString()");
   // console.log(redemptionValue?.toString());
+
+  // Get average rate, check if redemption rate is less than 90%
+  let averageRedemptionRate = bigNumberify(0);
+  for (let i = 0; i < collateralTokens.length; i++) {
+    const tokenInfo = getTokenInfo(infoTokens, collateralTokens[i]?.address);
+    const redemptionVal = tokenInfo.redemptionAmount?.mul(tokenInfo.maxPrice)?.div(expandDecimals(1, tokenInfo.decimals));
+    if (redemptionVal) averageRedemptionRate = averageRedemptionRate.add(redemptionVal);
+  }
+  averageRedemptionRate = averageRedemptionRate.div(bigNumberify(3));
+  let warnLowRedemptionRate = ((averageRedemptionRate) &&
+    (!averageRedemptionRate.eq(bigNumberify(0)) &&
+    (averageRedemptionRate.gt(bigNumberify(800000000000000000000000000000))))) ? 
+    true : false
 
   useEffect(() => {
     if (
@@ -722,6 +739,9 @@ const MintBox = (props) => {
     if (isMint) {
       if (toUsdMax.lt(fromUsdMin.mul(95).div(100))) {
         return "High Slippage, Mint Anyway";
+      }
+      if (warnLowRedemptionRate) {
+        return "NDOL Redemption Rate is Low, Mint Anyway"
       }
       return "Mint";
     }
@@ -1704,6 +1724,16 @@ const MintBox = (props) => {
               USD
             </div>
           </div>
+          {isMint && (
+              <div className="Exchange-info-row">
+                <div className="Exchange-info-label">NDOL Average Redemption Rate</div>
+                <div className="align-right">
+                  {averageRedemptionRate &&
+                    formatAmount(averageRedemptionRate, USD_DECIMALS, 2, true)}{" "}
+                  USD
+                </div>
+              </div>
+            )}
           {!isMarketOrder && (
             <ExchangeInfoRow label="Price">
               {getExchangeRateDisplay(
@@ -1771,6 +1801,8 @@ const MintBox = (props) => {
           isPendingConfirmation={isPendingConfirmation}
           fromUsdMin={fromUsdMin}
           toUsdMax={toUsdMax}
+          averageRedemptionRate={averageRedemptionRate}
+          warnLowRedemptionRate={warnLowRedemptionRate}
         />
       )}
     </div>

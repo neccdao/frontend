@@ -92,6 +92,8 @@ export default function ConfirmationBox(props) {
     isSubmitting,
     fromUsdMin,
     toUsdMax,
+    averageRedemptionRate,
+    warnLowRedemptionRate,
   } = props;
 
   const [savedSlippageAmount] = useLocalStorageSerializeKey(
@@ -391,6 +393,12 @@ export default function ConfirmationBox(props) {
             {renderMain()}
             {renderTriggerRatioWarning()}
             {renderSpreadWarning()}
+            {warnLowRedemptionRate && (
+              <div className="Confirmation-box-warning">
+                WARNING: NDOL average redemption rate is currently low! Slippage is greater than 10%. 
+                By design, staking NDOL helps combat impermanent loss over time.
+              </div>
+            )}
             {(isSwap || isBurn || isMint) && (
               <React.Fragment>
                 <ExchangeInfoRow label="Minimum received">
@@ -443,6 +451,17 @@ export default function ConfirmationBox(props) {
                   {toToken.symbol} price
                 </div>
                 <div className="align-right">{toTokenUsd} USD</div>
+              </div>
+            )}
+            {averageRedemptionRate && (
+              <div className="Exchange-info-row">
+                <div className="Exchange-info-label">
+                  NDOL Average Redemption Rate
+                </div>
+                <div className="align-right">
+                  {formatAmount(averageRedemptionRate, USD_DECIMALS, 2, true)}{" "}
+                  USD
+                </div>
               </div>
             )}
           </div>
