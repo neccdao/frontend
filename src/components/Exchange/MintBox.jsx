@@ -222,7 +222,7 @@ const MintBox = (props) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isClaim, setIsClaim] = useState(false);
   const [isUnstake, setIsUnstake] = useState(false);
-  const options = ["Mint", "Burn", "Stake"];
+  const options = ["Stake"];
   const isMint = swapOption === "Mint";
   const isBurn = swapOption === "Burn";
   const isStake = swapOption === "Stake";
@@ -1440,105 +1440,6 @@ const MintBox = (props) => {
           <React.Fragment>
             <div className="Exchange-swap-section">
               <div className="Exchange-swap-section-top">
-                {(isBurn || isMint) && (
-                  <div className="muted">
-                    {fromUsdMin && (
-                      // TODO for swap limits price can be different at moment of execution
-                      <div className="Exchange-swap-usd">
-                        Pay: {formatAmount(fromUsdMin, USD_DECIMALS, 2, true)}{" "}
-                        USD
-                      </div>
-                    )}
-                    {!fromUsdMin && "Pay"}
-                  </div>
-                )}
-
-                {isStake && (
-                  <div className="muted">
-                    {fromUsdMin && (
-                      // TODO for swap limits price can be different at moment of execution
-                      <div className="Exchange-swap-usd">
-                        Stake: {formatAmount(fromUsdMin, USD_DECIMALS, 2, true)}{" "}
-                        USD
-                      </div>
-                    )}
-                    {!fromUsdMin && "Stake"}
-                  </div>
-                )}
-                {fromBalance && (
-                  <div
-                    className="muted align-right clickable"
-                    onClick={() => {
-                      setFromValue(
-                        formatAmountFree(
-                          fromBalance,
-                          fromToken.decimals,
-                          fromToken.decimals
-                        )
-                      );
-                      setAnchorOnFromAmount(true);
-                    }}
-                  >
-                    Balance:{" "}
-                    {formatAmount(fromBalance, fromToken.decimals, 4, true)}
-                  </div>
-                )}
-              </div>
-              <div className="Exchange-swap-section-bottom">
-                <div className="Exchange-swap-input-container">
-                  <input
-                    type="number"
-                    placeholder="0.0"
-                    className="Exchange-swap-input"
-                    value={fromValue}
-                    onChange={onFromValueChange}
-                  />
-                  {fromValue !==
-                    formatAmountFree(
-                      fromBalance,
-                      fromToken.decimals,
-                      fromToken.decimals
-                    ) && (
-                    <div
-                      className="Exchange-swap-max"
-                      onClick={() => {
-                        setFromValue(
-                          formatAmountFree(
-                            fromBalance,
-                            fromToken.decimals,
-                            fromToken.decimals
-                          )
-                        );
-                        setAnchorOnFromAmount(true);
-                      }}
-                    >
-                      MAX
-                    </div>
-                  )}
-                </div>
-                <div>
-                  {swapOption === "Mint" ? (
-                    <TokenSelector
-                      label="From"
-                      chainId={CHAIN_ID}
-                      tokenAddress={fromTokenAddress}
-                      onSelectToken={onSelectFromToken}
-                      tokens={fromTokens.filter(
-                        (token) => !token?.symbol?.toLowerCase()?.includes("lp")
-                      )}
-                      infoTokens={infoTokens}
-                      mintingCap={maxNdol}
-                      showMintingCap={isBurn || isMint}
-                    />
-                  ) : (
-                    <div className="TokenSelector-box">{fromToken.symbol}</div>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            <div className="Exchange-swap-section">
-              <div className="Exchange-swap-section-top">
                 <div className="muted">
                   {toUsdMax && (
                     // TODO for swap limits price can be different at moment of execution
@@ -1629,16 +1530,6 @@ const MintBox = (props) => {
           </div>
         )}
 
-        <div className="Exchange-swap-button-container">
-          <button
-            className="App-cta Exchange-swap-button"
-            onClick={onClickPrimary}
-            disabled={!isPrimaryEnabled()}
-          >
-            {getPrimaryText()}
-          </button>
-        </div>
-
         {isStake && (
           <React.Fragment>
             {claimablenNecc?.gt(0) && (
@@ -1719,9 +1610,6 @@ const MintBox = (props) => {
       {isStake && (
         <div className="Exchange-swap-market-box border App-box">
           <div className="Exchange-swap-market-box-title">{swapOption}</div>
-          <ExchangeInfoRow label="nNecc Balance">
-            <div>{formatAmount(nNeccTokenBalance, 18, 4, true)}</div>
-          </ExchangeInfoRow>
           <ExchangeInfoRow label="Claimable nNecc">
             <div>{formatAmount(claimablenNecc, 18, 4, true)}</div>
           </ExchangeInfoRow>

@@ -71,6 +71,9 @@ function App() {
                   <Route exact path="/data">
                     <Data />
                   </Route>
+                  <Route exact path="/mint">
+                    <Mint />
+                  </Route>
                   <Route exact path="/bond">
                     <Bond />
                   </Route>
