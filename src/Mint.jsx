@@ -113,7 +113,7 @@ export default function Mint() {
 
   const [swapOption, setSwapOption] = useLocalStorageSerializeKey(
     [CHAIN_ID, "Mint-option"],
-    "Mint"
+    "Stake"
   );
 
   const [fromTokenAddress, setFromTokenAddress] = useState(
