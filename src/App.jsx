@@ -68,12 +68,6 @@ function App() {
                   <Route exact path="/trade">
                     <Exchange />
                   </Route>
-                  <Route exact path="/mint">
-                    <Mint />
-                  </Route>
-                  <Route exact path="/zap">
-                    <Zap />
-                  </Route>
                   <Route exact path="/data">
                     <Data />
                   </Route>
