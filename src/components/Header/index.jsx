@@ -144,16 +144,7 @@ const Header = () => {
             TRADE
           </NavLink>
         </div>
-        <div className="App-header-link-container  flex items-center">
-          <NavLink activeClassName="active" to="/mint">
-            MINT
-          </NavLink>
-        </div>
-        <div className="App-header-link-container  flex items-center">
-          <NavLink activeClassName="active" to="/bond">
-            BOND
-          </NavLink>
-        </div>
+
         {/* <div className="App-header-link-container  flex items-center">
         <NavLink activeClassName="active" to="/zap">
           ZAP
@@ -174,9 +165,12 @@ const Header = () => {
           </a>
         </div>
         <div className="App-header-link-container flex items-center ">
-          <a target="_blank" href="https://rainbowbridge.app/transfer">
-            BRIDGE
-            <span className="ml-1 text-md">↗</span>
+          <a
+            target="_blank"
+            href="https://assets.necc.io/sunset.txt"
+            className="text-yellow-500"
+          >
+            Sunset.txt
           </a>
         </div>
       </div>

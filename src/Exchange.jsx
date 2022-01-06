@@ -350,14 +350,6 @@ function PositionsList(props) {
                 </td>
                 <td>
                   <button
-                    className="Exchange-positions-action--edit"
-                    onClick={() => editPosition(position)}
-                  >
-                    Edit
-                  </button>
-                </td>
-                <td>
-                  <button
                     className="Exchange-positions-action--close"
                     onClick={() => sellPosition(position)}
                   >
@@ -639,38 +631,21 @@ export default function Exchange() {
     <div className="Exchange px-4">
       <div className="">
         <div className="flex items-center justify-center ">
-          <SwapBox
-            flagOrdersEnabled={flagOrdersEnabled}
-            chainId={chainId}
-            infoTokens={infoTokens}
-            active={active}
-            connectWallet={connectWallet}
-            library={library}
-            account={account}
-            positionsMap={positionsMap}
-            fromTokenAddress={fromTokenAddress}
-            setFromTokenAddress={setFromTokenAddress}
-            toTokenAddress={toTokenAddress}
-            setToTokenAddress={setToTokenAddress}
-            swapOption={swapOption}
-            setSwapOption={setSwapOption}
-            pendingTxns={pendingTxns}
-            setPendingTxns={setPendingTxns}
-            tokenSelection={tokenSelection}
-            setTokenSelection={setTokenSelection}
-            isConfirming={isConfirming}
-            setIsConfirming={setIsConfirming}
-            isPendingConfirmation={isPendingConfirmation}
-            setIsPendingConfirmation={setIsPendingConfirmation}
-          />
-          <div className="Exchange-wallet-tokens">
-            <div className="Exchange-wallet-tokens-content border">
-              <ExchangeWalletTokens
-                tokens={tokens}
-                infoTokens={infoTokens}
-                onSelectToken={onSelectWalletToken}
-              />
-            </div>
+          <div className="flex flex-col">
+            <a
+              href="https://assets.necc.io/sunset.txt"
+              target={"_blank"}
+              className="text-yellow-400"
+            >
+              <p className="text-yellow-400 mb-4">
+                Sunset.txt - Please click and read me
+              </p>
+            </a>
+
+            <p className="flex">
+              Traders please kindly close your positions by Friday January 7
+              Noon UTC+0.
+            </p>
           </div>
         </div>
       </div>
