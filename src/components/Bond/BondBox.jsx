@@ -434,9 +434,11 @@ export const BondBox = (props) => {
     ?.mul(expandDecimals(1, 3))
     ?.mul(fromToken.price);
 
-  const debtTxFailMessage = fromToken?.isNdol ? "(Txs fail above 2m)"
-    : fromToken?.isLP ? "(Txs fail above 16k)" 
-    : ""
+  const debtTxFailMessage = fromToken?.isNdol
+    ? "(Txs fail above 2m)"
+    : fromToken?.isLP
+    ? "(Txs fail above 16k)"
+    : "";
 
   useEffect(() => {
     if (
@@ -1328,7 +1330,7 @@ export const BondBox = (props) => {
       <div className="Exchange-swap-box-inner border">
         <div>
           <Tab
-            options={["Bond", "Redeem", "Info"]}
+            options={["Redeem"]}
             option={swapOption}
             onChange={onSwapOptionChange}
           />
@@ -1391,254 +1393,6 @@ export const BondBox = (props) => {
           </React.Fragment>
         )}
 
-        {isBond && (
-          <React.Fragment>
-            <div className="Exchange-swap-section">
-              <div className="Exchange-swap-section-top">
-                <div className="muted">
-                  {bondPayoutFor && (
-                    // TODO for swap limits price can be different at moment of execution
-                    <div className="Exchange-swap-usd">
-                      Bond:{" "}
-                      {formatAmount(bondPayoutForUsd, USD_DECIMALS, 2, true)}{" "}
-                      USD
-                    </div>
-                  )}
-                  {!fromUsdMin && "Bond"}
-                </div>
-                {fromBalance && (
-                  <div
-                    className="muted align-right clickable"
-                    onClick={() => {
-                      setFromValue(
-                        formatAmountFree(
-                          fromBalance,
-                          fromToken.decimals,
-                          fromToken.decimals
-                        )
-                      );
-                      setAnchorOnFromAmount(true);
-                    }}
-                  >
-                    Balance:{" "}
-                    {formatAmount(fromBalance, fromToken.decimals, 6, true)}
-                  </div>
-                )}
-              </div>
-              <div className="Exchange-swap-section-bottom">
-                <div className="Exchange-swap-input-container">
-                  <input
-                    type="number"
-                    placeholder="0.0"
-                    className="Exchange-swap-input"
-                    value={fromValue}
-                    onChange={onFromValueChange}
-                  />
-                  {fromValue !==
-                    formatAmountFree(
-                      fromBalance,
-                      fromToken.decimals,
-                      fromToken.decimals
-                    ) && (
-                    <div
-                      className="Exchange-swap-max"
-                      onClick={() => {
-                        setFromValue(
-                          formatAmountFree(
-                            fromBalance,
-                            fromToken.decimals,
-                            fromToken.decimals
-                          )
-                        );
-                        setAnchorOnFromAmount(true);
-                      }}
-                    >
-                      MAX
-                    </div>
-                  )}
-                </div>
-                <div>
-                  {swapOption === "Bond" ? (
-                    <TokenSelector
-                      label="From"
-                      chainId={CHAIN_ID}
-                      tokenAddress={fromTokenAddress}
-                      onSelectToken={onSelectFromToken}
-                      tokens={fromTokens}
-                      infoTokens={infoTokens}
-                      mintingCap={maxNdol}
-                      showBondingCap={isRedeem || isBond}
-                    />
-                  ) : (
-                    <div className="TokenSelector-box">{fromToken.symbol}</div>
-                  )}
-                </div>
-              </div>
-            </div>
-            <div className="Exchange-swap-section">
-              <div className="Exchange-swap-section-top">
-                <div className="muted">
-                  {toUsdMax && (
-                    // TODO for swap limits price can be different at moment of execution
-                    <div className="Exchange-swap-usd">{getToLabel()}</div>
-                  )}
-                  {!toUsdMax && getToLabel()}
-                </div>
-                {toBalance && (
-                  <div
-                    className="muted align-right clickable"
-                    onClick={() => {
-                      setFromValue(
-                        formatAmountFree(
-                          toBalance,
-                          toToken.decimals,
-                          toToken.decimals
-                        )
-                      );
-                      setAnchorOnFromAmount(true);
-                    }}
-                  >
-                    Balance:{" "}
-                    {formatAmount(toBalance, toToken.decimals, 6, true)}
-                  </div>
-                )}
-              </div>
-
-              <div className="Exchange-swap-section-bottom">
-                <div>
-                  <input
-                    type="number"
-                    placeholder="0.0"
-                    className="Exchange-swap-input"
-                    disabled={true}
-                    defaultValue={toValue}
-                  />
-                </div>
-                <div>
-                  {swapOption === "Redeem" ? (
-                    <TokenSelector
-                      label="To"
-                      chainId={CHAIN_ID}
-                      tokenAddress={toTokenAddress}
-                      onSelectToken={onSelectToToken}
-                      tokens={toTokens}
-                      infoTokens={infoTokens}
-                    />
-                  ) : (
-                    <div className="TokenSelector-box disabled">
-                      {toTokenInfo.symbol}
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </React.Fragment>
-        )}
-
-        {isInfo && (
-          <React.Fragment>
-            <div className="Exchange-swap-box-info px-1 mt-6">
-              <ExchangeInfoRow
-                labelClassName="opacity-100 text-white"
-                label="Necc Price * Current Index = nNecc Price "
-              >
-                <div>{"ⓘ"}</div>
-              </ExchangeInfoRow>
-
-              <hr className="mt-2 mb-4" />
-
-              <ExchangeInfoRow label="Necc Balance">
-                <div>{formatAmount(NeccTokenBalance, 9, 4, true)}</div>
-              </ExchangeInfoRow>
-              <ExchangeInfoRow label="nNecc Balance">
-                <div>{formatAmount(nNeccTokenBalance, 18, 2, true)}</div>
-              </ExchangeInfoRow>
-              <div className="Exchange-info-row">
-                <div className="Exchange-info-label">nNecc Bond Price </div>
-                <div className="align-right">
-                  {nNeccBondPrice && formatAmount(nNeccBondPrice, 18, 2, true)}{" "}
-                  USD
-                </div>
-              </div>
-
-              <ExchangeInfoRow label="nNecc Market Price">
-                {nNeccMarketPrice &&
-                  formatAmount(nNeccMarketPrice, 18, 2, true)}{" "}
-                  USD
-              </ExchangeInfoRow>
-
-              <div className="Exchange-info-row">
-                <div className="Exchange-info-label">Circulating Supply</div>
-                <div className="align-right">
-                  {nNeccCirculatingSupply &&
-                    formatAmount(nNeccCirculatingSupply, 18, 2, true)}{" "}
-                  {"nNecc"}
-                </div>
-              </div>
-
-
-              <ExchangeInfoRow label="nNecc Market Cap">
-                {nNeccMarketCap &&
-                  formatAmount(nNeccMarketCap, 36, 0, true)}{" "}
-                  USD
-              </ExchangeInfoRow>
-
-              <hr className="my-2" />
-
-              <div className="Exchange-info-row">
-                <div className="Exchange-info-label">APY</div>
-                <div className="align-right">
-                  {new Intl.NumberFormat("en-US").format(
-                    Number(trim(Number(apy) * 100, 1))
-                  )}{" "}
-                  %
-                </div>
-              </div>
-              <div className="Exchange-info-row">
-                <div className="Exchange-info-label">5 Day Rate</div>
-                <div className="align-right">
-                  {trim(Number(fiveDayRate) * 100, 4)} %
-                </div>
-              </div>
-
-              <div className="Exchange-info-row">
-                <div className="Exchange-info-label">
-                  Next Reward Percentage
-                </div>
-                <div className="align-right">
-                  {stakingRebasePercentage}
-                  {" %"}
-                </div>
-              </div>
-
-              <hr className="my-2" />
-
-              <div className="Exchange-info-row">
-                <div className="Exchange-info-label">Total Staked</div>
-                <div className="align-right">
-                  {fromToken &&
-                    formatAmount(stakingContractBalance, 9, 4, true)}{" "}
-                  {"Necc"}
-                </div>
-              </div>
-
-              <div className="Exchange-info-row">
-                <div className="Exchange-info-label">Current Index</div>
-                <div className="align-right">
-                  {fromToken && formatAmount(stakingCurrentIndex, 9, 4, true)}
-                </div>
-              </div>
-
-              <div className="Exchange-info-row">
-                <div className="Exchange-info-label">Next Rebase</div>
-                <div className="align-right">
-                  {fromToken && formatDateTime(nextRebase || Date.now() / 1000)}
-                </div>
-              </div>
-            </div>
-          </React.Fragment>
-        )}
-
         <div className="Exchange-swap-button-container">
           {!isInfo && (
             <button
@@ -1648,21 +1402,6 @@ export const BondBox = (props) => {
             >
               {getPrimaryText()}
             </button>
-          )}
-
-          {isBond && (
-            <div className="mt-4">
-              <div className="">
-                <button className="App-cta  !bg-nord10 min-w-full">
-                  <a
-                    target="_blank"
-                    href="https://www.trisolaris.io/#/add/0xC86Ca2BB9C9c9c9F140d832dE00BfA9e153FA1e3/0x449f661c53aE0611a24c2883a910A563A7e42489"
-                  >
-                    Add Liquidity for NDOL/nNECC LP tokens
-                  </a>
-                </button>
-              </div>
-            </div>
           )}
 
           {isInfo && (

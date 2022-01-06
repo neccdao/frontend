@@ -144,6 +144,11 @@ const Header = () => {
             TRADE
           </NavLink>
         </div>
+        <div className="App-header-link-container  flex items-center">
+          <NavLink activeClassName="active" to="/bond">
+            BOND - (REDEEM)
+          </NavLink>
+        </div>
 
         {/* <div className="App-header-link-container  flex items-center">
         <NavLink activeClassName="active" to="/zap">
