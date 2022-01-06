@@ -1330,7 +1330,7 @@ export const BondBox = (props) => {
       <div className="Exchange-swap-box-inner border">
         <div>
           <Tab
-            options={["Redeem"]}
+            options={["Redeem", "Info"]}
             option={swapOption}
             onChange={onSwapOptionChange}
           />
