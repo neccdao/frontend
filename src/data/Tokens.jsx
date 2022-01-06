@@ -169,6 +169,12 @@ export const TOKENS = {
       address: getContract(1337, "Necc"),
     },
     {
+      name: "nNecc",
+      symbol: "nNecc",
+      decimals: 18,
+      address: getContract(1337, "nNecc"),
+    },
+    {
       name: "sNecc",
       symbol: "sNecc",
       decimals: 9,
@@ -260,6 +266,18 @@ export function getBondTokens(chainId) {
       return token;
     }
     if (token.symbol?.toLowerCase().includes("lp")) {
+      return token;
+    }
+    return false;
+  });
+}
+
+export function getExitTokens(chainId) {
+  return TOKENS[chainId].filter((token) => {
+    if (token.symbol === "NDOL") {
+      return token;
+    }
+    if (token.symbol === "nNecc") {
       return token;
     }
     return false;

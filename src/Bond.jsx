@@ -108,6 +108,10 @@ export default function Bond() {
   const [tokenSelection, setTokenSelection] = useLocalStorageSerializeKey(
     [CHAIN_ID, "Bond-token-selection"],
     {
+      ["Exit"]: {
+        from: getTokenBySymbol(CHAIN_ID, "NDOL").address,
+        to: getTokenBySymbol(CHAIN_ID, "WETH").address,
+      },
       ["Bond"]: {
         from: getTokenBySymbol(CHAIN_ID, "NDOL").address,
         to: getTokenBySymbol(CHAIN_ID, "Necc").address,
