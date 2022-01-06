@@ -1340,6 +1340,26 @@ export const BondBox = (props) => {
           <React.Fragment>
             <div className="Exchange-swap-section">
               <div className="Exchange-swap-section-top">
+                <div className="muted">Principle</div>
+              </div>
+              <div className="Exchange-swap-section-bottom">
+                <div>
+                  <TokenSelector
+                    label="From"
+                    chainId={CHAIN_ID}
+                    tokenAddress={fromTokenAddress}
+                    onSelectToken={onSelectFromToken}
+                    tokens={fromTokens}
+                    infoTokens={infoTokens}
+                    mintingCap={maxNdol}
+                    showBondingCap={isRedeem || isBond}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="Exchange-swap-section">
+              <div className="Exchange-swap-section-top">
                 <div className="muted">{!fromUsdMin && "Redeemable"}</div>
               </div>
 
