@@ -67,6 +67,7 @@ import {
   getToken,
   getTokenBySymbol,
   getBondTokens,
+  getExitTokens,
 } from "../../data/Tokens";
 import Token from "../../abis/Token.json";
 import WETH from "../../abis/WETH.json";
@@ -74,6 +75,7 @@ import BondDepositoryFacet from "../../abis/BondDepositoryFacet.json";
 import UniswapV2Pair from "../../abis/IUniswapV2Pair.json";
 import Staking from "../../abis/StakingFacet.json";
 import TreasuryFacet from "../../abis/TreasuryFacet.json";
+import RedemptionFacet from "../../abis/RedemptionFacet.json";
 
 const { AddressZero } = ethers.constants;
 
@@ -167,7 +169,7 @@ function getNextFromAmount(
   };
 }
 
-export const BondBox = (props) => {
+export const ExitBox = (props) => {
   const {
     infoTokens,
     active,
@@ -220,6 +222,7 @@ export const BondBox = (props) => {
   const [isUnstake, setIsUnstake] = useState(false);
   const isBond = swapOption === "Bond";
   const isRedeem = swapOption === "Redeem";
+  const isExit = swapOption === "Exit";
   const isInfo = swapOption === "Info";
 
   const [isSettingsVisible, setIsSettingsVisible] = useState(false);
@@ -279,6 +282,7 @@ export const BondBox = (props) => {
     setIsSettingsVisible(false);
   };
 
+  const redemptionFacet = getContract(CHAIN_ID, "Redemption");
   const NDOLBond = getContract(CHAIN_ID, "NDOLBond");
   const NeccStaking = getContract(CHAIN_ID, "NeccStaking");
   const sNeccAddress = getContract(CHAIN_ID, "sNecc");
@@ -288,7 +292,7 @@ export const BondBox = (props) => {
   const ndolNNECCPairAddress = getContract(CHAIN_ID, "NDOL_NNECC_PAIR");
 
   const bondTokens = getBondTokens(CHAIN_ID);
-  const fromTokens = bondTokens;
+  const exitTokens = getExitTokens(CHAIN_ID);
   const toTokens = [getTokenBySymbol(CHAIN_ID, "Necc")];
 
   let fromToken = getToken(CHAIN_ID, fromTokenAddress);
@@ -337,6 +341,12 @@ export const BondBox = (props) => {
       fetcher: fetcher(library, Token),
     }
   );
+  const { data: exitTokenAllowance, mutate: updateExitTokenAllowance } = useSWR(
+    [active, fromTokenAddress, "allowance", account, redemptionFacet],
+    {
+      fetcher: fetcher(library, Token),
+    }
+  );
 
   const needApproval =
     tokenAllowance && fromAmount && fromAmount.gt(tokenAllowance);
@@ -344,9 +354,12 @@ export const BondBox = (props) => {
     stakingTokenAllowance && NeccTokenBalance?.gt(stakingTokenAllowance);
   const needUnstakingApproval =
     nNeccTokenAllowance && nNeccTokenBalance?.gt(nNeccTokenAllowance);
+  const needExitApproval =
+    exitTokenAllowance && fromAmount && fromAmount.gt(exitTokenAllowance);
 
   const prevFromTokenAddress = usePrevious(fromTokenAddress);
   const prevNeedApproval = usePrevious(needApproval);
+  const prevNeedExitApproval = usePrevious(needExitApproval);
 
   const fromUsdMin = getUsd(fromAmount, fromTokenAddress, false, infoTokens);
   const toUsdMax = getUsd(
@@ -430,9 +443,7 @@ export const BondBox = (props) => {
     }
   );
 
-  const bondPayoutForUsd = bondPayoutFor
-    ?.mul(expandDecimals(1, 3))
-    ?.mul(fromToken.price);
+  const bondPayoutForUsd = bigNumberify(0);
 
   const debtTxFailMessage = fromToken?.isNdol
     ? "(Txs fail above 2m)"
@@ -440,11 +451,13 @@ export const BondBox = (props) => {
     ? "(Txs fail above 16k)"
     : "";
 
+  const fixedETHPrice = expandDecimals(3400, 18);
+
   useEffect(() => {
     if (
       fromTokenAddress === prevFromTokenAddress &&
-      !needApproval &&
-      prevNeedApproval &&
+      !needExitApproval &&
+      prevNeedExitApproval &&
       isWaitingForApproval
     ) {
       setIsWaitingForApproval(false);
@@ -453,8 +466,8 @@ export const BondBox = (props) => {
   }, [
     fromTokenAddress,
     prevFromTokenAddress,
-    needApproval,
-    prevNeedApproval,
+    needExitApproval,
+    prevNeedExitApproval,
     setIsWaitingForApproval,
     fromToken.symbol,
     isWaitingForApproval,
@@ -470,6 +483,7 @@ export const BondBox = (props) => {
     updateTokenAllowance,
     updateStakingTokenAllowance,
     updatenNeccTokenAllowance,
+    updateExitTokenAllowance,
     updateNeccTokenBalance,
     updatenNeccTokenBalance,
     updatePrincipleValuation,
@@ -499,6 +513,25 @@ export const BondBox = (props) => {
         }
         if (isInfo) {
           setToValue(fromValue);
+          return;
+        }
+        if (isExit) {
+          if (fromToken.isNdol) {
+            const exitValue = bigNumberify(expandDecimals(fromAmount, 18))
+              .mul(4)
+              .div(10)
+              .div(fixedETHPrice);
+            setToValue(formatAmount(exitValue, 18, 9, false));
+            return;
+          } else {
+            // calc nNecc redemption value
+            const exitValue = bigNumberify(fromAmount)
+              .mul(expandDecimals(500, 18))
+              .div(fixedETHPrice);
+
+            setToValue(formatAmount(exitValue, 18, 9, false));
+            return;
+          }
           return;
         }
         if (toToken) {
@@ -533,6 +566,9 @@ export const BondBox = (props) => {
     if (isRedeem) {
       updateSwapAmounts();
     }
+    if (isExit) {
+      updateSwapAmounts();
+    }
     if (isBond) {
       updateSwapAmounts();
     }
@@ -550,6 +586,7 @@ export const BondBox = (props) => {
     infoTokens,
     isRedeem,
     isBond,
+    isExit,
     fromUsdMin,
     toUsdMax,
     isMarketOrder,
@@ -594,6 +631,9 @@ export const BondBox = (props) => {
   };
 
   const getToLabel = () => {
+    if (isExit) {
+      return "Pending";
+    }
     if (isRedeem) {
       return "Pending";
     }
@@ -633,6 +673,9 @@ export const BondBox = (props) => {
     if (error) {
       return false;
     }
+    if ((needExitApproval && isWaitingForApproval) || isApproving) {
+      return false;
+    }
     if ((needApproval && isWaitingForApproval) || isApproving) {
       return false;
     }
@@ -669,7 +712,8 @@ export const BondBox = (props) => {
 
     if (
       (needApproval && isWaitingForApproval) ||
-      (needStakingApproval && isWaitingForApproval)
+      (needStakingApproval && isWaitingForApproval) ||
+      (needExitApproval && isWaitingForApproval)
     ) {
       return "Waiting for Approval";
     }
@@ -694,6 +738,9 @@ export const BondBox = (props) => {
     if (needApproval) {
       return `Approve ${fromToken.symbol}`;
     }
+    if (needExitApproval) {
+      return `Approve ${fromToken.symbol}`;
+    }
 
     if (isSubmitting) {
       if (!isMarketOrder) {
@@ -709,12 +756,20 @@ export const BondBox = (props) => {
         return "Bond...";
       }
 
+      if (isExit) {
+        return "Redeeming...";
+      }
+
       if (isInfo) {
         return nNeccTokenBalance?.gt(0) ? "Unstake..." : "Stake...";
       }
     }
 
     if (!isMarketOrder) return `Create ${orderType.toLowerCase()} order`;
+
+    if (isExit) {
+      return "Redeem";
+    }
 
     if (isBond) {
       if (isToAmountGreaterThanAvailableBonds) {
@@ -783,6 +838,52 @@ export const BondBox = (props) => {
       message: txMessage,
     };
     setPendingTxns([...pendingTxns, pendingTxn]);
+  };
+
+  const exit = async () => {
+    setIsSubmitting(true);
+
+    let method;
+    let contract;
+    let value;
+    let params;
+
+    if (isExit) {
+      method = fromToken.isNdol ? "redeemNdol" : "redeemnNecc";
+      params = [fromAmount];
+
+      contract = new ethers.Contract(
+        redemptionFacet,
+        RedemptionFacet.abi,
+        library.getSigner()
+      );
+    }
+    console.log({ params });
+    console.log(params[0]?.toString());
+
+    try {
+      const gasLimit = await getGasLimit(contract, method, params, value);
+      const res = await contract[method](...params, { value, gasLimit });
+      const txUrl = getExplorerUrl(CHAIN_ID) + "tx/" + res.hash;
+      const toastSuccessMessage = (
+        <div>
+          Redeem submitted!{" "}
+          <a href={txUrl} target="_blank" rel="noopener noreferrer">
+            View status.
+          </a>
+          <br />
+        </div>
+      );
+
+      handleFulfilled(res, toastSuccessMessage, "Redeem Submitted");
+    } catch (err) {
+      console.error(err);
+      toast.error("Redeem failed");
+    } finally {
+      setIsSubmitting(false);
+      setIsConfirming(false);
+      setIsPendingConfirmation(false);
+    }
   };
 
   const rebase = async () => {
@@ -1127,6 +1228,20 @@ export const BondBox = (props) => {
       setAnchorOnFromAmount(true);
       setFromValue("");
       setToValue("");
+    } else if (opt === "Exit") {
+      const updatedTokenSelection = JSON.parse(JSON.stringify(tokenSelection));
+
+      updatedTokenSelection["Exit"] = {
+        from: tokenSelection["Exit"].from,
+        to: tokenSelection["Exit"].to,
+      };
+      setTokenSelection(updatedTokenSelection);
+      setFromTokenAddress(tokenSelection["Exit"].from);
+      setToTokenAddress(tokenSelection["Exit"].to);
+      setSwapOption("Exit");
+      setAnchorOnFromAmount(true);
+      setFromValue("");
+      setToValue("");
     } // Redeem
     else {
       const updatedTokenSelection = JSON.parse(JSON.stringify(tokenSelection));
@@ -1151,6 +1266,10 @@ export const BondBox = (props) => {
     }
 
     setIsPendingConfirmation(true);
+    if (isExit) {
+      exit();
+      return;
+    }
     if (isRebase) {
       rebase();
       return;
@@ -1181,6 +1300,23 @@ export const BondBox = (props) => {
   };
 
   function approveFromToken() {
+    if (isExit) {
+      approveTokens({
+        setIsApproving,
+        library,
+        tokenAddress: fromToken.address,
+        spender: redemptionFacet,
+        chainId: CHAIN_ID,
+        onApproveSubmitted: () => {
+          setIsWaitingForApproval(true);
+        },
+        infoTokens,
+        getTokenInfo,
+        pendingTxns,
+        setPendingTxns,
+      });
+      return;
+    }
     if (isInfo && needUnstakingApproval) {
       approveTokens({
         setIsApproving,
@@ -1251,6 +1387,11 @@ export const BondBox = (props) => {
     }
 
     if (needApproval) {
+      approveFromToken();
+      return;
+    }
+
+    if (needExitApproval) {
       approveFromToken();
       return;
     }
@@ -1330,34 +1471,104 @@ export const BondBox = (props) => {
       <div className="Exchange-swap-box-inner border">
         <div>
           <Tab
-            options={["Redeem", "Info"]}
+            options={["Exit"]}
             option={swapOption}
             onChange={onSwapOptionChange}
           />
         </div>
 
-        {isRedeem && (
+        {isExit && (
           <React.Fragment>
             <div className="Exchange-swap-section">
               <div className="Exchange-swap-section-top">
-                <div className="muted">Principle</div>
+                <div className="muted">
+                  <div className="Exchange-swap-usd">Redeem</div>
+                </div>
+                {fromBalance && (
+                  <div
+                    className="muted align-right clickable"
+                    onClick={() => {
+                      setFromValue(
+                        formatAmountFree(
+                          fromBalance,
+                          fromToken.decimals,
+                          fromToken.decimals
+                        )
+                      );
+                      setAnchorOnFromAmount(true);
+                    }}
+                  >
+                    Balance:{" "}
+                    {formatAmount(fromBalance, fromToken.decimals, 6, true)}
+                  </div>
+                )}
               </div>
               <div className="Exchange-swap-section-bottom">
+                <div className="Exchange-swap-input-container">
+                  <input
+                    type="number"
+                    placeholder="0.0"
+                    className="Exchange-swap-input"
+                    value={fromValue}
+                    onChange={onFromValueChange}
+                  />
+                  {fromValue !==
+                    formatAmountFree(
+                      fromBalance,
+                      fromToken.decimals,
+                      fromToken.decimals
+                    ) && (
+                    <div
+                      className="Exchange-swap-max"
+                      onClick={() => {
+                        setFromValue(
+                          formatAmountFree(
+                            fromBalance,
+                            fromToken.decimals,
+                            fromToken.decimals
+                          )
+                        );
+                        setAnchorOnFromAmount(true);
+                      }}
+                    >
+                      MAX
+                    </div>
+                  )}
+                </div>
                 <div>
                   <TokenSelector
                     label="From"
                     chainId={CHAIN_ID}
                     tokenAddress={fromTokenAddress}
                     onSelectToken={onSelectFromToken}
-                    tokens={fromTokens}
+                    tokens={exitTokens}
                     infoTokens={infoTokens}
-                    mintingCap={maxNdol}
-                    showBondingCap={isRedeem || isBond}
                   />
                 </div>
               </div>
             </div>
 
+            <div className="Exchange-swap-section">
+              <div className="Exchange-swap-section-bottom">
+                <div>
+                  <input
+                    type="number"
+                    placeholder="0.0"
+                    className="Exchange-swap-input"
+                    disabled={true}
+                    defaultValue={toValue}
+                  />
+                </div>
+                <div>
+                  <div className="TokenSelector-box">WETH</div>
+                </div>
+              </div>
+            </div>
+          </React.Fragment>
+        )}
+
+        {isRedeem && (
+          <React.Fragment>
             <div className="Exchange-swap-section">
               <div className="Exchange-swap-section-top">
                 <div className="muted">{!fromUsdMin && "Redeemable"}</div>
@@ -1457,6 +1668,21 @@ export const BondBox = (props) => {
         </div>
       </div>
 
+      {isExit && (
+        <div className="Exchange-swap-market-box border App-box">
+          <div className="Exchange-swap-market-box-title">Redeem</div>
+          <div className="Exchange-info-row">
+            <div className="Exchange-info-label">NDOL Redemption Value</div>
+            <div className="align-right">0.4 USD</div>
+          </div>
+
+          <div className="Exchange-info-row">
+            <div className="Exchange-info-label">nNecc Redemption Value</div>
+            <div className="align-right">500 USD</div>
+          </div>
+        </div>
+      )}
+
       {isBond && (
         <div className="Exchange-swap-market-box border App-box">
           <div className="Exchange-swap-market-box-title">{swapOption}</div>
@@ -1512,6 +1738,7 @@ export const BondBox = (props) => {
 
       {isConfirming && (
         <ConfirmationBox
+          isExit={isExit}
           isRedeem={isRedeem}
           isBond={isBond}
           isInfo={isInfo}

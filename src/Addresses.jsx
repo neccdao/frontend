@@ -41,6 +41,7 @@ const MintDistributor_AURORA = "0xCfbE1FbBEbe1530fFB44c01AD2497280f60C67f9";
 const VM_AURORA = "0x4F69f0Ce4d1431f407218758Bc6eD765CCb5aEb2";
 const TestableVM_AURORA = "0x8F110B92B427eA47fB0B336f1b682cF454e247bF";
 const NDOL_NNECC_PAIR_AURORA = "0xad5779da21408E70973Ac56ab91Dbf201B45b652";
+const Redemption_AURORA = "0xDeFB45F660166B3FE43Ec110AcaFEBcFC5185b33";
 
 /*
 { Diamantaire: '0xB812f503607Ee2259E9607Cb5E5836B550ac6492' }
@@ -117,6 +118,7 @@ const CONTRACTS = {
     NDOLBond: BondDiamond_AURORA,
     MintFarm: MintFarm_AURORA,
     MintDistributor: MintDistributor_AURORA,
+    Redemption: Redemption_AURORA,
 
     NATIVE_TOKEN: NATIVE_TOKEN_AURORA, // WETH
     BTC: BTC_AURORA,
@@ -177,6 +179,7 @@ const CONTRACTS = {
     NeccStaking: BondDiamond,
     StakingWarmup: BondDiamond,
     NDOLBond: BondDiamond,
+    Redemption: Redemption_AURORA,
 
     NATIVE_TOKEN,
     BTC,
