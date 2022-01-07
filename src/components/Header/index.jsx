@@ -165,7 +165,7 @@ const Header = () => {
           ZAP
         </NavLink>
       </div> */}
-        <div className="App-header-link-container  flex items-center">
+        {/* <div className="App-header-link-container  flex items-center">
           <NavLink activeClassName="active" to="/data">
             DATA
           </NavLink>
@@ -178,7 +178,7 @@ const Header = () => {
           >
             ABOUT
           </a>
-        </div>
+        </div> */}
         <div className="App-header-link-container flex items-center ">
           <a
             target="_blank"

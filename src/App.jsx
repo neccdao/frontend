@@ -69,9 +69,9 @@ function App() {
                   <Route exact path="/trade">
                     <Exchange />
                   </Route>
-                  <Route exact path="/data">
+                  {/* <Route exact path="/data">
                     <Data />
-                  </Route>
+                  </Route> */}
                   <Route exact path="/mint">
                     <Mint />
                   </Route>
