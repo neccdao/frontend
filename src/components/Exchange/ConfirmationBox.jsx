@@ -62,6 +62,7 @@ export default function ConfirmationBox(props) {
     isRebase,
     isClaim,
     isInfo,
+    isExit,
     isRedeemSecondary,
     setIsRedeemSecondary,
     setIsRebase,
@@ -169,6 +170,9 @@ export default function ConfirmationBox(props) {
     if (isRedeem) {
       return "Confirm Redeem and Stake";
     }
+    if (isExit) {
+      return "Confirm Redemption"
+    }
     return isLong ? "Confirm Long" : "Confirm Short";
   };
   const title = getTitle();
@@ -219,6 +223,9 @@ export default function ConfirmationBox(props) {
     }
     if (isHarvest) {
       return "Harvesting...";
+    }
+    if (isExit) {
+      return "Redeeming...";
     }
     return "Shorting...";
   };
@@ -355,6 +362,22 @@ export default function ConfirmationBox(props) {
       );
     }
 
+    if (isExit) {
+      return (
+        <div className="Confirmation-box-main">
+          <span>
+            Pay&nbsp;{formatAmount(fromAmount, fromToken.decimals, 4, true)}{" "}
+            {fromToken.symbol}{" "}
+          </span>
+          <div className="Confirmation-box-main-icon"></div>
+          <div>
+            Receive&nbsp;
+            {formatAmount(toAmount, toToken.decimals, 9, true)} {"WETH"}
+          </div>
+        </div>
+      );
+    };
+
     return (
       <div className="Confirmation-box-main">
         <span>
@@ -380,6 +403,11 @@ export default function ConfirmationBox(props) {
         }}
         label={title}
       >
+        {isExit && (
+          <div className="Confirmation-box-info">
+            {renderMain()}
+          </div>
+        )}
         {(isSwap ||
           isBurn ||
           isMint ||

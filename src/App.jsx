@@ -11,6 +11,7 @@ import Mint from "./Mint";
 import Zap from "./Zap";
 import Data from "./Data";
 import Footer from "./Footer";
+import Exit from "./Exit";
 
 import { cssTransition } from "react-toastify";
 import { ToastContainer } from "react-toastify";
@@ -76,6 +77,9 @@ function App() {
                   </Route>
                   <Route exact path="/bond">
                     <Bond />
+                  </Route>
+                  <Route exact path="/exit">
+                    <Exit />
                   </Route>
                 </Switch>
               </div>

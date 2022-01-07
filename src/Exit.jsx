@@ -38,6 +38,7 @@ import {
   getWhitelistedTokens,
   getTokenBySymbol,
   getBondTokens,
+  getExitTokens,
 } from "./data/Tokens";
 
 import ReaderFacet from "./abis/ReaderFacet.json";
@@ -51,7 +52,7 @@ import ExchangeWalletTokens from "./components/Exchange/ExchangeWalletTokens";
 import Footer from "./Footer";
 
 import "./css/Exchange.css";
-import { BondBox } from "./components/Bond/BondBox";
+import { ExitBox } from "./components/Exit/ExitBox";
 
 const NATIVE_TOKEN_ADDRESS = getContract(CHAIN_ID, "NATIVE_TOKEN");
 
@@ -101,12 +102,12 @@ function getInfoTokens(
 }
 
 export default function Bond() {
-  const tokens = getTokens(CHAIN_ID);
+  const tokens = getExitTokens(CHAIN_ID);
   const bondTokens = getBondTokens(CHAIN_ID);
   const [pendingTxns, setPendingTxns] = useState([]);
 
   const [tokenSelection, setTokenSelection] = useLocalStorageSerializeKey(
-    [CHAIN_ID, "Bond-token-selection"],
+    [CHAIN_ID, "Exit-token-selection"],
     {
       ["Exit"]: {
         from: getTokenBySymbol(CHAIN_ID, "NDOL").address,
@@ -128,8 +129,8 @@ export default function Bond() {
   );
 
   const [swapOption, setSwapOption] = useLocalStorageSerializeKey(
-    [CHAIN_ID, "Bond-option"],
-    "Redeem"
+    [CHAIN_ID, "Exit-option"],
+    "Exit"
   );
 
   const [fromTokenAddress, setFromTokenAddress] = useState(
@@ -170,7 +171,8 @@ export default function Bond() {
     }
   }, [prevAccount, account]);
 
-  const tokenAddresses = tokens.map((token) => token.address);
+  const exitTokens = getExitTokens(CHAIN_ID);
+  const tokenAddresses = exitTokens.map((token) => token.address);
   const bondTokenAddresses = bondTokens.map((token) => token.address);
   const { data: tokenBalances, mutate: updateTokenBalances } = useSWR(
     [active, readerAddress, "getTokenBalances", account],
@@ -472,7 +474,7 @@ export default function Bond() {
   const infoTokens = getInfoTokens(
     tokens,
     tokenBalances,
-    bondTokens,
+    exitTokens,
     undefined,
     undefined,
     bondsInfo
@@ -502,7 +504,7 @@ export default function Bond() {
   return (
     <div className="Exchange">
       <div className="flex items-center justify-center min-h-screen">
-        <BondBox
+        <ExitBox
           flagOrdersEnabled={flagOrdersEnabled}
           chainId={chainId}
           infoTokens={infoTokens}
