@@ -32,7 +32,7 @@ export default function TokenSelector(props) {
           {tokens.map((token) => {
             let info = infoTokens ? infoTokens[token.address] : {};
             let mintAmount;
-            let balance = info?.balance;
+            let balance = info.balance;
             if (showMintingCap && mintingCap && info.ndolAmount) {
               mintAmount = mintingCap.sub(info.ndolAmount);
             }

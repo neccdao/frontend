@@ -67,7 +67,6 @@ import {
   getToken,
   getTokenBySymbol,
   getBondTokens,
-  getExitTokens,
 } from "../../data/Tokens";
 import Token from "../../abis/Token.json";
 import WETH from "../../abis/WETH.json";
@@ -291,7 +290,7 @@ export const BondBox = (props) => {
   const ndolNNECCPairAddress = getContract(CHAIN_ID, "NDOL_NNECC_PAIR");
 
   const bondTokens = getBondTokens(CHAIN_ID);
-  const exitTokens = getExitTokens(CHAIN_ID);
+  const exitTokens = [getTokenBySymbol(CHAIN_ID, "NDOL"), getTokenBySymbol(CHAIN_ID, "nNecc")];
   const toTokens = [getTokenBySymbol(CHAIN_ID, "Necc")];
   
   let fromToken = getToken(CHAIN_ID, fromTokenAddress);

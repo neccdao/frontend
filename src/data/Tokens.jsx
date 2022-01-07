@@ -214,9 +214,6 @@ export function getTokens(chainId) {
     if (token.symbol === "sNecc") {
       return false;
     }
-    if (token.symbol === "nNecc") {
-      return false;
-    }
     return token;
   });
 }
@@ -266,18 +263,6 @@ export function getBondTokens(chainId) {
       return token;
     }
     if (token.symbol?.toLowerCase().includes("lp")) {
-      return token;
-    }
-    return false;
-  });
-}
-
-export function getExitTokens(chainId) {
-  return TOKENS[chainId].filter((token) => {
-    if (token.symbol === "NDOL") {
-      return token;
-    }
-    if (token.symbol === "nNecc") {
       return token;
     }
     return false;
