@@ -139,11 +139,11 @@ const Header = () => {
         </NavLink>
       </div>
       <div className="flex flex-wrap">
-        <div className="App-header-link-container  flex items-center">
+        {/* <div className="App-header-link-container  flex items-center">
           <NavLink activeClassName="active" to="/trade">
             TRADE
           </NavLink>
-        </div>
+        </div> */}
         <div className="App-header-link-container  flex items-center">
           <NavLink activeClassName="active" to="/exit">
             EXIT

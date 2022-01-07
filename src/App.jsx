@@ -64,11 +64,11 @@ function App() {
               <div className="App-content">
                 <Switch>
                   <Route exact path="/">
-                    <Exchange />
+                    <Exit />
                   </Route>
-                  <Route exact path="/trade">
+                  {/* <Route exact path="/trade">
                     <Exchange />
-                  </Route>
+                  </Route> */}
                   {/* <Route exact path="/data">
                     <Data />
                   </Route> */}
