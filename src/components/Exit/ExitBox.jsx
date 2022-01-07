@@ -676,12 +676,6 @@ export const ExitBox = (props) => {
     if ((needExitApproval && isWaitingForApproval) || isApproving) {
       return false;
     }
-    if ((needApproval && isWaitingForApproval) || isApproving) {
-      return false;
-    }
-    if ((needStakingApproval && isWaitingForApproval) || isApproving) {
-      return false;
-    }
 
     if (isApproving) {
       return false;
@@ -710,11 +704,7 @@ export const ExitBox = (props) => {
       return error;
     }
 
-    if (
-      (needApproval && isWaitingForApproval) ||
-      (needStakingApproval && isWaitingForApproval) ||
-      (needExitApproval && isWaitingForApproval)
-    ) {
+    if (needExitApproval && isWaitingForApproval) {
       return "Waiting for Approval";
     }
 
@@ -734,9 +724,6 @@ export const ExitBox = (props) => {
       if (needStakingApproval) {
         return `Approve Necc for Staking`;
       }
-    }
-    if (needApproval) {
-      return `Approve ${fromToken.symbol}`;
     }
     if (needExitApproval) {
       return `Approve ${fromToken.symbol}`;
@@ -1375,6 +1362,11 @@ export const ExitBox = (props) => {
       return;
     }
 
+    if (needExitApproval) {
+      approveFromToken();
+      return;
+    }
+
     if (isInfo) {
       if (needUnstakingApproval) {
         approveFromToken();
@@ -1387,11 +1379,6 @@ export const ExitBox = (props) => {
     }
 
     if (needApproval) {
-      approveFromToken();
-      return;
-    }
-
-    if (needExitApproval) {
       approveFromToken();
       return;
     }
