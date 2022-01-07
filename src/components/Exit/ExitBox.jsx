@@ -341,12 +341,16 @@ export const ExitBox = (props) => {
       fetcher: fetcher(library, Token),
     }
   );
+
   const { data: exitTokenAllowance, mutate: updateExitTokenAllowance } = useSWR(
     [active, fromTokenAddress, "allowance", account, redemptionFacet],
     {
       fetcher: fetcher(library, Token),
     }
   );
+
+  // console.log(redemptionFacet);
+  // console.log(exitTokenAllowance?.toString());
 
   const needApproval =
     tokenAllowance && fromAmount && fromAmount.gt(tokenAllowance);
@@ -1376,11 +1380,6 @@ export const ExitBox = (props) => {
         approveFromToken();
         return;
       }
-    }
-
-    if (needApproval) {
-      approveFromToken();
-      return;
     }
 
     setIsConfirming(true);
